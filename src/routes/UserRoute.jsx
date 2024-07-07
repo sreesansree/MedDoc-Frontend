@@ -6,6 +6,8 @@ import UserSignUp from "../pages/user/UserSignUp";
 import UserOtp from "../pages/user/UserOtp";
 import DoctorsList from "../pages/user/DoctorsList";
 import Header from "../component/user/Header";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
 
 export default function UserRoute() {
   return (
@@ -17,6 +19,8 @@ export default function UserRoute() {
         <Route path="register" element={<UserSignUp />} />
         <Route path="verify-otp" element={<UserOtp />} />
         <Route path="doctors-list" element={<DoctorsList />} />
+        <Route path="about" element={<About />} />
+        <Route path="contact_us" element={<Contact />} />
       </Routes>
     </>
   );
