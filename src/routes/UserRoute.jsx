@@ -8,6 +8,7 @@ import DoctorsList from "../pages/user/DoctorsList";
 import Header from "../component/user/Header";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
+import FooterCom from "../component/pageVerify/FooterCom";
 
 export default function UserRoute() {
   return (
@@ -22,6 +23,7 @@ export default function UserRoute() {
         <Route path="about" element={<About />} />
         <Route path="contact_us" element={<Contact />} />
       </Routes>
+      <FooterCom />
     </>
   );
 }

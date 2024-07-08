@@ -5,6 +5,7 @@ import Login from "../component/pageVerify/Login";
 import Landingpage from "../component/landingPage/Landingpage";
 import NavBar from "../component/pageVerify/NavBar";
 import OTP from "../component/pageVerify/OTP";
+import FooterCom from "../component/pageVerify/FooterCom";
 
 function AuthRoute() {
   return (
@@ -16,6 +17,7 @@ function AuthRoute() {
         <Route path="verify_otp" element={<OTP />} />
         <Route path="" element={<Landingpage />} />
       </Routes>
+      <FooterCom />
     </>
   );
 }
