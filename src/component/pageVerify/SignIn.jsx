@@ -9,12 +9,19 @@ import {
   TextInput,
 } from "flowbite-react";
 import axios from "axios";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../../redux/user/userSlice.js";
+import { useSelector, useDispatch } from "react-redux";
 
 export default function SignIn() {
   const [formData, setFromData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
-
+  // const [errorMessage, setErrorMessage] = useState(null);
+  // const [loading, setLoading] = useState(false);
+  const { loading, error: errorMessage } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -25,36 +32,39 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log("Form data being sent:", formData);
-    if (
-      !formData.email ||
-      !formData.password
-    ) {
-      return setErrorMessage("Please fill out all fields.");
+    if (!formData.email || !formData.password) {
+      // return setErrorMessage("Please fill out all fields.");
+      return dispatch(signInFailure("Please fill out all fields."));
     }
     try {
-      setLoading(true);
-      setErrorMessage(null);
+      dispatch(signInStart());
       const res = await axios.post("api/users/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
+        withCredentials: true, // Include this to send cookies
       });
 
       // Check for success status
       if (res.status !== 200 && res.status !== 201) {
-        setErrorMessage(
-          data.message || "Something went wrong. Please try again."
+        dispatch(
+          signInFailure(
+            data.message || "Something went wrong. Please try again."
+          )
         );
-        setLoading(false);
+
+        // setLoading(false);
         return;
       }
 
       // If registration is successful, navigate to the OTP verification page
-      setLoading(false);
+      // setLoading(false);
+      dispatch(signInSuccess(res.data));
       navigate("/user/userhome");
     } catch (error) {
-     setErrorMessage(error.response?.data?.message || error.message);
-    setLoading(false);
+      // setErrorMessage(error.response?.data?.message || error.message);
+      // setLoading(false);
+      dispatch(signInFailure(error.message));
     }
   };
   return (
@@ -80,7 +90,6 @@ export default function SignIn() {
         {/* right */}
         <div className="flex-1">
           <form className=" flex flex-col gap-4" onSubmit={handleSubmit}>
-        
             <div>
               <Label value="Email" />
               <TextInput
