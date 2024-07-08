@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Alert,
   // FloatingLabel,
@@ -8,7 +9,6 @@ import {
   TextInput,
 } from "flowbite-react";
 
-import { Link, useNavigate } from "react-router-dom";
 export default function UserSignUp() {
   const [formData, setFromData] = useState({});
 
@@ -20,9 +20,12 @@ export default function UserSignUp() {
   const handleChange = (e) => {
     // console.log(e.target.value);
     setFromData({ ...formData, [e.target.id]: e.target.value.trim() });
+    console.log(formData);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+    } catch (error) {}
   };
   return (
     <div className="min-h-screen mt-20">
@@ -80,7 +83,7 @@ export default function UserSignUp() {
             <div>
               <Label value="Mobile" />
               <TextInput
-                type="text"
+                type="Number"
                 placeholder="Enter your mobile number"
                 id="mobile"
                 onChange={handleChange}
