@@ -10,10 +10,9 @@ import {
 } from "flowbite-react";
 import axios from "axios";
 
-export default function SignUp() {
+export default function SignIn() {
   const [formData, setFromData] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
-  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -27,9 +26,7 @@ export default function SignUp() {
     e.preventDefault();
     // console.log("Form data being sent:", formData);
     if (
-      !formData.name ||
       !formData.email ||
-      !formData.mobile ||
       !formData.password
     ) {
       return setErrorMessage("Please fill out all fields.");
@@ -37,7 +34,7 @@ export default function SignUp() {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await axios.post("api/users/register", formData, {
+      const res = await axios.post("api/users/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -54,7 +51,7 @@ export default function SignUp() {
 
       // If registration is successful, navigate to the OTP verification page
       setLoading(false);
-      navigate("/verify_otp");
+      navigate("/user/userhome");
     } catch (error) {
      setErrorMessage(error.response?.data?.message || error.message);
     setLoading(false);
@@ -75,7 +72,7 @@ export default function SignUp() {
             Doc
           </Link>
           <p className="text-sm mt-5">
-            Consult your doctor . You can sign up with your email and password
+            Consult your doctor . You can sign In with your email and password
             or with Google.
           </p>
         </div>
@@ -83,27 +80,7 @@ export default function SignUp() {
         {/* right */}
         <div className="flex-1">
           <form className=" flex flex-col gap-4" onSubmit={handleSubmit}>
-            <div>
-              <Label value="name" />
-              <TextInput
-                type="text"
-                placeholder="Enter your name"
-                id="name"
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Floating label
-             <div>
-              <FloatingLabel
-                type="text"
-                variant="outlined"
-                label="User Name"
-                id="username"
-                onChange={handleChange}
-              />
-            </div> */}
-
+        
             <div>
               <Label value="Email" />
               <TextInput
@@ -114,19 +91,10 @@ export default function SignUp() {
               />
             </div>
             <div>
-              <Label value="Mobile" />
-              <TextInput
-                type="Number"
-                placeholder="Enter your mobile number"
-                id="mobile"
-                onChange={handleChange}
-              />
-            </div>
-            <div>
               <Label value="Password" />
               <TextInput
                 type="password"
-                placeholder="Password"
+                placeholder="**********"
                 id="password"
                 onChange={handleChange}
               />
@@ -143,14 +111,14 @@ export default function SignUp() {
                   <span className="pl-3">Loading...</span>
                 </>
               ) : (
-                "Sign Up"
+                "Sign In"
               )}
             </Button>
           </form>
           <div className="flex gap-2 text-sm mt-5">
-            <span>Have an account?</span>
-            <Link to={"/signin"} className="text-blue-500">
-              Sign In
+            <span> Don't Have an account?</span>
+            <Link to="/signup" className="text-blue-500">
+              Sign Up
             </Link>
           </div>
           {errorMessage && (

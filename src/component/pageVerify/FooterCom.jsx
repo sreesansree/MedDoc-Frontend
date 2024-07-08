@@ -9,15 +9,15 @@ export default function FooterCom() {
       <div className="w-full mx-w-7xl mx-auto">
         <div className="grid w-full justify-between sm:flex md:grid-cols-1">
           <div className="mt-5">
-          <Link to="/">
-        <span
-          className="px-2 py-1 bg-gradient-to-r from-indigo-400
+            <Link to="/">
+              <span
+                className="px-2 py-1 bg-gradient-to-r from-indigo-400
         via-purple-300 to-pink-400 rounded-lg text-white"
-        >
-          Med
-        </span>
-        Doc
-      </Link>
+              >
+                Med
+              </span>
+              Doc
+            </Link>
           </div>
           <div className="grid grid-cols-2 gap-8 mt-4 sm:grid-cols-3 sm:gap-6">
             <div>
@@ -27,9 +27,7 @@ export default function FooterCom() {
                   href="https://github.com/sreesansree?tab=repositories"
                   target="_blank"
                   rel="noopener noreferrer"
-                >
-                  
-                </Footer.Link>
+                ></Footer.Link>
                 <Footer.Link
                   href="/about"
                   target="_blank"

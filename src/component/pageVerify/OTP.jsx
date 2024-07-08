@@ -62,7 +62,7 @@ export default function OTP() {
       }
       setSuccessMessage("OTP verified successfully!");
       setLoading(false);
-      navigate("/login");
+      navigate("/signin");
     } catch (error) {
       setErrorMessage(error.response?.data?.message || error.message);
       setLoading(false);
