@@ -8,11 +8,12 @@ import {
   Spinner,
   TextInput,
 } from "flowbite-react";
+import axios from "axios";
 
-export default function UserSignUp() {
+export default function SignUp() {
   const [formData, setFromData] = useState({});
-
   const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -20,12 +21,44 @@ export default function UserSignUp() {
   const handleChange = (e) => {
     // console.log(e.target.value);
     setFromData({ ...formData, [e.target.id]: e.target.value.trim() });
-    console.log(formData);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // console.log("Form data being sent:", formData);
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.mobile ||
+      !formData.password
+    ) {
+      return setErrorMessage("Please fill out all fields.");
+    }
     try {
-    } catch (error) {}
+      setLoading(true);
+      setErrorMessage(null);
+      const res = await axios.post("api/users/register", formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Check for success status
+      if (res.status !== 200 && res.status !== 201) {
+        setErrorMessage(
+          data.message || "Something went wrong. Please try again."
+        );
+        setLoading(false);
+        return;
+      }
+
+      // If registration is successful, navigate to the OTP verification page
+      setLoading(false);
+      navigate("/verify_otp");
+    } catch (error) {
+     setErrorMessage(error.response?.data?.message || error.message);
+    setLoading(false);
+    }
   };
   return (
     <div className="min-h-screen mt-20">
@@ -51,11 +84,11 @@ export default function UserSignUp() {
         <div className="flex-1">
           <form className=" flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
-              <Label value="User name" />
+              <Label value="name" />
               <TextInput
                 type="text"
                 placeholder="Enter your name"
-                id="username"
+                id="name"
                 onChange={handleChange}
               />
             </div>
@@ -98,16 +131,33 @@ export default function UserSignUp() {
                 onChange={handleChange}
               />
             </div>
-            <Button gradientDuoTone={"purpleToPink"} type="submit" outline>
-              Sign Up
+            <Button
+              gradientDuoTone={"purpleToPink"}
+              type="submit"
+              outline
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner size="sm" />
+                  <span className="pl-3">Loading...</span>
+                </>
+              ) : (
+                "Sign Up"
+              )}
             </Button>
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>Have an account?</span>
-            <Link to={"/user/login"} className="text-blue-500">
+            <Link to={"/login"} className="text-blue-500">
               Sign In
             </Link>
           </div>
+          {errorMessage && (
+            <Alert className="mt-5" color={"failure"}>
+              {errorMessage}
+            </Alert>
+          )}
         </div>
       </div>
     </div>
