@@ -5,6 +5,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice";
+import { signOutSuccess } from "../../redux/user/userSlice";
 
 export default function NavBar() {
   const path = useLocation().pathname;
@@ -12,7 +13,17 @@ export default function NavBar() {
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
 
-  const handleSignOut = () => {};
+  const handleSignOut = async () => {
+    const res = await fetch(`api/users/signout`, {
+      method: "POST",
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.log(data.message);
+    } else {
+      dispatch(signOutSuccess());
+    }
+  };
   return (
     <Navbar className="border-b-2 self-center whitespace-nowrap text-sm sm:text-xl font font-semibold dark:text-white">
       <Link to="/">

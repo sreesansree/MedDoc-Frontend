@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 import { HiArrowSmRight, HiUser } from "react-icons/hi";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
+import { signOutSuccess } from "../../redux/user/userSlice";
+
 export default function DashSideBar() {
-  //   const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const location = useLocation();
   const [tab, setTab] = useState("");
@@ -19,10 +20,14 @@ export default function DashSideBar() {
   }, [location.search]);
 
   const handleSignOut = async () => {
-    try {
-      const res = await axios.post("");
-    } catch (error) {
-      console.log(error.message);
+    const res = await fetch(`api/users/signout`, {
+      method: "POST",
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.log(data.message);
+    } else {
+      dispatch(signOutSuccess())
     }
   };
   return (
@@ -33,9 +38,9 @@ export default function DashSideBar() {
             <Sidebar.Item
               active={tab === "profile"}
               icon={HiUser}
-            //   label={currentUser?.user?.name}
-            //   label={'User'}
-            //   labelColor="dark"
+              //   label={currentUser?.user?.name}
+              //   label={'User'}
+              //   labelColor="dark"
               as={"div"}
             >
               Profile
