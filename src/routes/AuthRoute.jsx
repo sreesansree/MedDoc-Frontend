@@ -8,19 +8,23 @@ import FooterCom from "../component/pageVerify/FooterCom";
 import SignIn from "../component/pageVerify/SignIn";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
-
+import Dashboard from "../pages/Dashboard";
+import PrivateRoute from "../component/dashboard/PrivateRoute";
 
 function AuthRoute() {
   return (
     <>
       <NavBar />
       <Routes>
+        <Route path="" element={<Landingpage />} />
         <Route path="signup" element={<SignUp />} />
         <Route path="signin" element={<SignIn />} />
         <Route path="verify_otp" element={<OTP />} />
-        <Route path="" element={<Landingpage />} />
         <Route path="about" element={<About />} />
         <Route path="contact_us" element={<Contact />} />
+        <Route element={<PrivateRoute />}>
+          <Route path="dashboard" element={<Dashboard />} />
+        </Route>
       </Routes>
       <FooterCom />
     </>

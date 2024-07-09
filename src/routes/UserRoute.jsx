@@ -9,18 +9,20 @@ import DoctorsList from "../pages/user/DoctorsList";
 
 import FooterCom from "../component/pageVerify/FooterCom";
 import NavBar from "../component/pageVerify/NavBar";
+import PrivateRoute from "../component/dashboard/PrivateRoute";
 
 export default function UserRoute() {
   return (
     <>
-     <NavBar />
+      <NavBar />
       <Routes>
-        <Route path="" element={<UserHome />} />
-        {/* <Route path="login" element={<UserSignIn />} />
+        {/* <Route path="" element={<UserHome />} />
+        <Route path="login" element={<UserSignIn />} />
         <Route path="register" element={<UserSignUp />} />
         <Route path="verify-otp" element={<UserOtp />} /> */}
-        <Route path="doctors-list" element={<DoctorsList />} />
-        
+        <Route element={<PrivateRoute />}>
+          <Route path="doctors-list" element={<DoctorsList />} />
+        </Route>
       </Routes>
       <FooterCom />
     </>
