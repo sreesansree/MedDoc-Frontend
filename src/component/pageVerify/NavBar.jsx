@@ -17,8 +17,8 @@ export default function NavBar() {
     <Navbar className="border-b-2 self-center whitespace-nowrap text-sm sm:text-xl font font-semibold dark:text-white">
       <Link to="/">
         <span
-          className="px-2 py-1 bg-gradient-to-r from-indigo-400
-        via-purple-300 to-pink-400 rounded-lg text-white"
+          className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400
+    via-purple-500 to-pink-500 font-bold"
         >
           Med
         </span>
@@ -40,7 +40,7 @@ export default function NavBar() {
           className="w-12 h-10 hidden sm:inline"
           color="gray"
           pill
-          onClick={()=>dispatch(toggleTheme())}
+          onClick={() => dispatch(toggleTheme())}
         >
           {theme === "light" ? <FaSun /> : <FaMoon />}
         </Button>
@@ -81,11 +81,22 @@ export default function NavBar() {
         <Navbar.Link active={path === "/"} as={"div"}>
           <Link to="/">Home</Link>
         </Navbar.Link>
+        {currentUser && (
+          <>
+            <Navbar.Link active={path === "/user/doctors"} as={"div"}>
+              <Link to="/user/doctors-list">Doctors</Link>
+            </Navbar.Link>
+
+            <Navbar.Link active={path === "/user/doctors"} as={"div"}>
+              <Link to="/user/book_consultatio">Book consultaion</Link>
+            </Navbar.Link>
+          </>
+        )}
         <Navbar.Link active={path === "/about"} as={"div"}>
-          <Link to="/user/about">About</Link>
+          <Link to="/about">About</Link>
         </Navbar.Link>
         <Navbar.Link active={path === "/contact_us"} as={"div"}>
-          <Link to="/user/contact_us">Contact Us</Link>
+          <Link to="/contact_us">Contact Us</Link>
         </Navbar.Link>
       </Navbar.Collapse>
     </Navbar>

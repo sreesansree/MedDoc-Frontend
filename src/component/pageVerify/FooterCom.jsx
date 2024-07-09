@@ -11,8 +11,8 @@ export default function FooterCom() {
           <div className="mt-5">
             <Link to="/">
               <span
-                className="px-2 py-1 bg-gradient-to-r from-indigo-400
-        via-purple-300 to-pink-400 rounded-lg text-white"
+                className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400
+    via-purple-500 to-pink-500 font-bold"
               >
                 Med
               </span>
