@@ -62,7 +62,7 @@ export default function NavBar() {
                 {currentUser?.user?.email}
               </span>
             </Dropdown.Header>
-            <Link to="/">
+            <Link to={"/dashboard?tab=profile"}>
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
