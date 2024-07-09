@@ -52,6 +52,7 @@ export default function SignIn() {
           signInFailure(
             data.message || "Something went wrong. Please try again."
           )
+          
         );
 
         // setLoading(false);
@@ -61,11 +62,11 @@ export default function SignIn() {
       // If registration is successful, navigate to the OTP verification page
       // setLoading(false);
       dispatch(signInSuccess(res.data));
-      navigate("/user/userhome");
+      navigate("/");
     } catch (error) {
       // setErrorMessage(error.response?.data?.message || error.message);
       // setLoading(false);
-      dispatch(signInFailure(error.message));
+      dispatch(signInFailure(error.response?.data?.message || error.message));
     }
   };
   return (
