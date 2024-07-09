@@ -15,7 +15,7 @@ export default function UserRoute() {
     <>
       <Header />
       <Routes>
-        <Route path="userHome" element={<UserHome />} />
+        <Route path="" element={<UserHome />} />
         {/* <Route path="login" element={<UserSignIn />} />
         <Route path="register" element={<UserSignUp />} />
         <Route path="verify-otp" element={<UserOtp />} /> */}

@@ -9,6 +9,7 @@ import {
   TextInput,
 } from "flowbite-react";
 import axios from "axios";
+import OAuth from "../google/OAuth";
 
 export default function SignUp() {
   const [formData, setFromData] = useState({});
@@ -56,8 +57,8 @@ export default function SignUp() {
       setLoading(false);
       navigate("/verify_otp");
     } catch (error) {
-     setErrorMessage(error.response?.data?.message || error.message);
-    setLoading(false);
+      setErrorMessage(error.response?.data?.message || error.message);
+      setLoading(false);
     }
   };
   return (
@@ -146,6 +147,7 @@ export default function SignUp() {
                 "Sign Up"
               )}
             </Button>
+            <OAuth />
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>Have an account?</span>
