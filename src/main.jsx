@@ -7,13 +7,15 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import ThemeProvider from "./component/themeProvider/ThemeProvider.jsx";
 import "react-toastify/dist/ReactToastify.css";
-
+import { CookiesProvider } from "react-cookie";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <PersistGate persistor={persistor}>
     <Provider store={store}>
-      <ThemeProvider>
-        <App />
-      </ThemeProvider>
+      <CookiesProvider>
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
+      </CookiesProvider>
     </Provider>
   </PersistGate>
 );

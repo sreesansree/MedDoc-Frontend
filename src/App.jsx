@@ -8,6 +8,7 @@ import {
   DoctorRoute,
 } from "./routes/Routes.js";
 
+
 export default function App() {
   return (
     <div>
@@ -16,7 +17,7 @@ export default function App() {
           <Route path="/*" element={<AuthRoute />} />
           <Route path="/user/*" element={<UserRoute />} />
           <Route path="/admin/*" element={<AdminRoute />} />
-          <Route path="/doctor/*" />
+          <Route path="/doctor/*" element={<DoctorRoute />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
