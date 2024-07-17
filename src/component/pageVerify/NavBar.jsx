@@ -14,7 +14,7 @@ export default function NavBar() {
   const dispatch = useDispatch();
 
   const handleSignOut = async () => {
-    const res = await fetch(`api/users/signout`, {
+    const res = await fetch(`api/users/logout`, {
       method: "POST",
     });
     const data = await res.json();
@@ -22,6 +22,7 @@ export default function NavBar() {
       console.log(data.message);
     } else {
       dispatch(signOutSuccess());
+      navigate("api/users/login", { replace: true });
     }
   };
   return (

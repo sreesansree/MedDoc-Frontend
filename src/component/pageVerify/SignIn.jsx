@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -21,9 +21,20 @@ export default function SignIn() {
   const [formData, setFromData] = useState({});
   // const [errorMessage, setErrorMessage] = useState(null);
   // const [loading, setLoading] = useState(false);
-  const { loading, error: errorMessage } = useSelector((state) => state.user);
+  const {
+    currentUser,
+    loading,
+    error: errorMessage,
+  } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  // const userInfo = useSelector((state) => state.user); // Adjust based on your state slice
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/", { replace: true }); // Redirect to home
+    }
+  }, [currentUser, navigate]);
 
   const handleChange = (e) => {
     // console.log(e.target.value);

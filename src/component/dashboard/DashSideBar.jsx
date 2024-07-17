@@ -20,7 +20,7 @@ export default function DashSideBar() {
   }, [location.search]);
 
   const handleSignOut = async () => {
-    const res = await fetch(`api/users/signout`, {
+    const res = await fetch(`api/users/logout`, {
       method: "POST",
     });
     const data = await res.json();

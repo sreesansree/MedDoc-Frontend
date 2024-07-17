@@ -8,7 +8,7 @@ export default function DashProfile() {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const handleSignOut = async () => {
-    const res = await fetch(`api/users/signout`, {
+    const res = await fetch(`api/users/logout`, {
       method: "POST",
     });
     const data = await res.json();
