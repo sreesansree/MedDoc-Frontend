@@ -19,14 +19,17 @@ const adminSlice = createSlice({
       state.currentAdmin = action.payload;
       state.loading = false;
       state.error = null;
+      localStorage.setItem("adminInfo", JSON.stringify(action.payload));
     },
-    signInFailureA: (state) => {
-      state.currentAdmin = null;
-      state.error = null;
+    signInFailureA: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
     },
     signOutSuccessA: (state) => {
-      (state.currentAdmin = null), (state.error = null);
+      state.currentAdmin = null;
+      state.error = null;
       state.loading = false;
+      localStorage.removeItem("adminInfo");
     },
     resetLoading: (state) => {
       state.loading = false;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Spinner, TextInput, Label } from "flowbite-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +16,17 @@ export default function AdminLogin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const { loading, error: errorMessage } = useSelector((state) => state.admin);
+  const {
+    currentAdmin,
+    loading,
+    error: errorMessage,
+  } = useSelector((state) => state.admin);
+
+  useEffect(() => {
+    if (currentAdmin) {
+      navigate("/admin", { replace: true });
+    }
+  }, [currentAdmin, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
@@ -24,27 +34,47 @@ export default function AdminLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!formData.email || !formData.password) {
+      // return setErrorMessage("Please fill out all fields.");
+      dispatch(signInFailureA("Please fill out all fields."));
+      toast.error("fill out all fields", {
+        onClose: () => dispatch(resetLoading()),
+      });
+      return;
+    }
     try {
       dispatch(signInStartA());
-      console.log(formData, "formData");
-      const response = await axios.post("http://localhost:5000/api/admin/login", formData, {
+      // console.log(formData, "formData");
+      const response = await axios.post("/api/admin/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
         withCredentials: true, // Include this to send cookies
       });
-      console.log(response, "responseee");
+      console.log(response.data, "responseee");
+
+      // Check for success status
+      if (response.status !== 200 && response.status !== 201) {
+        dispatch(
+          signInFailureA(
+            data.message || "Something went wrong. Please try again."
+          )
+        );
+
+        // setLoading(false);
+        return;
+      }
+
       dispatch(signInSuccessA(response.data));
       toast.success("Login successful!", {
         onClose: () => dispatch(resetLoading()),
       });
-      navigate("/admin/");
+      navigate("/admin");
     } catch (error) {
       dispatch(
         signInFailureA(error.response?.data?.message || "Login failed!")
       );
-      toast.error(error.response?.data?.message || "Login failed!", {
+      toast.error(error.response?.data?.message || "Login failed!!", {
         onClose: () => dispatch(resetLoading()),
       });
     }
