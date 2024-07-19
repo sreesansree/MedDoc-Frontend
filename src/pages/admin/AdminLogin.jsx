@@ -35,32 +35,27 @@ export default function AdminLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
-      // return setErrorMessage("Please fill out all fields.");
       dispatch(signInFailureA("Please fill out all fields."));
-      toast.error("fill out all fields", {
+      toast.error("Please fill out all fields", {
         onClose: () => dispatch(resetLoading()),
       });
       return;
     }
     try {
       dispatch(signInStartA());
-      // console.log(formData, "formData");
       const response = await axios.post("/api/admin/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
         withCredentials: true, // Include this to send cookies
       });
-      console.log(response.data, "responseee");
 
-      // Check for success status
       if (response.status !== 200 && response.status !== 201) {
         dispatch(
           signInFailureA(
-            data.message || "Something went wrong. Please try again."
+            response.data.message || "Something went wrong. Please try again."
           )
         );
-        // setLoading(false);
         return;
       }
 
@@ -74,7 +69,7 @@ export default function AdminLogin() {
         signInFailureA(error.response?.data?.message || "Login failed!")
       );
 
-      toast.error(error.response?.data?.message || "Login failed!!", {
+      toast.error(error.response?.data?.message || "Login failed!", {
         onClose: () => dispatch(resetLoading()),
       });
     }
@@ -82,30 +77,34 @@ export default function AdminLogin() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-3 bg-white rounded shadow-md">
-        <h2 className="text-2xl font-bold text-center">Admin Login</h2>
+      <div className="w-full max-w-md p-8 space-y-3 bg-white rounded shadow-lg">
+        <h2 className="text-2xl font-bold text-center text-gray-700">Admin Login</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <Label htmlFor="email" value="Email" />
+            <Label htmlFor="email" value="Email" className="block text-gray-600" />
             <TextInput
               id="email"
               type="email"
               name="email"
               onChange={handleChange}
               value={formData.email}
+              placeholder="Enter your email"
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50 focus:ring-indigo-500"
             />
           </div>
           <div>
-            <Label htmlFor="password" value="Password" />
+            <Label htmlFor="password" value="Password" className="block text-gray-600" />
             <TextInput
               id="password"
               type="password"
               name="password"
               onChange={handleChange}
               value={formData.password}
+              placeholder="Enter your password"
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50 focus:ring-indigo-500"
             />
           </div>
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">
             {loading ? (
               <>
                 <Spinner size="sm" light={true} />

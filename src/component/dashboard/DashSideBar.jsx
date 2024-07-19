@@ -27,7 +27,7 @@ export default function DashSideBar() {
     if (!res.ok) {
       console.log(data.message);
     } else {
-      dispatch(signOutSuccess())
+      dispatch(signOutSuccess());
     }
   };
   return (

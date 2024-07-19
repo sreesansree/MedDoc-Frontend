@@ -24,7 +24,7 @@ export default function AdminSidebar() {
 
   const handleSignOut = async () => {
     try {
-      const res = await axios.post("/api/admin/logout");
+      const res = await axios.post("api/admin/logout");
       console.log(res, "response");
       if (res.status !== 200) {
         console.log(res.data.message);
@@ -38,15 +38,15 @@ export default function AdminSidebar() {
   };
 
   return (
-    <Sidebar>
+    <Sidebar className="w-full md:w-56 ">
       <Sidebar.Items>
-        <Sidebar.ItemGroup>
-          <Link to="/admin?tab=admin">
+        <Sidebar.ItemGroup className="flex flex-col gap-1 ">
+          <Link to="/admin/dashboard?tab=dashboard">
             <Sidebar.Item active={tab === "admin"} icon={HiChartPie} as="div">
               Dashboard
             </Sidebar.Item>
           </Link>
-          <Link to="/admin?tab=department">
+          <Link to="/admin/dashboard?tab=department">
             <Sidebar.Item
               active={tab === "department"}
               icon={FcDepartment}
@@ -55,7 +55,7 @@ export default function AdminSidebar() {
               Departments
             </Sidebar.Item>
           </Link>
-          <Link to="/admin?tab=doctors">
+          <Link to="/admin/dashboard?tab=doctors">
             <Sidebar.Item
               active={tab === "doctors"}
               icon={FaUserDoctor}
@@ -64,7 +64,7 @@ export default function AdminSidebar() {
               Doctors
             </Sidebar.Item>
           </Link>
-          <Link to="/admin?tab=users">
+          <Link to="/admin/dashboard?tab=users">
             <Sidebar.Item active={tab === "users"} icon={HiUser} as="div">
               Users
             </Sidebar.Item>
