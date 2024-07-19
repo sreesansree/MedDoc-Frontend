@@ -24,7 +24,7 @@ export default function DashProfile() {
       <form className="flex flex-col gap-4">
         <div className="w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full">
           <img
-            src={currentUser?.user?.profilePicture}
+            src={currentUser?.profilePicture}
             alt="user"
             className="rounded-full w-full h-full border-8 border-[lightgray]"
           />
@@ -33,13 +33,14 @@ export default function DashProfile() {
           type="text"
           id="name"
           placeholder="username"
-          defaultValue={currentUser?.user?.name}
+          defaultValue={currentUser?.name}
         />
         <TextInput
           type="email"
           id="email"
           placeholder="email"
-          defaultValue={currentUser?.user?.email}
+          defaultValue={currentUser?.email}
+          disabled
         />
         <TextInput type="password" id="password" placeholder="password" />
         <Button

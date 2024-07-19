@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar, Button, Dropdown, Navbar, TextInput } from "flowbite-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
@@ -12,6 +12,7 @@ export default function NavBar() {
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     const res = await fetch(`api/users/logout`, {
@@ -22,9 +23,10 @@ export default function NavBar() {
       console.log(data.message);
     } else {
       dispatch(signOutSuccess());
-      navigate("api/users/login", { replace: true });
+      navigate("/signin", { replace: true });
     }
   };
+
   return (
     <Navbar className="border-b-2 self-center whitespace-nowrap text-sm sm:text-xl font font-semibold dark:text-white">
       <Link to="/">
@@ -63,15 +65,15 @@ export default function NavBar() {
             label={
               <Avatar
                 alt="user"
-                img={currentUser?.user?.profilePicture}
+                img={currentUser?.profilePicture}
                 rounded
               />
             }
           >
             <Dropdown.Header>
-              <span className="block text-sm">@{currentUser?.user?.name}</span>
+              <span className="block text-sm">@{currentUser?.name}</span>
               <span className="block text-sm font-medium truncate">
-                {currentUser?.user?.email}
+                {currentUser?.email}
               </span>
             </Dropdown.Header>
             <Link to={"/dashboard?tab=profile"}>

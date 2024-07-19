@@ -8,7 +8,6 @@ export default function AdminRoute() {
     <>
       <Routes>
         <Route path="login" element={<AdminLogin />} />
-
         <Route element={<AdminAuth />}>
           <Route path="" element={<AdminHome />} />
         </Route>

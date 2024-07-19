@@ -1,7 +1,10 @@
-import React from 'react'
+import React from "react";
+import AdminLayout from "../../component/admin/AdminLayout";
 
 export default function AdminHome() {
   return (
-    <div>AdminHome</div>
-  )
+    <AdminLayout>
+      <h1>Admin Dashboard</h1>
+    </AdminLayout>
+  );
 }
