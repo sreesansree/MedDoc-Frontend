@@ -14,24 +14,33 @@ export default function AdminHeader() {
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    const res = await fetch(`api/admin/logout`, {
-      method: "POST",
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      console.log(data.message);
-    } else {
+    try {
+      const res = await fetch(`/api/admin/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Ensure cookies are sent with the request
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        console.error("Sign out failed:", data.message || "Unknown error");
+        return;
+      }
+
       dispatch(signOutSuccessA());
       navigate("/admin/login", { replace: true });
+    } catch (error) {
+      console.error("Error during sign out:", error);
     }
   };
 
   return (
-    <Navbar className="border-b-2 self-center whitespace-nowrap text-sm sm:text-xl font font-semibold dark:text-white">
+    <Navbar className={`border-b-2 self-center whitespace-nowrap text-sm sm:text-xl font font-semibold ${theme === "dark" ? "bg-gray-900 dark:border-gray-700 dark:text-white" : "bg-white dark:bg-gray-800"}`}>
       <Link to="/admin">
         <span
-          className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400
-    via-purple-500 to-pink-500 font-bold"
+          className={`bg-clip-text text-transparent ${theme === "dark" ? "bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500" : "bg-gradient-to-r from-indigo-600 via-purple-700 to-pink-600"} font-bold`}
         >
           Med
         </span>
@@ -41,11 +50,11 @@ export default function AdminHeader() {
       <div className="flex gap-2 md:order-2">
         <Button
           className="w-12 h-10 hidden sm:inline"
-          color="gray"
+          color={theme === "dark" ? "gray" : "gray"}
           pill
           onClick={() => dispatch(toggleTheme())}
         >
-          {theme === "light" ? <FaSun /> : <FaMoon />}
+          {theme === "light" ? <FaSun className="text-yellow-400" /> : <FaMoon className="text-gray-400" />}
         </Button>
         {currentAdmin ? (
           <Dropdown
@@ -61,7 +70,9 @@ export default function AdminHeader() {
                 {currentAdmin?.email}
               </span>
             </Dropdown.Header>
-            <Dropdown.Item onClick={() => navigate("/admin/dashboard?tab=profile")}>
+            <Dropdown.Item
+              onClick={() => navigate("/admin/dashboard?tab=profile")}
+            >
               Profile
             </Dropdown.Item>
             <Dropdown.Divider />
@@ -78,27 +89,27 @@ export default function AdminHeader() {
 
       <Navbar.Toggle />
       <Navbar.Collapse>
-        {!path.startsWith("/admin") && (
+        {currentAdmin && (
           <ul className="md:gap-6 md:flex md:space-x-6 md:space-y-0 md:mt-0 md:text-sm md:font-medium">
             <li>
               <Link
                 className={`${
                   path === "/admin/dashboard?tab=dashboard"
-                    ? "bg-gray-100 md:bg-transparent md:text-blue-700 md:p-0"
+                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400 md:bg-transparent md:text-blue-700 md:p-0"
                     : "bg-blue-700 md:bg-transparent md:text-blue-700 md:p-0"
-                } block py-2 pr-4 pl-3 rounded md:bg-transparent hover:bg-gray-100 md:p-0`}
+                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0`}
                 to="/admin/dashboard?tab=dashboard"
               >
                 Dashboard
               </Link>
             </li>
             <li>
-              <Link
+              <Link c
                 className={`${
                   path === "/admin/dashboard?tab=department"
-                    ? "bg-gray-100 md:bg-transparent md:text-blue-700 md:p-0"
+                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400 md:bg-transparent md:text-blue-700 md:p-0"
                     : "bg-blue-700 md:bg-transparent md:text-blue-700 md:p-0"
-                } block py-2 pr-4 pl-3 rounded md:bg-transparent hover:bg-gray-100 md:p-0`}
+                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0`}
                 to="/admin/dashboard?tab=department"
               >
                 Department
@@ -108,9 +119,9 @@ export default function AdminHeader() {
               <Link
                 className={`${
                   path === "/admin/dashboard?tab=doctors"
-                    ? "bg-gray-100 md:bg-transparent md:text-blue-700 md:p-0"
+                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400 md:bg-transparent md:text-blue-700 md:p-0"
                     : "bg-blue-700 md:bg-transparent md:text-blue-700 md:p-0"
-                } block py-2 pr-4 pl-3 rounded md:bg-transparent hover:bg-gray-100 md:p-0`}
+                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0`}
                 to="/admin/dashboard?tab=doctors"
               >
                 Doctors
@@ -120,9 +131,9 @@ export default function AdminHeader() {
               <Link
                 className={`${
                   path === "/admin/dashboard?tab=users"
-                    ? "bg-gray-100 md:bg-transparent md:text-blue-700 md:p-0"
+                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400 md:bg-transparent md:text-blue-700 md:p-0"
                     : "bg-blue-700 md:bg-transparent md:text-blue-700 md:p-0"
-                } block py-2 pr-4 pl-3 rounded md:bg-transparent hover:bg-gray-100 md:p-0`}
+                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0`}
                 to="/admin/dashboard?tab=users"
               >
                 Users
