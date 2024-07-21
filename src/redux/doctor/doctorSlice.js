@@ -30,6 +30,7 @@ const doctorSlice = createSlice({
       state.loading = false;
       // localStorage.removeItem("doctorInfo");
     },
+   
   },
 });
 

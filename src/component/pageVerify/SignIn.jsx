@@ -147,24 +147,26 @@ export default function SignIn() {
             </Button>
             <OAuth />
           </form>
-
-          <div className="flex gap-2 text-sm mt-2">
-            <span> Don't Have an account?</span>
-            <Link to="/signup" className="text-blue-500">
-              Sign Up
-            </Link>
+          <div className="flex justify-between">
+            <div className="flex gap-2 text-xs mt-2">
+              <span> Don't Have an account?</span>
+              <Link to="/signup" className="text-blue-500">
+                Sign Up
+              </Link>
+            </div>
+            <span>|</span>
+            <div className="flex gap-2 text-xs mt-2">
+              <span> Forget your password?</span>
+              <Link to="/signup" className="text-blue-500">
+                click here
+              </Link>
+            </div>
           </div>
-          <div className="flex gap-2 text-sm  mt-2">
+
+          <div className="flex justify-center gap-2 text-sm  mt-2">
             <span> Are you a doctor?</span>
             <Link to="/doctor/login" className="text-blue-500">
               sign in here
-            </Link>
-          </div>
-
-          <div className="flex gap-2 text-sm mt-2">
-            <span> Forget your password?</span>
-            <Link to="/signup" className="text-blue-500">
-              click here
             </Link>
           </div>
           {errorMessage && (

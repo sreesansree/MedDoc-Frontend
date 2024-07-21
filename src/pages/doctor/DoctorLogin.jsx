@@ -20,7 +20,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 export default function DoctorLogin() {
   const [formData, setFromData] = useState({ email: "", password: "" });
- 
+
   const {
     currentDoctor,
     loading,
@@ -51,7 +51,7 @@ export default function DoctorLogin() {
     }
     try {
       dispatch(signInStartD());
-      const res = await axios.post("api/doctor/login", formData, {
+      const res = await axios.post("/api/doctor/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -138,24 +138,26 @@ export default function DoctorLogin() {
             </Button>
             {/* <OAuth /> */}
           </form>
+          <div className="flex justify-between">
+            <div className="flex gap-2 text-xs mt-2">
+              <span> Don't Have an account?</span>
+              <Link to="/doctor/register" className="text-blue-500">
+                Sign Up
+              </Link>
+            </div>
 
-          <div className="flex gap-2 text-sm mt-2">
-            <span> Don't Have an account?</span>
-            <Link to="/doctor/register" className="text-blue-500">
-              Sign Up
-            </Link>
+            <div className="flex gap-2 text-xs mt-2">
+              <span> Forget your password?</span>
+              <Link to="/signup" className="text-blue-500">
+                click here
+              </Link>
+            </div>
           </div>
-          <div className="flex gap-2 text-sm  mt-2">
+
+          <div className="flex gap-2 text-xs justify-center mt-2">
             <span> Are you a patient?</span>
             <Link to="/signin" className="text-blue-500">
               sign in here
-            </Link>
-          </div>
-
-          <div className="flex gap-2 text-sm mt-2">
-            <span> Forget your password?</span>
-            <Link to="/signup" className="text-blue-500">
-              click here
             </Link>
           </div>
           {errorMessage && (

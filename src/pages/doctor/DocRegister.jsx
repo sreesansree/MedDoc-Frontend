@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -17,6 +17,16 @@ export default function DocRegister() {
   //   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // clear the error message after 5 seconds
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,23 +37,21 @@ export default function DocRegister() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log("Form data being sent:", formData);
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.mobile ||
-      !formData.password
-    ) {
-      return setErrorMessage("Please fill out all fields.");
+    if (!formData.name || !formData.email || !formData.password) {
+      setErrorMessage("Please fill out all fields.");
+      toast.error("fill out all fields.");
+      return;
     }
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await axios.post("api/doctor/register", formData, {
+      console.log(formData,'formdata');
+      const res = await axios.post("/api/doctor/register", formData, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-
+      console.log(res,'res');
       // Check for success status
       if (res.status !== 200 && res.status !== 201) {
         setErrorMessage(
@@ -55,7 +63,7 @@ export default function DocRegister() {
 
       // If registration is successful, navigate to the OTP verification page
       setLoading(false);
-      navigate("/doctor/verify_otp");
+      navigate("/doctor/verify-otp");
     } catch (error) {
       setErrorMessage(error.response?.data?.message || error.message);
       setLoading(false);
@@ -94,18 +102,6 @@ export default function DocRegister() {
                 onChange={handleChange}
               />
             </div>
-
-            {/* Floating label
-             <div>
-              <FloatingLabel
-                type="text"
-                variant="outlined"
-                label="User Name"
-                id="username"
-                onChange={handleChange}
-              />
-            </div> */}
-
             <div>
               <Label value="Email" />
               <TextInput
