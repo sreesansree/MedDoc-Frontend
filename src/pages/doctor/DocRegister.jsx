@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "flowbite-react";
 import axios from "axios";
-// import OAuth from "../google/OAuth";
+import OAuth from "../../component/google/OAuth.jsx";
 
 export default function DocRegister() {
   const [formData, setFromData] = useState({});
@@ -45,13 +45,13 @@ export default function DocRegister() {
     try {
       setLoading(true);
       setErrorMessage(null);
-      console.log(formData,'formdata');
+      console.log(formData, "formdata");
       const res = await axios.post("/api/doctor/register", formData, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(res,'res');
+      console.log(res, "res");
       // Check for success status
       if (res.status !== 200 && res.status !== 201) {
         setErrorMessage(
@@ -136,7 +136,7 @@ export default function DocRegister() {
                 "Sign Up"
               )}
             </Button>
-            {/* <OAuth /> */}
+            <OAuth userType="doctor" />
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>Have an account?</span>

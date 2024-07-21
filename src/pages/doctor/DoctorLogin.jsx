@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Alert,
-  // FloatingLabel,
-  Button,
-  Label,
-  Spinner,
-  TextInput,
-} from "flowbite-react";
+import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import axios from "axios";
 
 import {
@@ -16,20 +9,19 @@ import {
   signInFailureD,
 } from "../../redux/doctor/doctorSlice.js";
 import { useSelector, useDispatch } from "react-redux";
-// import OAuth from "../google/OAuth.jsx";
+import OAuth from "../../component/google/OAuth.jsx";
 
 export default function DoctorLogin() {
-  const [formData, setFromData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  // const [errors, setErrors] = useState({});
 
   const {
     currentDoctor,
     loading,
     error: errorMessage,
-  } = useSelector((state) => state.user);
-
+  } = useSelector((state) => state.doctor);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const userInfo = useSelector((state) => state.user); // Adjust based on your state slice
 
   useEffect(() => {
     if (currentDoctor) {
@@ -37,18 +29,47 @@ export default function DoctorLogin() {
     }
   }, [currentDoctor, navigate]);
 
+  useEffect(() => {
+    let timer;
+    if (errorMessage) {
+      timer = setTimeout(() => {
+        dispatch(signInFailureD(null)); // Clear error message
+        setErrors({});
+      }, 10000); // Clear error after 10 seconds
+    }
+    return () => clearTimeout(timer); // Cleanup timer on component unmount
+  }, [errorMessage, dispatch]);
+
   const handleChange = (e) => {
-    // console.log(e.target.value);
-    setFromData({ ...formData, [e.target.id]: e.target.value.trim() });
+    setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
+
+  /* const validate = () => {
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.email) {
+      newErrors.email = "Email is required.";
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Invalid email format.";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required.";
+    }
+
+    return newErrors;
+  }; */
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log("Form data being sent:", formData);
-    if (!formData.email || !formData.password) {
-      // return setErrorMessage("Please fill out all fields.");
-      return dispatch(signInFailureD("Please fill out all fields."));
-    }
+    // const validationErrors = validate();
+    // if (Object.keys(validationErrors).length > 0) {
+    //   setErrors(validationErrors);
+    //   return;
+    // }
+
     try {
       dispatch(signInStartD());
       const res = await axios.post("/api/doctor/login", formData, {
@@ -58,51 +79,54 @@ export default function DoctorLogin() {
         withCredentials: true, // Include this to send cookies
       });
 
-      // Check for success status
       if (res.status !== 200 && res.status !== 201) {
-        dispatch(
-          signInFailureD(
-            data.message || "Something went wrong. Please try again."
-          )
-        );
-
-        // setLoading(false);
+        const errorMessage =
+          res.data.message || "Something went wrong. Please try again.";
+        dispatch(signInFailureD(errorMessage));
         return;
       }
 
-      // If registration is successful, navigate to the OTP verification page
-      // setLoading(false);
       dispatch(signInSuccessD(res.data));
       navigate("/doctor");
     } catch (error) {
-      // setErrorMessage(error.response?.data?.message || error.message);
-      // setLoading(false);
-      dispatch(signInFailureD(error.response?.data?.message || error.message));
+      const errorMessage =
+        error.response?.data?.message ||
+        "Something went wrong. Please try again.";
+      dispatch(signInFailureD(errorMessage));
     }
   };
+
   return (
     <div className="min-h-screen mt-20">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
         {/* left */}
         <div className="flex-1">
           <Link to="/doctor" className="font-bold dark:text-white text-4xl">
-            <span
-              className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400
-    via-purple-500 to-pink-500 font-bold"
-            >
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 font-bold">
               Med
             </span>
             Doc
           </Link>
           <p className="text-sm mt-5">
-            Consult your doctor . You can sign In with your email and password
-            or with Google.
+            <span className="font-semibold">Welcome back, Doctor.</span> To
+            access your dashboard, please{" "}
+            <span className="font-semibold">log in</span> using your email and
+            password. For added convenience, you can also use your{" "}
+            <span className="font-semibold text-blue-500">Google account</span>{" "}
+            for a quicker sign-in. Ensure your credentials are kept secure and
+            up-to-date to provide the{" "}
+            <span className="font-semibold">best care</span> to your patients.
           </p>
         </div>
 
         {/* right */}
         <div className="flex-1">
-          <form className=" flex flex-col gap-4" onSubmit={handleSubmit}>
+          {errorMessage && (
+            <Alert className="mt-5" color={"failure"}>
+              {errorMessage}
+            </Alert>
+          )}
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
               <Label value="Email" />
               <TextInput
@@ -110,7 +134,12 @@ export default function DoctorLogin() {
                 placeholder="Enter your email address"
                 id="email"
                 onChange={handleChange}
+                value={formData.email}
+                // className={errors.email ? "border-red-500" : ""}
               />
+              {/* {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )} */}
             </div>
             <div>
               <Label value="Password" />
@@ -119,7 +148,12 @@ export default function DoctorLogin() {
                 placeholder="**********"
                 id="password"
                 onChange={handleChange}
+                value={formData.password}
+                // className={errors.password ? "border-red-500" : ""}
               />
+              {/* {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+              )} */}
             </div>
             <Button
               gradientDuoTone={"purpleToPink"}
@@ -136,7 +170,7 @@ export default function DoctorLogin() {
                 "Sign In"
               )}
             </Button>
-            {/* <OAuth /> */}
+            <OAuth userType="doctor" />
           </form>
           <div className="flex justify-between">
             <div className="flex gap-2 text-xs mt-2">
@@ -154,17 +188,12 @@ export default function DoctorLogin() {
             </div>
           </div>
 
-          <div className="flex gap-2 text-xs justify-center mt-2">
+          <div className="flex gap-2 text-sm justify-center mt-2">
             <span> Are you a patient?</span>
             <Link to="/signin" className="text-blue-500">
               sign in here
             </Link>
           </div>
-          {errorMessage && (
-            <Alert className="mt-5" color={"failure"}>
-              {errorMessage}
-            </Alert>
-          )}
         </div>
       </div>
     </div>

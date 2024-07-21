@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice";
+import { signOutSuccessD } from "../../redux/doctor/doctorSlice";
 
 export default function DocHeader() {
   const path = useLocation().pathname;
@@ -11,7 +12,7 @@ export default function DocHeader() {
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  console.log("currentDoctor:", currentDoctor);
   const handleSignOut = async () => {
     try {
       const res = await fetch(`/api/doctor/logout`, {
@@ -28,7 +29,7 @@ export default function DocHeader() {
         return;
       }
 
-      //   dispatch(signOutSuccessA());
+      dispatch(signOutSuccessD());
       navigate("/doctor/login", { replace: true });
     } catch (error) {
       console.error("Error during sign out:", error);
@@ -43,7 +44,7 @@ export default function DocHeader() {
           : "bg-white dark:bg-gray-800"
       }`}
     >
-      <Link to="/">
+      <Link to="/doctor">
         <span
           className={`bg-clip-text text-transparent ${
             theme === "dark"
@@ -82,7 +83,9 @@ export default function DocHeader() {
             }
           >
             <Dropdown.Header>
-              <span className="block text-sm">@{currentDoctor?.name}</span>
+              <span className="block text-sm">
+                @{currentDoctor?.name}
+              </span>
               <span className="block text-sm font-medium truncate">
                 {currentDoctor?.email}
               </span>
@@ -102,9 +105,29 @@ export default function DocHeader() {
             </Button>
           </Link>
         )}
+        <Navbar.Toggle />
       </div>
+      <Navbar.Collapse>
+        <>
+          {currentDoctor && (
+            <>
+              <Navbar.Link active={path === "/doctor"} as={"div"}>
+                <Link to="/doctor">Home</Link>
+              </Navbar.Link>
 
-      <Navbar.Toggle />
+              <Navbar.Link active={path === "/appointments"} as={"div"}>
+                <Link to="/doctor/">Appointments</Link>
+              </Navbar.Link>
+              <Navbar.Link active={path === "/messages"} as={"div"}>
+                <Link to="/doctor/">Messages</Link>
+              </Navbar.Link>
+              <Navbar.Link active={path === "/messages"} as={"div"}>
+                <Link to="/doctor/">Notifications</Link>
+              </Navbar.Link>
+            </>
+          )}
+        </>
+      </Navbar.Collapse>
     </Navbar>
   );
 }

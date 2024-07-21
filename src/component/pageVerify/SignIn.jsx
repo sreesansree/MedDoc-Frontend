@@ -145,7 +145,7 @@ export default function SignIn() {
                 "Sign In"
               )}
             </Button>
-            <OAuth />
+            <OAuth  userType='user'/>
           </form>
           <div className="flex justify-between">
             <div className="flex gap-2 text-xs mt-2">
