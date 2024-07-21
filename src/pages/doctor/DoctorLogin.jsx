@@ -7,44 +7,35 @@ import {
   Label,
   Spinner,
   TextInput,
-  Select,
 } from "flowbite-react";
 import axios from "axios";
-import {
-  signInStart,
-  signInSuccess,
-  signInFailure,
-} from "../../redux/user/userSlice.js";
-// import {
-//   signInStartD,
-//   signInSuccessD,
-//   signInFailureD,
-//   signOutSuccessD,
-// } from "../../redux/doctor/doctorSlice.js";
-import { useSelector, useDispatch } from "react-redux";
-import OAuth from "../google/OAuth.jsx";
 
-export default function SignIn() {
-  // const [role, setRole] = useState("user");
+import {
+  signInStartD,
+  signInSuccessD,
+  signInFailureD,
+} from "../../redux/doctor/doctorSlice.js";
+import { useSelector, useDispatch } from "react-redux";
+// import OAuth from "../google/OAuth.jsx";
+
+export default function DoctorLogin() {
   const [formData, setFromData] = useState({ email: "", password: "" });
-  // const [errorMessage, setErrorMessage] = useState(null);
-  // const [loading, setLoading] = useState(false);
+ 
   const {
-    currentUser,
+    currentDoctor,
     loading,
     error: errorMessage,
   } = useSelector((state) => state.user);
-  // const doctorLoginSlice = useSelector((state) => state.doctor);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // const userInfo = useSelector((state) => state.user); // Adjust based on your state slice
 
   useEffect(() => {
-    if (currentUser) {
-      navigate("/", { replace: true }); // Redirect to home
+    if (currentDoctor) {
+      navigate("/doctor", { replace: true }); // Redirect to home
     }
-  }, [currentUser, navigate]);
+  }, [currentDoctor, navigate]);
 
   const handleChange = (e) => {
     // console.log(e.target.value);
@@ -56,11 +47,11 @@ export default function SignIn() {
     // console.log("Form data being sent:", formData);
     if (!formData.email || !formData.password) {
       // return setErrorMessage("Please fill out all fields.");
-      return dispatch(signInFailure("Please fill out all fields."));
+      return dispatch(signInFailureD("Please fill out all fields."));
     }
     try {
-      dispatch(signInStart());
-      const res = await axios.post("api/users/login", formData, {
+      dispatch(signInStartD());
+      const res = await axios.post("api/doctor/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -70,7 +61,7 @@ export default function SignIn() {
       // Check for success status
       if (res.status !== 200 && res.status !== 201) {
         dispatch(
-          signInFailure(
+          signInFailureD(
             data.message || "Something went wrong. Please try again."
           )
         );
@@ -81,12 +72,12 @@ export default function SignIn() {
 
       // If registration is successful, navigate to the OTP verification page
       // setLoading(false);
-      dispatch(signInSuccess(res.data));
-      navigate("/");
+      dispatch(signInSuccessD(res.data));
+      navigate("/doctor");
     } catch (error) {
       // setErrorMessage(error.response?.data?.message || error.message);
       // setLoading(false);
-      dispatch(signInFailure(error.response?.data?.message || error.message));
+      dispatch(signInFailureD(error.response?.data?.message || error.message));
     }
   };
   return (
@@ -94,7 +85,7 @@ export default function SignIn() {
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
         {/* left */}
         <div className="flex-1">
-          <Link to="/" className="font-bold dark:text-white text-4xl">
+          <Link to="/doctor" className="font-bold dark:text-white text-4xl">
             <span
               className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400
     via-purple-500 to-pink-500 font-bold"
@@ -145,18 +136,18 @@ export default function SignIn() {
                 "Sign In"
               )}
             </Button>
-            <OAuth />
+            {/* <OAuth /> */}
           </form>
 
           <div className="flex gap-2 text-sm mt-2">
             <span> Don't Have an account?</span>
-            <Link to="/signup" className="text-blue-500">
+            <Link to="/doctor/register" className="text-blue-500">
               Sign Up
             </Link>
           </div>
           <div className="flex gap-2 text-sm  mt-2">
-            <span> Are you a doctor?</span>
-            <Link to="/doctor/login" className="text-blue-500">
+            <span> Are you a patient?</span>
+            <Link to="/signin" className="text-blue-500">
               sign in here
             </Link>
           </div>

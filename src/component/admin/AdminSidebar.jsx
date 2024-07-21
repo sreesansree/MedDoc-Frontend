@@ -24,16 +24,26 @@ export default function AdminSidebar() {
 
   const handleSignOut = async () => {
     try {
-      const res = await axios.post("api/admin/logout");
-      console.log(res, "response");
+      const res = await axios.post(
+        "/api/admin/logout",
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, // Ensure cookies are sent with the request
+        }
+      );
+
       if (res.status !== 200) {
-        console.log(res.data.message);
-      } else {
-        dispatch(signOutSuccessA());
-        navigate("/admin/login");
+        console.error("Sign out failed:", res.data.message || "Unknown error");
+        return;
       }
+
+      dispatch(signOutSuccessA());
+      navigate("/admin/login", { replace: true });
     } catch (error) {
-      console.log(error.message);
+      console.error("Error during sign out:", error);
     }
   };
 
