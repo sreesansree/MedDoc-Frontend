@@ -79,12 +79,18 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-slate-800 ">
       <div className="w-full max-w-md p-8 space-y-3 bg-white rounded shadow-md">
-        <h2 className="text-2xl font-bold text-center">Admin Login</h2>
+        <h2 className="text-xl font-bold text-cyan-900 text-center">
+          Admin Login
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <Label htmlFor="email" value="Email" />
+          <div className="">
+            <Label
+              className="dark:text-slate-900 mv-10"
+              htmlFor="email"
+              value="Email"
+            />
             <TextInput
               id="email"
               type="email"
@@ -94,7 +100,11 @@ export default function AdminLogin() {
             />
           </div>
           <div>
-            <Label htmlFor="password" value="Password" />
+            <Label
+              className="dark:text-slate-900 mv-10"
+              htmlFor="password"
+              value="Password"
+            />
             <TextInput
               id="password"
               type="password"

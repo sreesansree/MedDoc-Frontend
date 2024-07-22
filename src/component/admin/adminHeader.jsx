@@ -37,10 +37,20 @@ export default function AdminHeader() {
   };
 
   return (
-    <Navbar className={`border-b-2 self-center whitespace-nowrap text-sm sm:text-xl font font-semibold ${theme === "dark" ? "bg-gray-900 dark:border-gray-700 dark:text-white" : "bg-white dark:bg-gray-800"}`}>
+    <Navbar
+      className={`border-b-2 self-center whitespace-nowrap text-sm sm:text-xl font font-semibold ${
+        theme === "dark"
+          ? "bg-gray-900 dark:border-gray-700 dark:text-white"
+          : "bg-white dark:bg-gray-800"
+      }`}
+    >
       <Link to="/admin">
         <span
-          className={`bg-clip-text text-transparent ${theme === "dark" ? "bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500" : "bg-gradient-to-r from-indigo-600 via-purple-700 to-pink-600"} font-bold`}
+          className={`bg-clip-text text-transparent ${
+            theme === "dark"
+              ? "bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500"
+              : "bg-gradient-to-r from-indigo-600 via-purple-700 to-pink-600"
+          } font-bold`}
         >
           Med
         </span>
@@ -54,7 +64,11 @@ export default function AdminHeader() {
           pill
           onClick={() => dispatch(toggleTheme())}
         >
-          {theme === "light" ? <FaSun className="text-yellow-400" /> : <FaMoon className="text-gray-400" />}
+          {theme === "light" ? (
+            <FaSun className="text-yellow-400" />
+          ) : (
+            <FaMoon className="text-gray-400" />
+          )}
         </Button>
         {currentAdmin ? (
           <Dropdown
@@ -104,7 +118,8 @@ export default function AdminHeader() {
               </Link>
             </li>
             <li>
-              <Link c
+              <Link
+                c
                 className={`${
                   path === "/admin/dashboard?tab=department"
                     ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400 md:bg-transparent md:text-blue-700 md:p-0"
