@@ -167,7 +167,7 @@ export default function SignIn() {
             <span>|</span>
             <div className="flex gap-2 text-xs mt-2">
               <span> Forget your password?</span>
-              <Link to="/signup" className="text-blue-500">
+              <Link to="/forgot-password" className="text-blue-500">
                 click here
               </Link>
             </div>

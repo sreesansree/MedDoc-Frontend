@@ -7,6 +7,8 @@ import DocOTP from "../pages/doctor/DocOtp";
 import DocHome from "../pages/doctor/DocHome";
 import FooterCom from "../component/pageVerify/FooterCom";
 import DoctorAuth from "../component/Auth/DoctorAuth";
+import ForgetPassword from "../component/common/ForgetPassword";
+import CompletePasswordReset from "../component/common/CompletePasswordReset";
 
 export default function DoctorRoute() {
   return (
@@ -16,6 +18,14 @@ export default function DoctorRoute() {
         <Route path="register" element={<DocRegister />} />
         <Route path="login" element={<DoctorLogin />} />
         <Route path="verify-otp" element={<DocOTP />} />
+        <Route
+          path="forgot-password"
+          element={<ForgetPassword userType="doctor" />}
+        />
+        <Route
+          path="reset-password"
+          element={<CompletePasswordReset userType="doctor" />}
+        />
         <Route element={<DoctorAuth />}>
           <Route path="" element={<DocHome />} />
         </Route>
