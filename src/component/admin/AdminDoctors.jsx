@@ -21,7 +21,7 @@ export default function AdminDoctors() {
       setDoctors([]); // Ensure it's an array even in case of error
     }
   };
-
+ 
   useEffect(() => {
     fetchDoctors();
   }, []);
@@ -62,7 +62,7 @@ export default function AdminDoctors() {
 
   return (
     <div className="container mx-auto px-4">
-      <h2 className="text-2xl font-semibold my-4">Admin Doctors</h2>
+      <h2 className="text-2xl font-semibold my-4">Admin Doctors List</h2>
       <div className="overflow-x-auto">
         <Table className="min-w-full divide-y divide-gray-200" hoverable>
           <Table.Head>

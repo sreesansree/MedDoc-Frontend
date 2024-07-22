@@ -7,7 +7,6 @@ import {
   Label,
   Spinner,
   TextInput,
-  Select,
 } from "flowbite-react";
 import axios from "axios";
 import {
@@ -45,6 +44,17 @@ export default function SignIn() {
       navigate("/", { replace: true }); // Redirect to home
     }
   }, [currentUser, navigate]);
+
+  useEffect(() => {
+    let timer;
+    if (errorMessage) {
+      timer = setTimeout(() => {
+        dispatch(signInFailure(null)); // Clear error message
+        // setErrors({});
+      }, 8000); // Clear error after 8 seconds
+    }
+    return () => clearTimeout(timer); // Cleanup timer on component unmount
+  }, [errorMessage, dispatch]);
 
   const handleChange = (e) => {
     // console.log(e.target.value);
@@ -145,7 +155,7 @@ export default function SignIn() {
                 "Sign In"
               )}
             </Button>
-            <OAuth  userType='user'/>
+            <OAuth userType="user" />
           </form>
           <div className="flex justify-between">
             <div className="flex gap-2 text-xs mt-2">
