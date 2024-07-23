@@ -1,17 +1,48 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Badge, Button } from "flowbite-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import {
   HiChartPie,
   HiUser,
   HiUserGroup,
   HiClipboardList,
 } from "react-icons/hi";
+import axios from "axios"; // Import axios for making API calls
 
-export default function AdminHomeContent() {
+export default function AdminHome() {
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalDoctors, setTotalDoctors] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const isDashboard = location.pathname.includes("dashboard");
+
+  // Fetch users and doctors when the component mounts
+  useEffect(() => {
+    const fetchTotals = async () => {
+      try {
+        const usersResponse = await axios.get("/api/admin/users", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, // Include this to send cookies
+        });
+        const doctorsResponse = await axios.get("/api/admin/doctors", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, // Include this to send cookies
+        });
+
+        setTotalUsers(usersResponse.data.length);
+        setTotalDoctors(doctorsResponse.data.length);
+      } catch (error) {
+        console.error("Failed to fetch totals:", error);
+      }
+    };
+
+    fetchTotals();
+  }, []);
+
   return (
     <div className="p-4 space-y-4">
       <header className="flex justify-between items-center">
@@ -31,14 +62,14 @@ export default function AdminHomeContent() {
           <HiUser className="text-3xl text-indigo-600" />
           <div>
             <h2 className="text-lg font-medium">Total Users</h2>
-            <p className="text-2xl font-semibold">1,234</p>
+            <p className="text-2xl font-semibold">{totalUsers}</p>
           </div>
         </Card>
         <Card className="flex items-center space-x-4">
           <HiUserGroup className="text-3xl text-green-600" />
           <div>
             <h2 className="text-lg font-medium">Total Doctors</h2>
-            <p className="text-2xl font-semibold">567</p>
+            <p className="text-2xl font-semibold">{totalDoctors}</p>
           </div>
         </Card>
         <Card className="flex items-center space-x-4">
@@ -52,7 +83,7 @@ export default function AdminHomeContent() {
           <HiChartPie className="text-3xl text-red-600" />
           <div>
             <h2 className="text-lg font-medium">Revenue</h2>
-            <p className="text-2xl font-semibold">₹ 12,345</p>
+            <p className="text-2xl font-semibold">₹ 0000</p>
           </div>
         </Card>
       </section>
@@ -84,8 +115,12 @@ export default function AdminHomeContent() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Quick Actions</h2>
         <div className="flex gap-4">
+          <Link to="/admin/dashboard?tab=users">
           <Button gradientDuoTone="cyanToBlue">View All Users</Button>
-          <Button gradientDuoTone="cyanToBlue">View All Doctors</Button>
+          </Link>
+          <Link to="/admin/dashboard?tab=doctors">
+          <Button  gradientDuoTone="cyanToBlue">View All Doctors</Button>
+          </Link>
           <Button gradientDuoTone="cyanToBlue">Manage Departments</Button>
           <Button gradientDuoTone="cyanToBlue">Check Appointments</Button>
         </div>
