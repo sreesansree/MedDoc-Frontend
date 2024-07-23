@@ -9,6 +9,7 @@ import FooterCom from "../component/pageVerify/FooterCom";
 import DoctorAuth from "../component/Auth/DoctorAuth";
 import ForgetPassword from "../component/common/ForgetPassword";
 import CompletePasswordReset from "../component/common/CompletePasswordReset";
+import NotFound from "../component/notFound/NotFound";
 
 export default function DoctorRoute() {
   return (
@@ -29,6 +30,7 @@ export default function DoctorRoute() {
         <Route element={<DoctorAuth />}>
           <Route path="" element={<DocHome />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <FooterCom />
     </>

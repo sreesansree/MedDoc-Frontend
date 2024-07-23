@@ -10,6 +10,7 @@ import DoctorsList from "../pages/user/DoctorsList";
 import FooterCom from "../component/pageVerify/FooterCom";
 import NavBar from "../component/pageVerify/NavBar";
 import PrivateRoute from "../component/dashboard/PrivateRoute";
+import NotFound from "../component/notFound/NotFound";
 
 export default function UserRoute() {
   return (
@@ -23,6 +24,7 @@ export default function UserRoute() {
         <Route element={<PrivateRoute />}>
           <Route path="doctors-list" element={<DoctorsList />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <FooterCom />
     </>

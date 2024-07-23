@@ -14,10 +14,10 @@ export default function App() {
     <div>
       <Router>
         <Routes>
-          <Route path="/*" element={<AuthRoute />} />
           <Route path="/user/*" element={<UserRoute />} />
           <Route path="/admin/*" element={<AdminRoute />} />
           <Route path="/doctor/*" element={<DoctorRoute />} />
+          <Route path="/*" element={<AuthRoute />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

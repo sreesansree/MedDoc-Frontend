@@ -12,13 +12,13 @@ import Dashboard from "../pages/Dashboard";
 import PrivateRoute from "../component/dashboard/PrivateRoute";
 import ForgetPassword from "../component/common/ForgetPassword";
 import CompletePasswordReset from "../component/common/CompletePasswordReset";
+import NotFound from "../component/notFound/NotFound";
 
 function AuthRoute() {
   return (
     <>
       <NavBar />
       <Routes>
-        <Route path="" element={<Landingpage />} />
         <Route path="signup" element={<SignUp />} />
         <Route path="signin" element={<SignIn />} />
         <Route path="verify_otp" element={<OTP />} />
@@ -35,6 +35,8 @@ function AuthRoute() {
         <Route element={<PrivateRoute />}>
           <Route path="dashboard" element={<Dashboard />} />
         </Route>
+        <Route path="" element={<Landingpage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <FooterCom />
     </>
