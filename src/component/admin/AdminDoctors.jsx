@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
+import { GiCheckMark } from "react-icons/gi";
 
 export default function AdminDoctors() {
   const [doctors, setDoctors] = useState([]);
@@ -82,13 +83,13 @@ export default function AdminDoctors() {
                   <Table.Cell>{doctor.name}</Table.Cell>
                   <Table.Cell>{doctor.email}</Table.Cell>
                   <Table.Cell>{doctor.isVerified ? "Yes" : "No"}</Table.Cell>
-                  <Table.Cell>{doctor.isApproved ? "Yes" : "No"}</Table.Cell>
+                  <Table.Cell>{doctor.isApproved ? <GiCheckMark />  : "No"}</Table.Cell>
                   <Table.Cell
                     className={`${
                       doctor.is_blocked ? "text-red-500" : "text-lime-600"
                     }`}
                   >
-                    {doctor.is_blocked ? "Yes" : "No"}
+                    {doctor.is_blocked ? <GiCheckMark /> : "No"}
                   </Table.Cell>
                   <Table.Cell>
                     <Link to={`/admin/dashboard?tab=doctor/${doctor._id}`}>

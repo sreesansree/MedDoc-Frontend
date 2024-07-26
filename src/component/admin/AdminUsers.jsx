@@ -79,7 +79,8 @@ export default function AdminUsers() {
                   <Table.Cell>{user.email}</Table.Cell>
                   <Table.Cell>{user.isVerified ? "Yes" : "No"}</Table.Cell>
                   <Table.Cell>{user.is_blocked ? "Yes" : "No"}</Table.Cell>
-                  <Table.Cell>
+
+                  {/* <Table.Cell>
                     <button
                       className="bg-red-500 text-white px-2 py-1 rounded ml-2"
                       onClick={() => handleBlock(user._id)}
@@ -91,6 +92,20 @@ export default function AdminUsers() {
                       onClick={() => handleUnblock(user._id)}
                     >
                       Unblock
+                    </button>
+                  </Table.Cell> */}
+                  <Table.Cell>
+                    <button
+                      className={` ${
+                        user.is_blocked ? "bg-green-500" : "bg-red-500"
+                      } text-white w-20 px-2 py-1 rounded ml-2`}
+                      onClick={() =>
+                        user.is_blocked
+                          ? handleUnblock(user._id)
+                          : handleBlock(user._id)
+                      }
+                    >
+                      {user.is_blocked ? "Unblock" : "Block"}
                     </button>
                   </Table.Cell>
                 </Table.Row>
