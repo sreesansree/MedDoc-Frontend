@@ -13,7 +13,6 @@ export default function Dashboard() {
     if (tabFromUrl) {
       setTab(tabFromUrl);
     }
-
   }, [location.search]);
   return (
     <div className="min-h-screen flex flex-col md:flex-row">

@@ -13,10 +13,10 @@ export default function AdminRoute() {
         <Route path="login" element={<AdminLogin />} />
         <Route element={<AdminAuth />}>
           <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="/" element={<AdminHome />} />
         </Route>
-        <Route path="/" element={<AdminHome />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
-} 
+}

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Table } from "flowbite-react";
+import { Link } from "react-router-dom";
 
 export default function AdminDoctors() {
   const [doctors, setDoctors] = useState([]);
-  console.log(doctors, "dpctorsssssss");
-
+  // console.log(doctors, "dpctorsssssss");
+  
   const fetchDoctors = async () => {
     try {
       const response = await axios.get("/api/admin/doctors", {
@@ -14,51 +15,48 @@ export default function AdminDoctors() {
         },
         withCredentials: true, // Include this to send cookies
       });
-      console.log(response.data, "doctors data");
+      // console.log(response.data, "doctors data");
       setDoctors(response.data);
     } catch (error) {
       console.error("Error fetching doctors:", error);
       setDoctors([]); // Ensure it's an array even in case of error
     }
   };
- 
+  
+
   useEffect(() => {
     fetchDoctors();
   }, []);
 
-  const handleApprove = async (id) => {
-    try {
-      await axios.post(`/api/admin/approve-doctor/${id}`, {}, {
-        withCredentials: true,
-      });
-      fetchDoctors(); 
-    } catch (error) {
-      console.error("Error approving doctor:", error);
-    }
-  };
-  
   const handleBlock = async (id) => {
     try {
-      await axios.post(`/api/admin/block-doctor/${id}`, {}, {
-        withCredentials: true,
-      });
-      fetchDoctors(); 
+      await axios.post(
+        `/api/admin/block-doctor/${id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      fetchDoctors();
     } catch (error) {
       console.error("Error blocking doctor:", error);
     }
   };
-  
+
   const handleUnblock = async (id) => {
     try {
-      await axios.post(`/api/admin/unblock-doctor/${id}`, {}, {
-        withCredentials: true,
-      });
-      fetchDoctors(); 
+      await axios.post(
+        `/api/admin/unblock-doctor/${id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      fetchDoctors();
     } catch (error) {
       console.error("Error unblocking doctor:", error);
     }
   };
-  
 
   return (
     <div className="container mx-auto px-4">
@@ -71,6 +69,7 @@ export default function AdminDoctors() {
             <Table.HeadCell>Verified</Table.HeadCell>
             <Table.HeadCell>Approved</Table.HeadCell>
             <Table.HeadCell>Blocked</Table.HeadCell>
+            <Table.HeadCell>View</Table.HeadCell>
             <Table.HeadCell>Actions</Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
@@ -84,25 +83,32 @@ export default function AdminDoctors() {
                   <Table.Cell>{doctor.email}</Table.Cell>
                   <Table.Cell>{doctor.isVerified ? "Yes" : "No"}</Table.Cell>
                   <Table.Cell>{doctor.isApproved ? "Yes" : "No"}</Table.Cell>
-                  <Table.Cell>{doctor.is_blocked ? "Yes" : "No"}</Table.Cell>
+                  <Table.Cell
+                    className={`${
+                      doctor.is_blocked ? "text-red-500" : "text-lime-600"
+                    }`}
+                  >
+                    {doctor.is_blocked ? "Yes" : "No"}
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Link to={`/admin/dashboard?tab=doctor/${doctor._id}`}>
+                      <button className="bg-blue-500 text-white px-2 py-1 rounded">
+                        View
+                      </button>
+                    </Link>
+                  </Table.Cell>
                   <Table.Cell>
                     <button
-                      className="bg-green-500 text-white px-2 py-1 rounded"
-                      onClick={() => handleApprove(doctor._id)}
+                      className={` ${
+                        doctor.is_blocked ? "bg-green-500" : "bg-red-500"
+                      } text-white w-20 px-2 py-1 rounded ml-2`}
+                      onClick={() =>
+                        doctor.is_blocked
+                          ? handleUnblock(doctor._id)
+                          : handleBlock(doctor._id)
+                      }
                     >
-                      Approve
-                    </button>
-                    <button
-                      className="bg-red-500 text-white px-2 py-1 rounded ml-2"
-                      onClick={() => handleBlock(doctor._id)}
-                    >
-                      Block
-                    </button>
-                    <button
-                      className="bg-yellow-500 text-white px-2 py-1 rounded ml-2"
-                      onClick={() => handleUnblock(doctor._id)}
-                    >
-                      Unblock
+                      {doctor.is_blocked ? "Unblock" : "Block"}
                     </button>
                   </Table.Cell>
                 </Table.Row>

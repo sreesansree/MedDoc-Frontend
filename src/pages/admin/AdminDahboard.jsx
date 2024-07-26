@@ -6,6 +6,7 @@ import AdminHome from "../admin/AdminHome";
 import AdminDepartments from "../../component/admin/AdminDepartment";
 import AdminDoctors from "../../component/admin/AdminDoctors";
 import AdminUsers from "../../component/admin/AdminUsers";
+import AdminSingleDoctor from "../../component/admin/AdminSingleDoctor";
 
 export default function AdminDashboard() {
   const location = useLocation();
@@ -18,6 +19,7 @@ export default function AdminDashboard() {
       setTab(tabFromUrl);
     }
   }, [location.search]);
+  const matchDoctorId = tab.match(/^doctor\/(.+)$/);
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
@@ -30,6 +32,7 @@ export default function AdminDashboard() {
         {tab === "department" && <AdminDepartments />}
         {tab === "doctors" && <AdminDoctors />}
         {tab === "users" && <AdminUsers />}
+        {matchDoctorId && <AdminSingleDoctor doctorId={matchDoctorId[1]} />}
       </div>
     </div>
   );
