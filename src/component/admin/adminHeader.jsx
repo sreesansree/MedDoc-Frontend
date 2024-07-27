@@ -102,16 +102,17 @@ export default function AdminHeader() {
       </div>
 
       <Navbar.Toggle />
+
       <Navbar.Collapse>
         {currentAdmin && (
-          <ul className="md:gap-6 md:flex md:space-x-6 md:space-y-0 md:mt-0 md:text-sm md:font-medium">
+          <ul className="md:gap-6 md:flex md:space-x-6 md:space-y-0 md:mt-0 md:text-sm md:font-medium dark:text-white">
             <li>
               <Link
                 className={`${
                   path === "/admin/dashboard?tab=dashboard"
-                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400 md:bg-transparent md:text-blue-700 md:p-0"
-                    : "bg-blue-700 md:bg-transparent md:text-blue-700 md:p-0"
-                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0`}
+                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400"
+                    : " dark:text-white"
+                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 md:p-0`}
                 to="/admin/dashboard?tab=dashboard"
               >
                 Dashboard
@@ -119,12 +120,11 @@ export default function AdminHeader() {
             </li>
             <li>
               <Link
-                c
                 className={`${
                   path === "/admin/dashboard?tab=department"
-                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400 md:bg-transparent md:text-blue-700 md:p-0"
-                    : "bg-blue-700 md:bg-transparent md:text-blue-700 md:p-0"
-                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0`}
+                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400"
+                    : "dark:bg-transparent dark:text-white"
+                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 md:p-0`}
                 to="/admin/dashboard?tab=department"
               >
                 Department
@@ -134,9 +134,9 @@ export default function AdminHeader() {
               <Link
                 className={`${
                   path === "/admin/dashboard?tab=doctors"
-                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400 md:bg-transparent md:text-blue-700 md:p-0"
-                    : "bg-blue-700 md:bg-transparent md:text-blue-700 md:p-0"
-                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0`}
+                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400"
+                    : "dark:bg-transparent dark:text-white"
+                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 md:p-0`}
                 to="/admin/dashboard?tab=doctors"
               >
                 Doctors
@@ -146,9 +146,9 @@ export default function AdminHeader() {
               <Link
                 className={`${
                   path === "/admin/dashboard?tab=users"
-                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400 md:bg-transparent md:text-blue-700 md:p-0"
-                    : "bg-blue-700 md:bg-transparent md:text-blue-700 md:p-0"
-                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0`}
+                    ? "bg-gray-100 dark:bg-gray-700 dark:text-blue-400"
+                    : "dark:bg-transparent dark:text-white"
+                } block py-2 pr-4 pl-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 md:p-0`}
                 to="/admin/dashboard?tab=users"
               >
                 Users
