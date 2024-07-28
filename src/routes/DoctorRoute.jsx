@@ -10,6 +10,7 @@ import DoctorAuth from "../component/Auth/DoctorAuth";
 import ForgetPassword from "../component/common/ForgetPassword";
 import CompletePasswordReset from "../component/common/CompletePasswordReset";
 import NotFound from "../component/notFound/NotFound";
+import DocDashboard from "../pages/doctor/DocDashboard";
 
 export default function DoctorRoute() {
   return (
@@ -28,6 +29,7 @@ export default function DoctorRoute() {
           element={<CompletePasswordReset userType="doctor" />}
         />
         <Route element={<DoctorAuth />}>
+          <Route path="dashboard" element={<DocDashboard />} />
           <Route path="" element={<DocHome />} />
         </Route>
         <Route path="*" element={<NotFound />} />
