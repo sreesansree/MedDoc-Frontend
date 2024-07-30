@@ -33,8 +33,6 @@ export default function DocProfile() {
     }));
   };
 
- 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await fetch(`/api/doctor/profile`, {
@@ -54,7 +52,9 @@ export default function DocProfile() {
 
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
-      <h1 className="my-7 text-center font-semibold text-3xl">Dr. {currentDoctor?.name}</h1>
+      <h1 className="my-7 text-center font-semibold text-3xl">
+        Dr. {currentDoctor?.name}
+      </h1>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4">
           <div className="w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full">
@@ -92,19 +92,22 @@ export default function DocProfile() {
               onChange={handleInputChange}
               className="w-full mr-2"
             />
-            <FileInput
-              id="certificate"
-              onChange={handleInputChange}
-              sizing="sm"
-              className="w-full ml-2"
-            />
-          </div>
-          <div className="flex justify-between">
+
             <TextInput
               type="number"
               id="mobile"
               placeholder="Mobile number"
               value={doctorDetails.mobile || ""}
+              onChange={handleInputChange}
+              className="w-full ml-2"
+            />
+          </div>
+          <div className="flex justify-between mt-2">
+            <TextInput
+              type="text"
+              id="department"
+              placeholder="department"
+              value={doctorDetails.department || ""}
               onChange={handleInputChange}
               className="w-full mr-2"
             />
@@ -117,9 +120,20 @@ export default function DocProfile() {
               className="w-full ml-2"
             />
           </div>
+          <div>
+            <Label value="Certificate" className="m-3 mb-2"/>
+            <FileInput
+              id="certificate"
+              onChange={handleInputChange}
+              sizing="sm"
+              className="w-full ml-2"
+            />{" "}
+          </div>
           <div className="flex justify-between items-center">
             <div className="w-full flex items-center">
-              <Label htmlFor="isVerified" className="mr-2">Verified:</Label>
+              <Label htmlFor="isVerified" className="mr-2">
+                Verified:
+              </Label>
               <div className="relative w-full flex items-center">
                 {doctorDetails.isVerified ? (
                   <FaCheckCircle className="text-green-500" />
@@ -129,7 +143,9 @@ export default function DocProfile() {
               </div>
             </div>
             <div className="w-full flex items-center">
-              <Label htmlFor="isApproved" className="mr-2">Approved:</Label>
+              <Label htmlFor="isApproved" className="mr-2">
+                Approved:
+              </Label>
               <div className="relative w-full flex items-center">
                 {doctorDetails.isApproved ? (
                   <FaCheckCircle className="text-green-500" />
@@ -139,7 +155,7 @@ export default function DocProfile() {
               </div>
             </div>
           </div>
-          
+
           <Button
             type="submit"
             className="w-full"
@@ -150,7 +166,6 @@ export default function DocProfile() {
           </Button>
         </div>
       </form>
-      
     </div>
   );
 }
