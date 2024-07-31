@@ -30,11 +30,30 @@ const doctorSlice = createSlice({
       state.loading = false;
       localStorage.removeItem("doctorInfo");
     },
-   
+    updateStartD: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    updateSuccessD: (state, action) => {
+      state.currentDoctor = action.payload;
+      state.loading = false;
+      state.error = null;
+    },
+    updateFailureD: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
-export const { signInStartD, signInSuccessD, signInFailureD, signOutSuccessD } =
-  doctorSlice.actions;
+export const {
+  signInStartD,
+  signInSuccessD,
+  signInFailureD,
+  signOutSuccessD,
+  updateStartD,
+  updateSuccessD,
+  updateFailureD,
+} = doctorSlice.actions;
 
 export default doctorSlice.reducer;
