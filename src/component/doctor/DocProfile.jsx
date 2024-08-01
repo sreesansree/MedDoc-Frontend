@@ -1,9 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, TextInput, Label, FileInput, Alert } from "flowbite-react";
 import { useDispatch, useSelector } from "react-redux";
-// import { signOutSuccessD } from "../../redux/doctor/doctorSlice.js";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { app } from "../../firebase/firebase.js";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {
+  Button,
+  TextInput,
+  Label,
+  FileInput,
+  Alert,
+  Select,
+  Modal,
+} from "flowbite-react";
 import {
   getDownloadURL,
   getStorage,
@@ -15,24 +24,49 @@ import {
   updateSuccessD,
   updateFailureD,
 } from "../../redux/doctor/doctorSlice.js";
-import { Link } from "react-router-dom";
-import { CircularProgressbar } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
+import axios from "axios";
 
 export default function DocProfile() {
   const dispatch = useDispatch();
   const filePickRef = useRef();
+  const certificatePickRef = useRef();
+  const [formData, setFormData] = useState({});
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
+
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
   const [imageFileUploading, setImageFileUploading] = useState(false);
 
-  console.log(imageFileUploadProgress, imageFileUploadError);
+  const [updateDoctorSuccess, setUpdateDoctorSuccess] = useState(null);
+  const [updateDoctorError, setUpdateDoctorError] = useState(null);
+  const [departments, setDepartments] = useState([]);
+
+  const [certificateFile, setCertificateFile] = useState(null);
+  const [certificateFileUrl, setCertificateFileUrl] = useState(null);
+  const [certificateFileUploadError, setCertificateFileUploadError] =
+    useState(null);
+  const [certificateFileUploading, setCertificateFileUploading] =
+    useState(false);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
   const { currentDoctor, error, loading } = useSelector(
     (state) => state.doctor
   );
-  const [doctorDetails, setDoctorDetails] = useState(currentDoctor || {});
+
+  // useEffect(() => {
+  //   if (currentDoctor) {
+  //     setFormData({
+  //       name: currentDoctor.name,
+  //       email: currentDoctor.email,
+  //       qualification: currentDoctor.qualification,
+  //       mobile: currentDoctor.mobile,
+  //       department: currentDoctor.department,
+  //       state: currentDoctor.state,
+  //       profilePicture: currentDoctor.profilePicture,
+  //       certificate: currentDoctor.certificate,
+  //     });
+  //   }
+  // }, [currentDoctor]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -42,23 +76,38 @@ export default function DocProfile() {
     }
   };
 
+  const handleCertificateChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCertificateFile(file);
+    }
+  };
+
   useEffect(() => {
     if (imageFile) {
       uploadImage();
     }
   }, [imageFile]);
 
+  useEffect(() => {
+    if (certificateFile) {
+      uploadCertificate();
+    }
+  }, [certificateFile]);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await axios.get("/api/admin/departments/");
+        setDepartments(response.data);
+      } catch (error) {
+        console.error("Error fetching departments: ", error);
+      }
+    };
+    fetchDepartments();
+  }, []);
+
   const uploadImage = async () => {
-    // service firebase.storage {
-    //   match /b/{bucket}/o {
-    //     match /{allPaths=**} {
-    //       allow read;
-    //       allow write: if
-    //       request.resource.size < 2 * 1024 * 1024 &&
-    //       request.resource.contentType.matches("image/ *")
-    //     }
-    //   }
-    // }
     setImageFileUploading(true);
     setImageFileUploadError(null);
     const storage = getStorage(app);
@@ -82,9 +131,9 @@ export default function DocProfile() {
         setImageFileUrl(null);
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURl) => {
-          setImageFileUrl(downloadURl);
-          setDoctorDetails({ ...doctorDetails, profilePicture: downloadURl });
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setImageFileUrl(downloadURL);
+          setFormData({ ...formData, profilePicture: downloadURL });
           setImageFileUrl(null);
           setImageFileUploading(false);
         });
@@ -92,44 +141,83 @@ export default function DocProfile() {
     );
   };
 
-  useEffect(() => {
-    if (!currentDoctor) {
-      // Fetch doctor details if not already in state
-      const fetchDoctorDetails = async () => {
-        const res = await fetch(`/api/doctor/profile`);
-        const data = await res.json();
-        if (res.ok) {
-          setDoctorDetails(data);
-        } else {
-          console.log(data.message);
-        }
-      };
-      fetchDoctorDetails();
-    }
-  }, [currentDoctor]);
+  const uploadCertificate = async () => {
+    setCertificateFileUploading(true);
+    setCertificateFileUploadError(null);
+    const storage = getStorage(app);
+    const fileName = new Date().getTime() + certificateFile.name;
+    const storageRef = ref(storage, fileName);
+
+    const uploadTask = uploadBytesResumable(storageRef, certificateFile);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {},
+      (error) => {
+        setCertificateFileUploadError(
+          "Could not upload certificate (File must be less than 2MB)"
+        );
+        setCertificateFile(null);
+        setCertificateFileUrl(null);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setCertificateFileUrl(downloadURL);
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            certificate: downloadURL,
+          }));
+          setCertificateFileUploading(false);
+        });
+      }
+    );
+  };
 
   const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    setDoctorDetails((prevDetails) => ({
-      ...prevDetails,
-      [id]: value,
-    }));
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`/api/doctor/profile/${currentDoctor._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(doctorDetails),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      console.log(data.message);
-    } else {
-      console.log("Profile updated successfully");
+    setUpdateDoctorError(null);
+    setUpdateDoctorSuccess(null);
+    if (Object.keys(formData).length === 0) {
+      return;
+    }
+    if (imageFileUploading || certificateFileUploading) {
+      setUpdateDoctorError("Please wait for file uploads to complete");
+      return;
+    }
+    try {
+      dispatch(updateStartD());
+      const response = await axios.put(
+        `/api/doctor/profile/${currentDoctor._id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+          },
+          withCredentials: true,
+        }
+      );
+      console.log(response.data, "response dataa");
+
+      if (response.status !== 200 && response.status !== 201) {
+        dispatch(updateFailureD(response.data.message));
+        setUpdateDoctorError(response.data.message);
+        toast.error("Update Error");
+        console.error("Update Error:", response.data.message); // Add this
+      } else {
+        dispatch(updateSuccessD(response.data));
+        setUpdateDoctorSuccess(response.data.message);
+        toast.success("Profile updated Successfully");
+        console.log("Update Success:", response.data.message); // Add this
+      }
+    } catch (error) {
+      dispatch(updateFailureD(error.message));
+      setUpdateDoctorError(error.message);
+      toast.error("Catch Error..");
+      console.error("Catch Error:", error.message); // Add this
     }
   };
 
@@ -139,7 +227,6 @@ export default function DocProfile() {
         Dr. {currentDoctor?.name}
       </h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* <div > */}
         <input
           type="file"
           accept="image/*"
@@ -147,116 +234,128 @@ export default function DocProfile() {
           ref={filePickRef}
           hidden
         />
+
         <div
           className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
           onClick={() => filePickRef.current.click()}
         >
-          {imageFileUploadProgress && (
-            <CircularProgressbar
-              value={imageFileUploadProgress || 0}
-              text={`${imageFileUploadProgress}%`}
-              strokeWidth={5}
-              styles={{
-                root: {
-                  width: "100%",
-                  height: "100%",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                },
-                path: {
-                  stroke: `rgba(62,152,199, ${imageFileUploadProgress / 100})`,
-                },
-              }}
-            />
-          )}
           <img
-            src={imageFileUrl || doctorDetails.profilePicture}
+            src={imageFileUrl || currentDoctor?.profilePicture}
             alt="doctor"
             className={`rounded-full w-full h-full object-cover border-8
-              border-[lightgray] ${
-                imageFileUploadProgress &&
-                imageFileUploadProgress < 100 &&
-                "opacity-60"
-              }`}
+              border-[lightgray] ${imageFileUploading && "opacity-60"}`}
           />
         </div>
         {imageFileUploadError && (
           <Alert color={"failure"}>{imageFileUploadError}</Alert>
         )}
-        <div className="flex justify-between">
-          <TextInput
-            type="text"
-            id="name"
-            placeholder="Username"
-            defaultValue={doctorDetails.name || ""}
-            onChange={handleInputChange}
-            className="w-full mr-2"
-          />
-          <TextInput
-            type="email"
-            id="email"
-            placeholder="Email"
-            defaultValue={doctorDetails.email || ""}
-            onChange={handleInputChange}
-            disabled
-            className="w-full ml-2"
-          />
-        </div>
-        <div className="flex justify-between">
-          <TextInput
-            type="text"
-            id="qualification"
-            placeholder="Qualification"
-            defaultValue={doctorDetails.qualification || ""}
-            onChange={handleInputChange}
-            className="w-full mr-2"
-          />
 
+        <div className="flex gap-6 justify-between">
+          {/* <Label htmlFor="name" value="Name" /> */}
           <TextInput
-            type="number"
-            id="mobile"
-            placeholder="Mobile number"
-            defaultValue={doctorDetails.mobile || ""}
+            id="name"
+            type="text"
+            placeholder="Enter your name"
+            required
+            defaultValue={currentDoctor?.name || ""}
             onChange={handleInputChange}
-            className="w-full ml-2"
+            className="w-full"
+          />
+          {/* </div>
+        <div> */}
+          {/* <Label htmlFor="email" value="Email" /> */}
+          <TextInput
+            id="email"
+            type="email"
+            placeholder="Enter your email"
+            required
+            defaultValue={currentDoctor?.email || ""}
+            onChange={handleInputChange}
+            className="w-full"
           />
         </div>
-        <div className="flex justify-between mt-2">
+        <div className="flex gap-6 justify-between">
+          {/* <Label htmlFor="qualification" value="Qualification" /> */}
           <TextInput
+            id="qualification"
             type="text"
-            id="department"
-            placeholder="department"
-            defaultValue={doctorDetails.department || ""}
+            placeholder="Enter your qualification"
+            required
+            defaultValue={currentDoctor?.qualification || ""}
             onChange={handleInputChange}
-            className="w-full mr-2"
+            className="w-full"
           />
+          {/* </div>
+        <div> */}
+          {/* <Label htmlFor="mobile" value="Mobile" /> */}
           <TextInput
-            type="text"
-            id="state"
-            placeholder="State"
-            defaultValue={doctorDetails.state || ""}
+            id="mobile"
+            type="tel"
+            placeholder="Enter your mobile number"
+            required
+            defaultValue={currentDoctor?.mobile || ""}
             onChange={handleInputChange}
-            className="w-full ml-2"
+            className="w-full"
           />
         </div>
         <div>
-          <Label value="Certificate" className="m-3 mb-2" />
-          <FileInput
-            type="file"
-            accept="image/*"
-            id="certificate"
-            onChange={handleImageChange}
-            sizing="sm"
+          <Label htmlFor="department" value="Department" />
+          <Select
+            id="department"
+            required
+            value={formData.department || ""}
+            onChange={(e) => {
+              setFormData({ ...formData, department: e.target.value });
+            }}
+          >
+            <option value="" disabled>
+              Select department
+            </option>
+            {departments.map((dept) => (
+              <option key={dept._id} value={dept._id}>
+                {dept.name}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="state" value="State" />
+          <TextInput
+            id="state"
+            type="text"
+            placeholder="Enter your state"
+            required
+            defaultValue={currentDoctor?.state || ""}
+            onChange={handleInputChange}
             className="w-full ml-2"
-          />{" "}
-          {/* <div className="w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full">
-            <img
-              src={doctorDetails?.certificate}
-              alt="user"
-              className="rounded-full w-full h-full border-8 border-[lightgray]"
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <div
+            className="relative w-full self-center cursor-pointer shadow-md overflow-hidden"
+            onClick={() => certificatePickRef.current.click()}
+          >
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+              onChange={handleCertificateChange}
+              ref={certificatePickRef}
+              hidden
             />
-          </div> */}
+            <div className="border-2 border-gray-300 p-2 rounded-lg text-center text-gray-400">
+              Click to upload certificate
+            </div>
+          </div>
+
+          {certificateFileUrl && (
+            <Button
+              color="info"
+              onClick={() => setShowCertificateModal(true)}
+              className="ml-4"
+            >
+              View Certificate
+            </Button>
+          )}
         </div>
         <div className="flex justify-between items-center">
           <div className="w-full flex items-center">
@@ -264,7 +363,7 @@ export default function DocProfile() {
               Verified:
             </Label>
             <div className="relative w-full flex items-center">
-              {doctorDetails.isVerified ? (
+              {currentDoctor.isVerified ? (
                 <FaCheckCircle className="text-green-500" />
               ) : (
                 <FaTimesCircle className="text-red-500" />
@@ -276,7 +375,7 @@ export default function DocProfile() {
               Approved:
             </Label>
             <div className="relative w-full flex items-center">
-              {doctorDetails.isApproved ? (
+              {currentDoctor.isApproved ? (
                 <FaCheckCircle className="text-green-500" />
               ) : (
                 <FaTimesCircle className="text-red-500" />
@@ -285,16 +384,58 @@ export default function DocProfile() {
           </div>
         </div>
 
-        <Button
-          type="submit"
-          className="w-full"
-          gradientDuoTone="purpleToPink"
-          outline
-        >
+        <Button type="submit" className="mt-4">
           Update
         </Button>
-        {/* </div> */}
+        {certificateFileUploadError && (
+          <Alert color={"failure"}>{certificateFileUploadError}</Alert>
+        )}
+
+        {updateDoctorSuccess && (
+          <Alert
+            color={"success"}
+            className="mt-5 bg-green-100 border border-green-500"
+          >
+            {updateDoctorSuccess}
+          </Alert>
+        )}
+        {updateDoctorError && (
+          <Alert
+            color={"failure"}
+            className="mt-5 bg-red-100 border border-red-500"
+          >
+            {updateDoctorError}
+          </Alert>
+        )}
+        {error && (
+          <Alert
+            color={"failure"}
+            className="mt-5 bg-red-100 border border-red-500"
+          >
+            {error}
+          </Alert>
+        )}
       </form>
+      <ToastContainer />
+
+      {/* Modal for viewing certificate */}
+      <Modal
+        show={showCertificateModal}
+        size="lg"
+        onClose={() => setShowCertificateModal(false)}
+      >
+        <Modal.Header>Certificate</Modal.Header>
+        <Modal.Body>
+          <img
+            src={certificateFileUrl}
+            alt="certificate"
+            className="rounded-lg w-full h-full object-cover"
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setShowCertificateModal(false)}>Close</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

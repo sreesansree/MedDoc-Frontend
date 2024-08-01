@@ -40,8 +40,8 @@ const doctorSlice = createSlice({
       state.error = null;
     },
     updateFailureD: (state, action) => {
-      state.loading = false;
       state.error = action.payload;
+      state.loading = false;
     },
   },
 });

@@ -13,7 +13,11 @@ const DoctorsList = () => {
         },
         withCredentials: true, // Include cookies with the request
       });
-      setDoctors(response.data);
+      const approvedDoctors = response.data.filter(
+        (doctor) => doctor.isApproved
+      );
+      // console.log(approvedDoctors, "approved doctors");
+      setDoctors(approvedDoctors);
     } catch (error) {
       console.error("Error fetching doctors:", error);
       setDoctors([]);
