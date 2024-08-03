@@ -51,7 +51,7 @@ export default function OAuth({ userType }) {
     <Button
       type="button"
       gradientDuoTone="pinkToOrange"
-      className="flex items-center"
+      className="flex justify-center items-center"
       outline
       onClick={handleGoogleClick}
     >

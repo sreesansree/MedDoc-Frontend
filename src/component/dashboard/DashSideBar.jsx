@@ -1,14 +1,15 @@
 import { Sidebar } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { HiArrowSmRight, HiUser } from "react-icons/hi";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { signOutSuccess } from "../../redux/user/userSlice";
+import { signInFailure, signOutSuccess } from "../../redux/user/userSlice";
+import axios from "axios";
 
 export default function DashSideBar() {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
-  
+  const navigate = useNavigate();
   const location = useLocation();
   const [tab, setTab] = useState("");
 
@@ -21,14 +22,29 @@ export default function DashSideBar() {
   }, [location.search]);
 
   const handleSignOut = async () => {
-    const res = await fetch(`api/users/logout`, {
-      method: "POST",
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      console.log(data.message);
-    } else {
+    // const res = await fetch(`/api/users/logout`, {
+    //   method: "POST",
+    // });
+    try {
+      const res = await axios.post(
+        "/api/users/logout",
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, // Ensure cookies are sent with the request
+        }
+      );
+      if (res.status !== 200) {
+        console.error("Sign out failed:", res.data.message || "Unknown error");
+        dispatch(signInFailure());
+        return;
+      }
       dispatch(signOutSuccess());
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error("Error during sign out:", error);
     }
   };
   return (

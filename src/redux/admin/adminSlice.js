@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { signOutSuccess } from "../user/userSlice";
 
 const initialState = {
   currentAdmin: null,
@@ -19,7 +18,7 @@ const adminSlice = createSlice({
       state.currentAdmin = action.payload;
       state.loading = false;
       state.error = null;
-      localStorage.setItem("adminInfo", JSON.stringify(action.payload));
+      // localStorage.setItem("adminInfo", JSON.stringify(action.payload));
     },
     signInFailureA: (state, action) => {
       state.loading = false;
@@ -29,7 +28,7 @@ const adminSlice = createSlice({
       state.currentAdmin = null;
       state.error = null;
       state.loading = false;
-      localStorage.removeItem("adminInfo");
+      // localStorage.removeItem("adminInfo");
     },
     resetLoading: (state) => {
       state.loading = false;

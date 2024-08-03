@@ -106,7 +106,7 @@ export default function DocProfile() {
     };
     fetchDepartments();
   }, []);
-
+    
   const uploadImage = async () => {
     setImageFileUploading(true);
     setImageFileUploadError(null);

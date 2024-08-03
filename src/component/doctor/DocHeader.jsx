@@ -83,9 +83,7 @@ export default function DocHeader() {
             }
           >
             <Dropdown.Header>
-              <span className="block text-sm">
-                @{currentDoctor?.name}
-              </span>
+              <span className="block text-sm">@{currentDoctor?.name}</span>
               <span className="block text-sm font-medium truncate">
                 {currentDoctor?.email}
               </span>
@@ -113,6 +111,12 @@ export default function DocHeader() {
             <>
               <Navbar.Link active={path === "/doctor"} as={"div"}>
                 <Link to="/doctor">Home</Link>
+              </Navbar.Link>
+              <Navbar.Link active={path === "/create-slot"} as={"div"}>
+                <Link to="/doctor/create-slot">Create Slot</Link>
+              </Navbar.Link>
+              <Navbar.Link active={path === "/Slot-list"} as={"div"}>
+                <Link to="/doctor/slots/:doctorId">Slot List</Link>
               </Navbar.Link>
 
               <Navbar.Link active={path === "/appointments"} as={"div"}>

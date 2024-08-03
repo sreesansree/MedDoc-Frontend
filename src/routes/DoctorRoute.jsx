@@ -11,6 +11,8 @@ import ForgetPassword from "../component/common/ForgetPassword";
 import CompletePasswordReset from "../component/common/CompletePasswordReset";
 import NotFound from "../component/notFound/NotFound";
 import DocDashboard from "../pages/doctor/DocDashboard";
+import CreateSlot from "../component/doctor/CreateSlot";
+import SlotList from "../component/doctor/SlotList";
 
 export default function DoctorRoute() {
   return (
@@ -29,6 +31,8 @@ export default function DoctorRoute() {
           element={<CompletePasswordReset userType="doctor" />}
         />
         <Route element={<DoctorAuth />}>
+          <Route path="create-slot" element={<CreateSlot />} />
+          <Route path="slots/:doctorId" element={<SlotList />} />
           <Route path="dashboard" element={<DocDashboard />} />
           <Route path="" element={<DocHome />} />
         </Route>

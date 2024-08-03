@@ -41,6 +41,8 @@ export default function DashProfile() {
   const [formData, setFormData] = useState({});
   const [showModel, setShowModal] = useState(false);
 
+
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -134,6 +136,7 @@ export default function DashProfile() {
         setUpdateUserError(data.message);
       } else {
         dispatch(updateSuccess(data));
+        setImageFileUploadProgress(null)
         setUpdateUserSuccess("User's profile updated successfully");
       }
     } catch (error) {
@@ -229,6 +232,7 @@ export default function DashProfile() {
           placeholder="username"
           defaultValue={currentUser.name}
           onChange={handleChange}
+          required
         />
         <TextInput
           type="email"

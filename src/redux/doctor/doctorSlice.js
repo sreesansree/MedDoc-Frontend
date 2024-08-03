@@ -18,7 +18,7 @@ const doctorSlice = createSlice({
       state.currentDoctor = action.payload;
       state.loading = false;
       state.error = null;
-      localStorage.setItem("doctorInfo", JSON.stringify(action.payload));
+      // localStorage.setItem("doctorInfo", JSON.stringify(action.payload));
     },
     signInFailureD: (state, action) => {
       state.loading = false;
@@ -28,7 +28,7 @@ const doctorSlice = createSlice({
       state.currentDoctor = null;
       state.error = null;
       state.loading = false;
-      localStorage.removeItem("doctorInfo");
+      // localStorage.removeItem("doctorInfo");
     },
     updateStartD: (state) => {
       state.loading = true;
