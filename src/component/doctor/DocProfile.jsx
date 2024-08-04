@@ -53,20 +53,20 @@ export default function DocProfile() {
     (state) => state.doctor
   );
 
-  // useEffect(() => {
-  //   if (currentDoctor) {
-  //     setFormData({
-  //       name: currentDoctor.name,
-  //       email: currentDoctor.email,
-  //       qualification: currentDoctor.qualification,
-  //       mobile: currentDoctor.mobile,
-  //       department: currentDoctor.department,
-  //       state: currentDoctor.state,
-  //       profilePicture: currentDoctor.profilePicture,
-  //       certificate: currentDoctor.certificate,
-  //     });
-  //   }
-  // }, [currentDoctor]);
+  useEffect(() => {
+    if (currentDoctor) {
+      setFormData({
+        name: currentDoctor.name,
+        email: currentDoctor.email,
+        qualification: currentDoctor.qualification,
+        mobile: currentDoctor.mobile,
+        department: currentDoctor.department,
+        state: currentDoctor.state,
+        profilePicture: currentDoctor.profilePicture,
+        certificate: currentDoctor.certificate,
+      });
+    }
+  }, [currentDoctor]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -290,7 +290,7 @@ export default function DocProfile() {
           {/* <Label htmlFor="mobile" value="Mobile" /> */}
           <TextInput
             id="mobile"
-            type="tel"
+            type="text"
             placeholder="Enter your mobile number"
             required
             defaultValue={currentDoctor?.mobile || ""}
@@ -298,10 +298,11 @@ export default function DocProfile() {
             className="w-full"
           />
         </div>
-        <div>
-          <Label htmlFor="department" value="Department" />
+        <div className="flex gap-6 justify-between">
+          {/* <Label htmlFor="department" value="Department" /> */}
           <Select
             id="department"
+            className="w-full"
             required
             value={formData.department || ""}
             onChange={(e) => {
@@ -317,6 +318,16 @@ export default function DocProfile() {
               </option>
             ))}
           </Select>
+          <TextInput 
+           id="experience"
+           type="text"
+           placeholder="Enter your Experience"
+           required
+           defaultValue={currentDoctor?.experience || ""}
+           onChange={handleInputChange}
+           className="w-full"
+          />
+
         </div>
         <div>
           <Label htmlFor="state" value="State" />

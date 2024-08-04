@@ -1,7 +1,6 @@
 import React from "react";
 import { Avatar, Button, Dropdown, Navbar, TextInput } from "flowbite-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice";
@@ -38,17 +37,7 @@ export default function NavBar() {
         </span>
         Doc
       </Link>
-      <form>
-        <TextInput
-          type="text"
-          placeholder="Search"
-          rightIcon={AiOutlineSearch}
-          className="hidden lg:inline"
-        />
-      </form>
-      <Button className="w-12 h-10 lg:hidden" color="gray" pill>
-        <AiOutlineSearch />
-      </Button>
+      
       <div className="flex gap-2 md:order-2">
         <Button
           className="w-12 h-10 hidden sm:inline"

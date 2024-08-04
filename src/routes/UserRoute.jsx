@@ -15,18 +15,22 @@ import NotFound from "../component/notFound/NotFound";
 export default function UserRoute() {
   return (
     <>
-      <NavBar />
-      <Routes>
-        {/* <Route path="" element={<UserHome />} />
+      <div className="flex flex-col min-h-screen">
+        <main className="flex-grow">
+          <NavBar />
+          <Routes>
+            {/* <Route path="" element={<UserHome />} />
         <Route path="login" element={<UserSignIn />} />
         <Route path="register" element={<UserSignUp />} />
         <Route path="verify-otp" element={<UserOtp />} /> */}
-        <Route element={<PrivateRoute />}>
-          <Route path="doctors-list" element={<DoctorsList />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <FooterCom />
+            <Route element={<PrivateRoute />}>
+              <Route path="doctors-list" element={<DoctorsList />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <FooterCom />
+      </div>
     </>
   );
 }
