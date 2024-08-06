@@ -1,23 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Alert,
-  // FloatingLabel,
-  Button,
-  Label,
-  Spinner,
-  TextInput,
-} from "flowbite-react";
+import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import axios from "axios";
 import OAuth from "../../component/google/OAuth.jsx";
 
 export default function DocRegister() {
   const [formData, setFromData] = useState({});
+  const [certificate, setCertificate] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-  //   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // clear the error message after 5 seconds
+  console.log(formData, "formData");
+  console.log(certificate, "certificateFile");
   useEffect(() => {
     if (errorMessage) {
       const timer = setTimeout(() => {
@@ -30,38 +24,50 @@ export default function DocRegister() {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    // console.log(e.target.value);
-    setFromData({ ...formData, [e.target.id]: e.target.value.trim() });
+    if (e.target.type === "file") {
+      setCertificate(e.target.files[0]);
+    } else {
+      setFromData({ ...formData, [e.target.id]: e.target.value.trim() });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log("Form data being sent:", formData);
-    if (!formData.name || !formData.email || !formData.password) {
-      setErrorMessage("Please fill out all fields.");
-      toast.error("fill out all fields.");
+
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !certificate
+    ) {
+      setErrorMessage(
+        "Please fill out all fields and upload your certificate."
+      );
       return;
     }
+
+    const formDataWithFile = new FormData();
+    formDataWithFile.append("name", formData.name);
+    formDataWithFile.append("email", formData.email);
+    formDataWithFile.append("password", formData.password);
+    formDataWithFile.append("certificate", certificate);
+    console.log(formDataWithFile, "formdata with file");
+
     try {
       setLoading(true);
       setErrorMessage(null);
-      console.log(formData, "formdata");
-      const res = await axios.post("/api/doctor/register", formData, {
+      const res = await axios.post("/api/doctor/register", formDataWithFile, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
       });
-      console.log(res, "res");
-      // Check for success status
       if (res.status !== 200 && res.status !== 201) {
         setErrorMessage(
-          data.message || "Something went wrong. Please try again."
+          res.data.message || "Something went wrong. Please try again."
         );
         setLoading(false);
         return;
       }
-
-      // If registration is successful, navigate to the OTP verification page
       setLoading(false);
       navigate("/doctor/verify-otp");
     } catch (error) {
@@ -69,10 +75,10 @@ export default function DocRegister() {
       setLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen mt-20">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
-        {/* left */}
         <div className="flex-1">
           <Link to="/" className="font-bold dark:text-white text-4xl">
             <span
@@ -89,12 +95,11 @@ export default function DocRegister() {
           </p>
         </div>
 
-        {/* right */}
         <div className="flex-1">
-          <form className=" flex flex-col gap-4" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <h1 className="text-lg font-bold text-center">Doctor Register</h1>
             <div>
-              <Label value="name" />
+              <Label value="Name" />
               <TextInput
                 type="text"
                 placeholder="Enter your name"
@@ -111,13 +116,21 @@ export default function DocRegister() {
                 onChange={handleChange}
               />
             </div>
-
             <div>
               <Label value="Password" />
               <TextInput
                 type="password"
                 placeholder="Password"
                 id="password"
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Label value="Certificate" />
+              <input
+                type="file"
+                id="certificate"
+                accept=".pdf, .doc, .docx, .jpg, .jpeg, .png"
                 onChange={handleChange}
               />
             </div>

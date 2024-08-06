@@ -7,6 +7,7 @@ import AdminDepartments from "../../component/admin/AdminDepartment";
 import AdminDoctors from "../../component/admin/AdminDoctors";
 import AdminUsers from "../../component/admin/AdminUsers";
 import AdminSingleDoctor from "../../component/admin/AdminSingleDoctor";
+import AdminDoctorApproval from "../../component/admin/AdminDoctorApproval";
 
 export default function AdminDashboard() {
   const location = useLocation();
@@ -31,6 +32,7 @@ export default function AdminDashboard() {
         {tab === "profile" && <AdminDashProfile />}
         {tab === "department" && <AdminDepartments />}
         {tab === "doctors" && <AdminDoctors />}
+        {tab === "doctors/approve-management" && <AdminDoctorApproval />}
         {tab === "users" && <AdminUsers />}
         {matchDoctorId && <AdminSingleDoctor doctorId={matchDoctorId[1]} />}
       </div>

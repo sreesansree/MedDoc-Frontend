@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Table } from "flowbite-react";
+import { Button, Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
 
 export default function AdminDoctors() {
   const [doctors, setDoctors] = useState([]);
-  // console.log(doctors, "dpctorsssssss");
-  
+
   const fetchDoctors = async () => {
     try {
       const response = await axios.get("/api/admin/doctors", {
@@ -16,14 +15,15 @@ export default function AdminDoctors() {
         },
         withCredentials: true, // Include this to send cookies
       });
-      // console.log(response.data, "doctors data");
-      setDoctors(response.data);
+      const approvedDoctors = response.data.filter(
+        (doctor) => doctor.isApproved
+      );
+      setDoctors(approvedDoctors);
     } catch (error) {
       console.error("Error fetching doctors:", error);
       setDoctors([]); // Ensure it's an array even in case of error
     }
   };
-  
 
   useEffect(() => {
     fetchDoctors();
@@ -61,16 +61,19 @@ export default function AdminDoctors() {
 
   return (
     <div className="container mx-auto px-4">
-      <h2 className="text-2xl font-semibold my-4">Admin Doctors List</h2>
+      <div className="flex justify-between">
+        <h2 className="text-2xl font-semibold my-4">Doctor Management</h2>
+        <Link to="/admin/dashboard?tab=doctors/approve-management">
+        <Button className="h-fit w-fit">Aproval Mangement</Button>
+        </Link>
+      </div>
       <div className="overflow-x-auto">
         <Table className="min-w-full divide-y divide-gray-200" hoverable>
           <Table.Head>
             <Table.HeadCell>Name</Table.HeadCell>
             <Table.HeadCell>Email</Table.HeadCell>
+            <Table.HeadCell>Profile Picture</Table.HeadCell>
             <Table.HeadCell>Verified</Table.HeadCell>
-            <Table.HeadCell>Approved</Table.HeadCell>
-            <Table.HeadCell>Blocked</Table.HeadCell>
-            <Table.HeadCell>View</Table.HeadCell>
             <Table.HeadCell>Actions</Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
@@ -82,21 +85,19 @@ export default function AdminDoctors() {
                 >
                   <Table.Cell>{doctor.name}</Table.Cell>
                   <Table.Cell>{doctor.email}</Table.Cell>
-                  <Table.Cell>{doctor.isVerified ? "Yes" : "No"}</Table.Cell>
-                  <Table.Cell>{doctor.isApproved ? <GiCheckMark />  : "No"}</Table.Cell>
-                  <Table.Cell
-                    className={`${
-                      doctor.is_blocked ? "text-red-500" : "text-lime-600"
-                    }`}
-                  >
-                    {doctor.is_blocked ? <GiCheckMark /> : "No"}
+                  <Table.Cell>
+                    <img
+                      src={doctor.profilePicture}
+                      alt="Profile"
+                      className="w-10 h-10 object-cover rounded-full"
+                    />
                   </Table.Cell>
                   <Table.Cell>
-                    <Link to={`/admin/dashboard?tab=doctor/${doctor._id}`}>
-                      <button className="bg-blue-500 text-white px-2 py-1 rounded">
-                        View
-                      </button>
-                    </Link>
+                    {doctor.isVerified ? (
+                      <GiCheckMark className="text-green-500" />
+                    ) : (
+                      "No"
+                    )}
                   </Table.Cell>
                   <Table.Cell>
                     <button
@@ -116,7 +117,7 @@ export default function AdminDoctors() {
               ))
             ) : (
               <Table.Row>
-                <Table.Cell colSpan={6} className="text-center">
+                <Table.Cell colSpan={5} className="text-center">
                   No doctors found.
                 </Table.Cell>
               </Table.Row>

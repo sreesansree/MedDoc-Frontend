@@ -25,6 +25,7 @@ import {
   updateFailureD,
 } from "../../redux/doctor/doctorSlice.js";
 import axios from "axios";
+import { CircularProgressbar } from "react-circular-progressbar";
 
 export default function DocProfile() {
   const dispatch = useDispatch();
@@ -239,6 +240,25 @@ export default function DocProfile() {
           className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
           onClick={() => filePickRef.current.click()}
         >
+          {imageFileUploadProgress && (
+            <CircularProgressbar
+              value={imageFileUploadProgress || 0}
+              text={`${imageFileUploadProgress}%`}
+              strokeWidth={5}
+              styles={{
+                root: {
+                  width: "100%",
+                  height: "100%",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                },
+                path: {
+                  stroke: `rgba(62,152,199 ${imageFileUploadProgress / 100})`,
+                },
+              }}
+            />
+          )}
           <img
             src={imageFileUrl || currentDoctor?.profilePicture}
             alt="doctor"

@@ -44,7 +44,7 @@ const DoctorsList = () => {
   }, []);
 
   useEffect(() => {
-    let filtered = doctors.filter(doctor =>
+    let filtered = doctors.filter((doctor) =>
       doctor.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     if (selectedDepartment) {
@@ -77,7 +77,10 @@ const DoctorsList = () => {
 
   const indexOfLastDoctor = currentPage * doctorsPerPage;
   const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
-  const currentDoctors = filteredDoctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
+  const currentDoctors = filteredDoctors.slice(
+    indexOfFirstDoctor,
+    indexOfLastDoctor
+  );
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -104,15 +107,33 @@ const DoctorsList = () => {
           >
             <AiOutlineFilter className="mr-2" />
             Filter
-            <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
+            <svg
+              className="w-2.5 h-2.5 ms-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 10 6"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 1 4 4 4-4"
+              />
             </svg>
           </Button>
 
           {/* Dropdown menu */}
           {showFilters && (
-            <div id="dropdownMenu" className="z-10 absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow w-56">
-              <ul className="py-2 text-sm text-gray-700" aria-labelledby="dropdownButton">
+            <div
+              id="dropdownMenu"
+              className="z-10 absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow w-56"
+            >
+              <ul
+                className="py-2 text-sm text-gray-700"
+                aria-labelledby="dropdownButton"
+              >
                 <li>
                   <Select
                     value={selectedDepartment}
@@ -138,7 +159,8 @@ const DoctorsList = () => {
                     <option value="">All Experiences</option>
                     {[1, 2, 3, 4, 5].map((exp) => (
                       <option key={exp} value={exp}>
-                        {exp} year{exp > 1 ? "s" : ""}
+                        {exp} year
+                        {exp > 1 ? `${exp >= 5 ? "s & above" : "s"}` : ""}
                       </option>
                     ))}
                   </Select>
@@ -161,8 +183,12 @@ const DoctorsList = () => {
                 />
                 <h3 className="text-xl font-semibold mt-2">{doctor.name}</h3>
                 <p className="text-gray-500">{doctor.department?.name}</p>
-                <p className="text-gray-500">Experience: {doctor.experience} years</p>
-                <p className="text-gray-500">Rating: 4{doctor.starRating} / 5</p>
+                <p className="text-gray-500">
+                  Experience: {doctor.experience} years
+                </p>
+                <p className="text-gray-500">
+                  Rating: 4{doctor.starRating} / 5
+                </p>
                 <Button
                   gradientDuoTone="purpleToBlue"
                   className="mt-4"
@@ -180,15 +206,20 @@ const DoctorsList = () => {
 
       {/* Pagination */}
       <div className="flex justify-center mt-6">
-        {Array.from({ length: Math.ceil(filteredDoctors.length / doctorsPerPage) }, (_, index) => (
-          <Button
-            key={index}
-            onClick={() => paginate(index + 1)}
-            className={`mx-1 ${currentPage === index + 1 ? 'bg-blue-500 text-white' : ''}`}
-          >
-            {index + 1}
-          </Button>
-        ))}
+        {Array.from(
+          { length: Math.ceil(filteredDoctors.length / doctorsPerPage) },
+          (_, index) => (
+            <Button
+              key={index}
+              onClick={() => paginate(index + 1)}
+              className={`mx-1 ${
+                currentPage === index + 1 ? "bg-blue-500 text-white" : ""
+              }`}
+            >
+              {index + 1}
+            </Button>
+          )
+        )}
       </div>
     </div>
   );
