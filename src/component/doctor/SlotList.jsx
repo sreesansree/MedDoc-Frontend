@@ -41,6 +41,7 @@ const SlotList = () => {
               <p>
                 {slot.startTime} - {slot.endTime}
               </p>
+              <p>₹{slot.price}</p>
               <p>{slot.isBooked ? "Booked" : "Available"}</p>
             </Card>
           ))

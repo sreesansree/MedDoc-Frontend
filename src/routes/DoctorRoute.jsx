@@ -17,28 +17,32 @@ import SlotList from "../component/doctor/SlotList";
 export default function DoctorRoute() {
   return (
     <>
-      <DocHeader />
-      <Routes>
-        <Route path="register" element={<DocRegister />} />
-        <Route path="login" element={<DoctorLogin />} />
-        <Route path="verify-otp" element={<DocOTP />} />
-        <Route
-          path="forgot-password"
-          element={<ForgetPassword userType="doctor" />}
-        />
-        <Route
-          path="reset-password"
-          element={<CompletePasswordReset userType="doctor" />}
-        />
-        <Route element={<DoctorAuth />}>
-          <Route path="create-slot" element={<CreateSlot />} />
-          <Route path="slots/:doctorId" element={<SlotList />} />
-          <Route path="dashboard" element={<DocDashboard />} />
-          <Route path="" element={<DocHome />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <FooterCom />
+      <div className="flex flex-col min-h-screen">
+        <main className="flex-grow">
+          <DocHeader />
+          <Routes>
+            <Route path="register" element={<DocRegister />} />
+            <Route path="login" element={<DoctorLogin />} />
+            <Route path="verify-otp" element={<DocOTP />} />
+            <Route
+              path="forgot-password"
+              element={<ForgetPassword userType="doctor" />}
+            />
+            <Route
+              path="reset-password"
+              element={<CompletePasswordReset userType="doctor" />}
+            />
+            <Route element={<DoctorAuth />}>
+              <Route path="create-slot" element={<CreateSlot />} />
+              <Route path="slots/:doctorId" element={<SlotList />} />
+              <Route path="dashboard" element={<DocDashboard />} />
+              <Route path="" element={<DocHome />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <FooterCom />
+      </div>
     </>
   );
 }

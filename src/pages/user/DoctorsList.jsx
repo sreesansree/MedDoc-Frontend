@@ -3,6 +3,7 @@ import { AiOutlineSearch, AiOutlineFilter } from "react-icons/ai";
 import axios from "axios";
 import { Card, Button, TextInput, Select } from "flowbite-react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const DoctorsList = () => {
   const [doctors, setDoctors] = useState([]);
@@ -182,20 +183,22 @@ const DoctorsList = () => {
                   alt={doctor.name}
                 />
                 <h3 className="text-xl font-semibold mt-2">{doctor.name}</h3>
-                <p className="text-gray-500">{doctor.department?.name}</p>
+                <p className="text-gray-500">{doctor?.department?.name}</p>
                 <p className="text-gray-500">
                   Experience: {doctor.experience} years
                 </p>
                 <p className="text-gray-500">
                   Rating: 4{doctor.starRating} / 5
                 </p>
-                <Button
-                  gradientDuoTone="purpleToBlue"
-                  className="mt-4"
-                  onClick={() => console.log("Book Consultation clicked")}
-                >
-                  Book Appointment
-                </Button>
+                <Link to={`/user/doctor-detail/${doctor._id}`}>
+                  <Button
+                    gradientDuoTone="purpleToBlue"
+                    className="mt-4"
+                    onClick={() => console.log("Book Consultation clicked")}
+                  >
+                    Book Appointment
+                  </Button>
+                </Link>
               </div>
             </Card>
           ))

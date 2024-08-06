@@ -26,7 +26,7 @@ const BookSlot = () => {
 
   const handleBookSlot = async () => {
     try {
-      await axios.patch(`/api/users/slots/book/${selectedSlot}`); // Book the selected slot
+      await axios.patch(`/api/users/book-slot/${selectedSlot}`); // Book the selected slot
       setBookingStatus("success");
     } catch (error) {
       console.error("Error booking slot:", error);

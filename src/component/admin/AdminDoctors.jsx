@@ -6,6 +6,8 @@ import { GiCheckMark } from "react-icons/gi";
 
 export default function AdminDoctors() {
   const [doctors, setDoctors] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [doctorsPerPage] = useState(6);
 
   const fetchDoctors = async () => {
     try {
@@ -13,7 +15,7 @@ export default function AdminDoctors() {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true, // Include this to send cookies
+        withCredentials: true,
       });
       const approvedDoctors = response.data.filter(
         (doctor) => doctor.isApproved
@@ -59,12 +61,20 @@ export default function AdminDoctors() {
     }
   };
 
+  // Pagination logic
+  const indexOfLastDoctor = currentPage * doctorsPerPage;
+  const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
+  const currentDoctors = doctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
+
+  const totalPages = Math.ceil(doctors.length / doctorsPerPage);
+  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
+
   return (
     <div className="container mx-auto px-4">
       <div className="flex justify-between">
         <h2 className="text-2xl font-semibold my-4">Doctor Management</h2>
         <Link to="/admin/dashboard?tab=doctors/approve-management">
-        <Button className="h-fit w-fit">Aproval Mangement</Button>
+          <Button className="h-fit w-fit">Approval Management</Button>
         </Link>
       </div>
       <div className="overflow-x-auto">
@@ -77,8 +87,8 @@ export default function AdminDoctors() {
             <Table.HeadCell>Actions</Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
-            {Array.isArray(doctors) && doctors.length > 0 ? (
-              doctors.map((doctor) => (
+            {currentDoctors.length > 0 ? (
+              currentDoctors.map((doctor) => (
                 <Table.Row
                   key={doctor._id}
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
@@ -124,6 +134,21 @@ export default function AdminDoctors() {
             )}
           </Table.Body>
         </Table>
+
+        {/* Pagination */}
+        <div className="flex justify-center mt-6">
+          {pageNumbers.map((number) => (
+            <Button
+              key={number}
+              onClick={() => setCurrentPage(number)}
+              className={`mx-1 ${
+                currentPage === number ? "bg-blue-500 text-white" : ""
+              }`}
+            >
+              {number}
+            </Button>
+          ))}
+        </div>
       </div>
     </div>
   );

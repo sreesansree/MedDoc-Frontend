@@ -9,7 +9,7 @@ const CreateSlot = () => {
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-
+  const [price, setPrice] = useState(0);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -18,16 +18,22 @@ const CreateSlot = () => {
         date,
         startTime,
         endTime,
+        price,
       });
       console.log("Slot created:", response.data);
       setDoctorEmailOrName("");
       setDate("");
       setStartTime("");
       setEndTime("");
+      setPrice(0);
       toast.success("Successfully slot created");
     } catch (error) {
-      console.error("Error creating slot:", error);
-      toast.error("Error : creating slot");
+      const errorMessage =
+        error.response && error.response.data && error.response.data.message
+          ? error.response.data.message
+          : "An unexpected error occurred";
+      console.error("Error creating slot:", errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -73,6 +79,16 @@ const CreateSlot = () => {
               id="endTime"
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="price">Amount</Label>
+            <TextInput
+              type="text"
+              id="price"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
               required
             />
           </div>
