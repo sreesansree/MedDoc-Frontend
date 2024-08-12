@@ -9,10 +9,11 @@ import { signOutSuccessD } from "../../redux/doctor/doctorSlice";
 export default function DocHeader() {
   const path = useLocation().pathname;
   const { currentDoctor } = useSelector((state) => state.doctor);
+
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  console.log("currentDoctor:", currentDoctor);
+  console.log("currentDoctor in Header:", currentDoctor);
   const handleSignOut = async () => {
     try {
       const res = await fetch(`/api/doctor/logout`, {
@@ -116,7 +117,7 @@ export default function DocHeader() {
                 <Link to="/doctor/create-slot">Create Slot</Link>
               </Navbar.Link>
               <Navbar.Link active={path === "/Slot-list"} as={"div"}>
-                <Link to="/doctor/slots/:doctorId">Slot List</Link>
+                <Link to={`/doctor/slots/${currentDoctor.id}`}>Slot List</Link>
               </Navbar.Link>
 
               <Navbar.Link active={path === "/appointments"} as={"div"}>

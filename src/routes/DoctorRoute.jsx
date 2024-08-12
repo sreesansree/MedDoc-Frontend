@@ -34,7 +34,7 @@ export default function DoctorRoute() {
             />
             <Route element={<DoctorAuth />}>
               <Route path="create-slot" element={<CreateSlot />} />
-              <Route path="slots/:doctorId" element={<SlotList />} />
+              <Route path="slots/:id" element={<SlotList />} />
               <Route path="dashboard" element={<DocDashboard />} />
               <Route path="" element={<DocHome />} />
             </Route>

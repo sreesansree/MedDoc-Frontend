@@ -1,25 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import axios from "axios";
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import OAuth from "../../component/google/OAuth.jsx";
 
 export default function DocRegister() {
   const [formData, setFromData] = useState({});
-  const [certificate, setCertificate] = useState(null);
+  const certificatePickRef = useRef();
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  console.log(formData, "formData");
-  console.log(certificate, "certificateFile");
-  useEffect(() => {
-    if (errorMessage) {
-      const timer = setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [errorMessage]);
+  const [certificate, setCertificate] = useState(null);
+  const [certificateFileUrl, setCertificateFileUrl] = useState(null);
+  const [certificateFileUploadError, setCertificateFileUploadError] = useState(null);
+  const [certificateFileUploading, setCertificateFileUploading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -31,47 +25,63 @@ export default function DocRegister() {
     }
   };
 
+  const uploadCertificate = async () => {
+    if (!certificate) return;
+    setCertificateFileUploading(true);
+    setCertificateFileUploadError(null);
+    
+    const storage = getStorage(); // Use default app instance if needed
+    const fileName = new Date().getTime() + certificate.name;
+    const storageRef = ref(storage, fileName);
+
+    const uploadTask = uploadBytesResumable(storageRef, certificate);
+    return new Promise((resolve, reject) => {
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {},
+        (error) => {
+          setCertificateFileUploadError("Could not upload certificate (File must be less than 2MB)");
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setCertificateFileUrl(downloadURL);
+            setCertificateFileUploading(false);
+            resolve(downloadURL);
+          });
+        }
+      );
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.password ||
-      !certificate
-    ) {
-      setErrorMessage(
-        "Please fill out all fields and upload your certificate."
-      );
+    if (!formData.name || !formData.email || !formData.password || !certificate) {
+      setErrorMessage("Please fill out all fields and upload your certificate.");
       return;
     }
-
-    const formDataWithFile = new FormData();
-    formDataWithFile.append("name", formData.name);
-    formDataWithFile.append("email", formData.email);
-    formDataWithFile.append("password", formData.password);
-    formDataWithFile.append("certificate", certificate);
-    console.log(formDataWithFile, "formdata with file");
 
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await axios.post("/api/doctor/register", formDataWithFile, {
+
+      const certificateUrl = await uploadCertificate();
+
+      const res = await axios.post("/api/doctor/register", { ...formData, certificate: certificateUrl }, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
       });
+
       if (res.status !== 200 && res.status !== 201) {
-        setErrorMessage(
-          res.data.message || "Something went wrong. Please try again."
-        );
-        setLoading(false);
-        return;
+        setErrorMessage(res.data.message || "Something went wrong. Please try again.");
+      } else {
+        navigate("/doctor/verify-otp");
       }
-      setLoading(false);
-      navigate("/doctor/verify-otp");
     } catch (error) {
       setErrorMessage(error.response?.data?.message || error.message);
+    } finally {
       setLoading(false);
     }
   };
@@ -81,17 +91,12 @@ export default function DocRegister() {
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
         <div className="flex-1">
           <Link to="/" className="font-bold dark:text-white text-4xl">
-            <span
-              className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400
-    via-purple-500 to-pink-500 font-bold"
-            >
-              Med
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 font-bold">
+              MedDoc
             </span>
-            Doc
           </Link>
           <p className="text-sm mt-5">
-            Register as a doctor to provide consultations and manage
-            appointments. Sign up with your email and password.
+            Register as a doctor to provide consultations and manage appointments. Sign up with your email and password.
           </p>
         </div>
 
@@ -100,30 +105,15 @@ export default function DocRegister() {
             <h1 className="text-lg font-bold text-center">Doctor Register</h1>
             <div>
               <Label value="Name" />
-              <TextInput
-                type="text"
-                placeholder="Enter your name"
-                id="name"
-                onChange={handleChange}
-              />
+              <TextInput type="text" placeholder="Enter your name" id="name" onChange={handleChange} />
             </div>
             <div>
               <Label value="Email" />
-              <TextInput
-                type="email"
-                placeholder="Enter your email address"
-                id="email"
-                onChange={handleChange}
-              />
+              <TextInput type="email" placeholder="Enter your email address" id="email" onChange={handleChange} />
             </div>
             <div>
               <Label value="Password" />
-              <TextInput
-                type="password"
-                placeholder="Password"
-                id="password"
-                onChange={handleChange}
-              />
+              <TextInput type="password" placeholder="Password" id="password" onChange={handleChange} />
             </div>
             <div>
               <Label value="Certificate" />
@@ -134,12 +124,7 @@ export default function DocRegister() {
                 onChange={handleChange}
               />
             </div>
-            <Button
-              gradientDuoTone={"purpleToPink"}
-              type="submit"
-              outline
-              disabled={loading}
-            >
+            <Button gradientDuoTone={"purpleToPink"} type="submit" outline disabled={loading}>
               {loading ? (
                 <>
                   <Spinner size="sm" />
@@ -157,11 +142,7 @@ export default function DocRegister() {
               Sign In
             </Link>
           </div>
-          {errorMessage && (
-            <Alert className="mt-5" color={"failure"}>
-              {errorMessage}
-            </Alert>
-          )}
+          {errorMessage && <Alert color="failure">{errorMessage}</Alert>}
         </div>
       </div>
     </div>

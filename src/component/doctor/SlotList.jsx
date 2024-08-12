@@ -8,14 +8,13 @@ import "react-toastify/dist/ReactToastify.css";
 
 const SlotList = () => {
   const { currentDoctor } = useSelector((state) => state.doctor);
-  // console.log(currentDoctor._id, "iddddddd"); 
   const [slots, setSlots] = useState([]);
   useEffect(() => {
     const fetchSlots = async () => {
       try {
         // Fetch the slots for the specified doctor
         const response = await axios.get(`/api/doctor/slots/${currentDoctor._id}`);
-        console.log(response.data)
+        // console.log('response data : ',response.data)
         setSlots(response.data);
       } catch (error) {
         console.error("Error fetching slots:", error);

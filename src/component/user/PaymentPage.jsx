@@ -30,21 +30,34 @@ const PaymentPage = () => {
               // Log the response from Razorpay for debugging
               console.log("Razorpay response:", response);
 
-              const paymentResponse = await axios.post("/api/users/verify-payment", {
-                orderId: response.razorpay_order_id,
-                paymentId: response.razorpay_payment_id,
-                signature: response.razorpay_signature,
-              });
+              const paymentResponse = await axios.post(
+                "/api/users/verify-payment",
+                {
+                  orderId: response.razorpay_order_id,
+                  paymentId: response.razorpay_payment_id,
+                  signature: response.razorpay_signature,
+                }
+              );
 
               // Log payment verification response
-              console.log("Payment verification response:", paymentResponse.data);
+              console.log(
+                "Payment verification response:",
+                paymentResponse.data
+              );
 
               setModalMessage("Payment successful and appointment booked");
               setShowModal(true);
+
+              // Redirect to booked consultation page after 2 seconds
+              setTimeout(() => {
+                navigate("/dashboard?tab=appointments"); 
+              }, 1000);
             } catch (error) {
               console.error("Payment verification failed:", error);
               setErrorMessage(
-                error.response && error.response.data && error.response.data.message
+                error.response &&
+                  error.response.data &&
+                  error.response.data.message
                   ? error.response.data.message
                   : "Payment verification failed. Please try again."
               );
@@ -55,7 +68,7 @@ const PaymentPage = () => {
           },
         };
 
-        console.log('Razorpay options:', options);
+        console.log("Razorpay options:", options);
 
         const paymentObject = new window.Razorpay(options);
         paymentObject.open();
@@ -78,9 +91,7 @@ const PaymentPage = () => {
         Processing Payment...
       </h2>
       {errorMessage && (
-        <div className="text-red-500 text-center mt-4">
-          {errorMessage}
-        </div>
+        <div className="text-red-500 text-center mt-4">{errorMessage}</div>
       )}
       <ConfirmationModal
         showModal={showModal}

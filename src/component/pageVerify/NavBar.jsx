@@ -87,7 +87,7 @@ export default function NavBar() {
             </Navbar.Link>
 
             <Navbar.Link active={path === "/user/doctors"} as={"div"}>
-              <Link to="/user/book_consultatio">Book consultaion</Link>
+              <Link to="/dashboard?tab=appointments">Appointments</Link>
             </Navbar.Link>
           </>
         )}

@@ -118,7 +118,7 @@ export default function AdminDoctorApproval() {
                   <Table.Cell>
                     <img
                       src={doctor.certificate}
-                      alt="Certificate"
+                      alt="certificate"
                       className="w-12 h-12"
                     />
                   </Table.Cell>
