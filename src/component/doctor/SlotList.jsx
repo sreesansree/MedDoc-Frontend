@@ -22,41 +22,34 @@ const SlotList = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [updateForm, setUpdateForm] = useState({ date: "", startTime: "", endTime: "", price: "" });
 
+  const fetchSlots = async () => {
+    try {
+      const response = await axios.get(`/api/doctor/slots/${currentDoctor._id}`);
+      const now = new Date();
+
+      const validSlots = response.data
+        .filter((slot) => {
+          const slotDate = new Date(slot.date);
+          const slotStartTime = new Date(`1970-01-01T${slot.startTime}:00`);
+          const slotStartDateTime = new Date(
+            slotDate.setHours(slotStartTime.getHours(), slotStartTime.getMinutes())
+          );
+          return slotStartDateTime >= now;
+        })
+        .sort((a, b) => {
+          const dateTimeA = new Date(`${a.date}T${a.startTime}:00`);
+          const dateTimeB = new Date(`${b.date}T${b.startTime}:00`);
+          return dateTimeA - dateTimeB;
+        });
+
+      setSlots(validSlots);
+    } catch (error) {
+      console.error("Error fetching slots:", error);
+      toast.error("Error fetching slot list");
+    }
+  };
+
   useEffect(() => {
-    const fetchSlots = async () => {
-      try {
-        const response = await axios.get(`/api/doctor/slots/${currentDoctor._id}`);
-        const now = new Date();
-        const validSlots = response.data
-          .filter((slot) => {
-            const slotDate = new Date(slot.date);
-            const slotStartTime = new Date(`1970-01-01T${slot.startTime}:00`);
-            const slotStartDateTime = new Date(
-              slotDate.setHours(slotStartTime.getHours(), slotStartTime.getMinutes())
-            );
-            return slotStartDateTime >= now;
-          })
-          .sort((a, b) => {
-            const dateA = new Date(a.date);
-            const timeA = new Date(`1970-01-01T${a.startTime}:00`);
-            const dateTimeA = new Date(
-              dateA.setHours(timeA.getHours(), timeA.getMinutes())
-            );
-            const dateB = new Date(b.date);
-            const timeB = new Date(`1970-01-01T${b.startTime}:00`);
-            const dateTimeB = new Date(
-              dateB.setHours(timeB.getHours(), timeB.getMinutes())
-            );
-            return dateTimeA - dateTimeB;
-          });
-
-        setSlots(validSlots);
-      } catch (error) {
-        console.error("Error fetching slots:", error);
-        toast.error("Error in fetching slot-list");
-      }
-    };
-
     fetchSlots();
   }, [currentDoctor._id]);
 
@@ -79,11 +72,9 @@ const SlotList = () => {
   const handleUpdateSubmit = async () => {
     try {
       await axios.put(`/api/doctor/slots/${selectedSlot._id}`, updateForm);
+      setSlots(slots.map(slot => slot._id === selectedSlot._id ? { ...slot, ...updateForm } : slot));
       toast.success("Slot updated successfully");
       setShowUpdateModal(false);
-      // Refresh slot list
-      const response = await axios.get(`/api/doctor/slots/${currentDoctor._id}`);
-      setSlots(response.data);
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'An error occurred';
       toast.error(errorMessage);
@@ -93,11 +84,9 @@ const SlotList = () => {
   const handleDeleteConfirm = async () => {
     try {
       await axios.delete(`/api/doctor/slots/${selectedSlot._id}`);
+      setSlots(slots.filter(slot => slot._id !== selectedSlot._id));
       toast.success("Slot deleted successfully");
       setShowDeleteModal(false);
-      // Refresh slot list
-      const response = await axios.get(`/api/doctor/slots/${currentDoctor._id}`);
-      setSlots(response.data);
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'An error occurred';
       toast.error(errorMessage);

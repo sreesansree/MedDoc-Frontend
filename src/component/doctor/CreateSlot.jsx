@@ -7,31 +7,33 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const formatTime = (time) => {
-  const [hours, minutes] = time.split(':').map(Number);
-  const period = hours >= 12 ? 'PM' : 'AM';
+  const [hours, minutes] = time.split(":").map(Number);
+  const period = hours >= 12 ? "PM" : "AM";
   const formattedHours = hours % 12 || 12;
-  const formattedMinutes = minutes.toString().padStart(2, '0');
+  const formattedMinutes = minutes.toString().padStart(2, "0");
   return `${formattedHours}:${formattedMinutes} ${period}`;
 };
 
 const parseTime = (time) => {
-  const [timePart, period] = time.split(' ');
-  const [hours, minutes] = timePart.split(':').map(Number);
+  const [timePart, period] = time.split(" ");
+  const [hours, minutes] = timePart.split(":").map(Number);
   let hours24 = hours;
-  if (period === 'PM' && hours !== 12) {
+  if (period === "PM" && hours !== 12) {
     hours24 += 12;
-  } else if (period === 'AM' && hours === 12) {
+  } else if (period === "AM" && hours === 12) {
     hours24 = 0;
   }
-  return `${hours24.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  return `${hours24.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}`;
 };
 
 const fixedTimeSlots = [
-  { startTime: "09:00", endTime: "10:00" },
-  { startTime: "10:00", endTime: "11:00" },
-  { startTime: "11:00", endTime: "12:00" },
-  { startTime: "13:00", endTime: "14:00" },
-  { startTime: "14:00", endTime: "15:00" },
+  { startTime: "09:00", endTime: "9:30" },
+  { startTime: "10:00", endTime: "10:30" },
+  { startTime: "11:00", endTime: "11:30" },
+  { startTime: "13:00", endTime: "13:30" },
+  { startTime: "14:00", endTime: "13:30" },
 ];
 
 const CreateSlot = () => {
@@ -42,6 +44,13 @@ const CreateSlot = () => {
   const [fixedSlot, setFixedSlot] = useState(false);
   const [selectedFixedSlot, setSelectedFixedSlot] = useState("");
 
+  const handlePriceChange = (e) => {
+    const value = e.target.value;
+    if (value >= 0) {
+      setPrice(value);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -51,7 +60,9 @@ const CreateSlot = () => {
     }
 
     try {
-      const [fixedStartTime, fixedEndTime] = fixedSlot ? selectedFixedSlot.split(" - ") : [startTime, endTime];
+      const [fixedStartTime, fixedEndTime] = fixedSlot
+        ? selectedFixedSlot.split(" - ")
+        : [startTime, endTime];
       const response = await axios.post("/api/doctor/slots", {
         date,
         startTime: parseTime(fixedStartTime),
@@ -59,14 +70,15 @@ const CreateSlot = () => {
         price,
         fixedSlot,
       });
-      console.log("Slot created:", response.data);
+      // console.log("Slot created:", response.data);
       setDate(null);
       setStartTime("");
       setEndTime("");
       setPrice(0);
       setFixedSlot(false);
       setSelectedFixedSlot("");
-      toast.success("Successfully slot created");
+      const message = response?.data?.message || "Successfully slot created";
+      toast.success(message);
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "An unexpected error occurred";
@@ -104,12 +116,17 @@ const CreateSlot = () => {
                 id="fixedSlot"
                 value={selectedFixedSlot}
                 onChange={(e) => setSelectedFixedSlot(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-gray-200 dark:bg-gray-600"
                 required
               >
                 <option value="">Select a fixed slot</option>
                 {fixedTimeSlots.map((slot, index) => (
-                  <option key={index} value={`${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}`}>
+                  <option
+                    key={index}
+                    value={`${formatTime(slot.startTime)} - ${formatTime(
+                      slot.endTime
+                    )}`}
+                  >
                     {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
                   </option>
                 ))}
@@ -154,7 +171,7 @@ const CreateSlot = () => {
               type="number"
               id="price"
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              onChange={handlePriceChange}
               className="border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
               required
             />

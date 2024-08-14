@@ -7,7 +7,7 @@ const Appointment = () => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate("/user/dashboard"); // Adjust this route to your actual dashboard or home page
+    navigate("/"); // Adjust this route to your actual dashboard or home page
   };
 
   return (

@@ -8,7 +8,6 @@ import {
   Button,
   TextInput,
   Label,
-  FileInput,
   Alert,
   Select,
   Modal,
@@ -53,7 +52,7 @@ export default function DocProfile() {
   const { currentDoctor, error, loading } = useSelector(
     (state) => state.doctor
   );
-  console.log("Current Doctor profile : ",currentDoctor)
+  // console.log("Current Doctor profile : ",currentDoctor)
 
   useEffect(() => {
     if (currentDoctor) {

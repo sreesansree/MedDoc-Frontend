@@ -117,7 +117,7 @@ export default function DocHeader() {
                 <Link to="/doctor/create-slot">Create Slot</Link>
               </Navbar.Link>
               <Navbar.Link active={path === "/Slot-list"} as={"div"}>
-                <Link to={`/doctor/slots/${currentDoctor.id}`}>Slot List</Link>
+                <Link to={`/doctor/slots/${currentDoctor._id}`}>Slot List</Link>
               </Navbar.Link>
 
               <Navbar.Link active={path === "/appointments"} as={"div"}>
