@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ConfirmationModal from "./ConfirmationModal";
 
@@ -8,6 +8,7 @@ const PaymentPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const initializePayment = async () => {
@@ -48,10 +49,10 @@ const PaymentPage = () => {
               setModalMessage("Payment successful and appointment booked");
               setShowModal(true);
 
-              // Redirect to booked consultation page after 2 seconds
-              setTimeout(() => {
-                navigate("/dashboard?tab=appointments"); 
-              }, 1000);
+              // // Redirect to booked consultation page after 2 seconds
+              // setTimeout(() => {
+              //   navigate("/dashboard?tab=appointments");
+              // }, 1000);
             } catch (error) {
               console.error("Payment verification failed:", error);
               setErrorMessage(
@@ -85,6 +86,10 @@ const PaymentPage = () => {
     initializePayment();
   }, [slotId]);
 
+  const handleModalClose = () => {
+    navigate("/dashboard?tab=appointments"); // Redirect to appointments tab
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-semibold text-center">
@@ -95,7 +100,7 @@ const PaymentPage = () => {
       )}
       <ConfirmationModal
         showModal={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={handleModalClose}
         message={modalMessage}
       />
     </div>

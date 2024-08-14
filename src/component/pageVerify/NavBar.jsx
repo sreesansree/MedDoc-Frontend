@@ -12,9 +12,9 @@ export default function NavBar() {
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+console.log("Current User : ",currentUser)
   const handleSignOut = async () => {
-    const res = await fetch(`api/users/logout`, {
+    const res = await fetch(`/api/users/logout`, {
       method: "POST",
     });
     const data = await res.json();
@@ -22,7 +22,7 @@ export default function NavBar() {
       console.log(data.message);
     } else {
       dispatch(signOutSuccess());
-      navigate("/signin", { replace: true });
+      navigate("/", { replace: true });
     }
   };
 

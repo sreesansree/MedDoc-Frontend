@@ -29,7 +29,7 @@ const parseTime = (time) => {
 };
 
 const fixedTimeSlots = [
-  { startTime: "09:00", endTime: "9:30" },
+  { startTime: "09:00", endTime: "09:30" },
   { startTime: "10:00", endTime: "10:30" },
   { startTime: "11:00", endTime: "11:30" },
   { startTime: "13:00", endTime: "13:30" },

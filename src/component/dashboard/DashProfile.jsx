@@ -41,6 +41,7 @@ export default function DashProfile() {
   const [formData, setFormData] = useState({});
   const [showModel, setShowModal] = useState(false);
 
+console.log(currentUser);
 
 
   const handleImageChange = (e) => {
@@ -122,7 +123,7 @@ export default function DashProfile() {
     }
     try {
       dispatch(updateStart());
-      const res = await fetch(`/api/users/update//${currentUser._id}`, {
+      const res = await fetch(`/api/users/update/${currentUser._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
