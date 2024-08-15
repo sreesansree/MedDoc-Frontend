@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import DocSideBar from "../../component/doctor/DocSideBar";
 import DocProfile from "../../component/doctor/DocProfile";
+import DocAppointments from "../../component/doctor/DocAppointments";
 
 export default function DocDashboard() {
   const location = useLocation();
   const [tab, setTab] = useState("");
-  
+
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get("tab");
@@ -22,6 +23,8 @@ export default function DocDashboard() {
       </div>
       {/* Profile*/}
       {tab === "profile" && <DocProfile />}
+      {/* Appointments */}
+      {tab === "appointments" && <DocAppointments />}
     </div>
   );
 }

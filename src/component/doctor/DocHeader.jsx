@@ -120,12 +120,12 @@ export default function DocHeader() {
                 <Link to={`/doctor/slots/${currentDoctor._id}`}>Slot List</Link>
               </Navbar.Link>
 
-              <Navbar.Link active={path === "/appointments"} as={"div"}>
-                <Link to="/doctor/">Appointments</Link>
+              <Navbar.Link active={path === "/doctor/dashboard?tab=appointments"} as={"div"}>
+                <Link to="/doctor/dashboard?tab=appointments">Appointments</Link>
               </Navbar.Link>
-              <Navbar.Link active={path === "/messages"} as={"div"}>
+              {/* <Navbar.Link active={path === "/messages"} as={"div"}>
                 <Link to="/doctor/">Messages</Link>
-              </Navbar.Link>
+              </Navbar.Link> */}
               <Navbar.Link active={path === "/messages"} as={"div"}>
                 <Link to="/doctor/">Notifications</Link>
               </Navbar.Link>
