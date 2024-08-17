@@ -22,7 +22,7 @@ export default function DoctorLogin() {
   } = useSelector((state) => state.doctor);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     if (currentDoctor) {
       navigate("/doctor", { replace: true }); // Redirect to home
@@ -85,7 +85,6 @@ export default function DoctorLogin() {
         dispatch(signInFailureD(errorMessage));
         return;
       }
-
       dispatch(signInSuccessD(res.data));
       navigate("/doctor");
     } catch (error) {

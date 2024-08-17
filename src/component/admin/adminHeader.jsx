@@ -12,7 +12,7 @@ export default function AdminHeader() {
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+console.log('Current Admin : ',currentAdmin)
   const handleSignOut = async () => {
     try {
       const res = await fetch(`/api/admin/logout`, {

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card } from "flowbite-react";
+import { Button, Card, Modal } from "flowbite-react";
 import axios from "axios";
 import Lottie from "react-lottie";
 import animationData from "../../animations/chatanimation.json";
 import Pagination from "../common/Pagination";
+import ChatPage from '../../pages/chat/ChatPage.jsx'
 
 // Function to format date to "dd/MM/yyyy"
 const formatDate = (date) => {
@@ -15,10 +16,25 @@ const formatDate = (date) => {
   return `${day}/${month}/${year}`;
 };
 
+// Function to format time to 12-hour format
+const formatTime = (time) => {
+  const [hour, minute] = time.split(":").map(Number);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const formattedHour = hour % 12 || 12; // Convert 24h to 12h format
+  const formattedMinute = minute.toString().padStart(2, "0");
+  return `${formattedHour}:${formattedMinute} ${ampm}`;
+};
+
+
 const DocAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [appointmentsPerPage] = useState(5); // Number of appointments per page
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedChat, setSelectedChat] = useState({
+    userId: "",
+    appointmentId: "",
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,9 +46,6 @@ const DocAppointments = () => {
           const dateTimeB = new Date(b.date + "T" + b.startTime);
           return dateTimeA - dateTimeB;
         });
-        for (let i = 0; i < sortedAppointments; i++) {
-            console.log(i, sortedAppointments[i]);
-          }
         setAppointments(sortedAppointments);
       } catch (error) {
         console.error("Error fetching appointments", error);
@@ -57,6 +70,16 @@ const DocAppointments = () => {
     navigate("/doctor"); // Adjust this route to your actual dashboard or home page
   };
 
+  const handleChat = (userId, appointmentId) => {
+    setSelectedChat({ userId, appointmentId });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedChat({ userId: "", appointmentId: "" });
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-semibold text-center mb-6">
@@ -64,7 +87,11 @@ const DocAppointments = () => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {currentAppointments.map((appointment) => (
-          <AppointmentCard key={appointment._id} appointment={appointment} />
+          <AppointmentCard
+            key={appointment._id}
+            appointment={appointment}
+            onChat={handleChat}
+          />
         ))}
       </div>
       <div className="text-center mt-8">
@@ -80,19 +107,21 @@ const DocAppointments = () => {
           currentPage={currentPage}
         />
       </div>
+
+      {/* Chat Modal */}
+      <Modal show={isModalOpen} onClose={handleCloseModal}>
+        <Modal.Body>
+          <ChatPage
+            receiverId={selectedChat.userId}
+            appointmentId={selectedChat.appointmentId}
+          />
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
 
-const formatTime = (time) => {
-  const [hour, minute] = time.split(":").map(Number);
-  const ampm = hour >= 12 ? "PM" : "AM";
-  const formattedHour = hour % 12 || 12; // Convert 24h to 12h format
-  const formattedMinute = minute.toString().padStart(2, "0");
-  return `${formattedHour}:${formattedMinute} ${ampm}`;
-};
-
-const AppointmentCard = ({ appointment }) => {
+const AppointmentCard = ({ appointment, onChat }) => {
   const { user, date, startTime, endTime, isBooked } = appointment;
   const patientName = user.name || "Unknown Patient";
   const appointmentDate = formatDate(date);
@@ -127,23 +156,24 @@ const AppointmentCard = ({ appointment }) => {
           </p>
         </div>
       </div>
-      <div className="flex justify-between  gap-4">
+      <div className="flex justify-between gap-4">
         <Button
           gradientDuoTone="purpleToBlue"
-          className="w-full items-center "
+          className="w-full text-center"
           disabled={!isBooked}
         >
           {isBooked ? "View Details" : "Not Booked"}
         </Button>
         <Button
           gradientDuoTone="purpleToBlue"
-          className="w-full flex justify-center h-10 items-center"
+          className="w-full flex items-center justify-center"
+          onClick={() => onChat(user._id, appointment._id)}
         >
-          <p className="mt-3">Chat with patient</p>
+          <p className="mr-2">Message</p>
           <Lottie
             options={defaultOptions}
             width={30}
-            style={{ marginBottom: 10, marginLeft: 0 }}
+            style={{ marginBottom: 10 }}
           />
         </Button>
       </div>

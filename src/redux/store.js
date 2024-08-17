@@ -3,6 +3,7 @@ import userReducer from "./user/userSlice.js";
 import themeReducer from "./theme/themeSlice.js";
 import adminReducer from "./admin/adminSlice.js";
 import doctorReducer from "./doctor/doctorSlice.js";
+import chatReducer from "./chat/chatSlice.js";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import persistStore from "redux-persist/es/persistStore";
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   theme: themeReducer,
   admin: adminReducer,
   doctor: doctorReducer,
+  chat: chatReducer,
 });
 
 const persistConfig = {

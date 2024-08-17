@@ -13,6 +13,7 @@ import NotFound from "../component/notFound/NotFound";
 import DocDashboard from "../pages/doctor/DocDashboard";
 import CreateSlot from "../component/doctor/CreateSlot";
 import SlotList from "../component/doctor/SlotList";
+import ChatPage from "../pages/chat/ChatPage";
 
 export default function DoctorRoute() {
   return (
@@ -36,6 +37,7 @@ export default function DoctorRoute() {
               <Route path="create-slot" element={<CreateSlot />} />
               <Route path="slots/:id" element={<SlotList />} />
               <Route path="dashboard" element={<DocDashboard />} />
+              <Route path="chat" element={<ChatPage />} />
               <Route path="" element={<DocHome />} />
             </Route>
             <Route path="*" element={<NotFound />} />

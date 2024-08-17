@@ -52,7 +52,7 @@ export default function DocProfile() {
   const { currentDoctor, error, loading } = useSelector(
     (state) => state.doctor
   );
-  // console.log("Current Doctor profile : ",currentDoctor)
+  console.log("Current Doctor profile : ",currentDoctor)
 
   useEffect(() => {
     if (currentDoctor) {
@@ -68,7 +68,7 @@ export default function DocProfile() {
       });
     }
   }, [currentDoctor]);
-
+console.log(formData,'Form Data')
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {

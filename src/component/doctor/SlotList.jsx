@@ -20,27 +20,51 @@ const SlotList = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [updateForm, setUpdateForm] = useState({ date: "", startTime: "", endTime: "", price: "" });
+  const [updateForm, setUpdateForm] = useState({
+    date: "",
+    startTime: "",
+    endTime: "",
+    price: "",
+  });
 
   const fetchSlots = async () => {
     try {
-      const response = await axios.get(`/api/doctor/slots/${currentDoctor._id}`);
+      const slotsResponse = await axios.get(
+        `/api/doctor/slots/${currentDoctor._id}`
+      );
       const now = new Date();
 
-      const validSlots = response.data
+      // Filter and sort slots
+      const validSlots = slotsResponse.data
         .filter((slot) => {
           const slotDate = new Date(slot.date);
           const slotStartTime = new Date(`1970-01-01T${slot.startTime}:00`);
           const slotStartDateTime = new Date(
-            slotDate.setHours(slotStartTime.getHours(), slotStartTime.getMinutes())
+            slotDate.setHours(
+              slotStartTime.getHours(),
+              slotStartTime.getMinutes()
+            )
           );
           return slotStartDateTime >= now;
         })
         .sort((a, b) => {
-          const dateTimeA = new Date(`${a.date}T${a.startTime}:00`);
-          const dateTimeB = new Date(`${b.date}T${b.startTime}:00`);
+          const dateA = new Date(a.date);
+          const timeA = new Date(`1970-01-01T${a.startTime}:00`);
+          const dateTimeA = new Date(
+            dateA.setHours(timeA.getHours(), timeA.getMinutes())
+          );
+
+          const dateB = new Date(b.date);
+          const timeB = new Date(`1970-01-01T${b.startTime}:00`);
+          const dateTimeB = new Date(
+            dateB.setHours(timeB.getHours(), timeB.getMinutes())
+          );
+
           return dateTimeA - dateTimeB;
         });
+
+      // Log the sorted slots for debugging
+      console.log("Sorted Slots:", validSlots);
 
       setSlots(validSlots);
     } catch (error) {
@@ -72,11 +96,15 @@ const SlotList = () => {
   const handleUpdateSubmit = async () => {
     try {
       await axios.put(`/api/doctor/slots/${selectedSlot._id}`, updateForm);
-      setSlots(slots.map(slot => slot._id === selectedSlot._id ? { ...slot, ...updateForm } : slot));
+      setSlots(
+        slots.map((slot) =>
+          slot._id === selectedSlot._id ? { ...slot, ...updateForm } : slot
+        )
+      );
       toast.success("Slot updated successfully");
       setShowUpdateModal(false);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'An error occurred';
+      const errorMessage = error.response?.data?.message || "An error occurred";
       toast.error(errorMessage);
     }
   };
@@ -84,11 +112,11 @@ const SlotList = () => {
   const handleDeleteConfirm = async () => {
     try {
       await axios.delete(`/api/doctor/slots/${selectedSlot._id}`);
-      setSlots(slots.filter(slot => slot._id !== selectedSlot._id));
+      setSlots(slots.filter((slot) => slot._id !== selectedSlot._id));
       toast.success("Slot deleted successfully");
       setShowDeleteModal(false);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'An error occurred';
+      const errorMessage = error.response?.data?.message || "An error occurred";
       toast.error(errorMessage);
     }
   };
@@ -118,10 +146,16 @@ const SlotList = () => {
               <p>₹{slot.price}</p>
               <p>{slot.isBooked ? "Booked" : "Available"}</p>
               <div className="absolute top-2 right-2 flex gap-2">
-                <button onClick={() => handleUpdateClick(slot)} className="text-blue-500">
+                <button
+                  onClick={() => handleUpdateClick(slot)}
+                  className="text-blue-500"
+                >
                   <FaEdit />
                 </button>
-                <button onClick={() => handleDeleteClick(slot)} className="text-red-500">
+                <button
+                  onClick={() => handleDeleteClick(slot)}
+                  className="text-red-500"
+                >
                   <FaTrash />
                 </button>
               </div>
@@ -137,38 +171,54 @@ const SlotList = () => {
         <Modal.Body>
           <form>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Date</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Date
+              </label>
               <input
                 type="date"
                 value={updateForm.date}
-                onChange={(e) => setUpdateForm({ ...updateForm, date: e.target.value })}
+                onChange={(e) =>
+                  setUpdateForm({ ...updateForm, date: e.target.value })
+                }
                 className="mt-1 block w-full"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Start Time</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Start Time
+              </label>
               <input
                 type="time"
                 value={updateForm.startTime}
-                onChange={(e) => setUpdateForm({ ...updateForm, startTime: e.target.value })}
+                onChange={(e) =>
+                  setUpdateForm({ ...updateForm, startTime: e.target.value })
+                }
                 className="mt-1 block w-full"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">End Time</label>
+              <label className="block text-sm font-medium text-gray-700">
+                End Time
+              </label>
               <input
                 type="time"
                 value={updateForm.endTime}
-                onChange={(e) => setUpdateForm({ ...updateForm, endTime: e.target.value })}
+                onChange={(e) =>
+                  setUpdateForm({ ...updateForm, endTime: e.target.value })
+                }
                 className="mt-1 block w-full"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Price</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Price
+              </label>
               <input
                 type="number"
                 value={updateForm.price}
-                onChange={(e) => setUpdateForm({ ...updateForm, price: e.target.value })}
+                onChange={(e) =>
+                  setUpdateForm({ ...updateForm, price: e.target.value })
+                }
                 className="mt-1 block w-full"
               />
             </div>

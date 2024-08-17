@@ -40,9 +40,9 @@ export default function DashProfile() {
   const [updateUserError, setUpdateUserError] = useState(null);
   const [formData, setFormData] = useState({});
   const [showModel, setShowModal] = useState(false);
-
-console.log(currentUser);
-
+console.log(formData,'Form Data')
+console.log(currentUser.profilePicture,'Profile picture');
+console.log(currentUser.mobile,'mobile')
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -132,6 +132,7 @@ console.log(currentUser);
       });
 
       const data = await res.json();
+      console.log(data,'dataaaaaaaaaa')
       if (!res.ok) {
         dispatch(updateFailure(data.message));
         setUpdateUserError(data.message);
