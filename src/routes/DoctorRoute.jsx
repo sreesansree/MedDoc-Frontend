@@ -37,7 +37,7 @@ export default function DoctorRoute() {
               <Route path="create-slot" element={<CreateSlot />} />
               <Route path="slots/:id" element={<SlotList />} />
               <Route path="dashboard" element={<DocDashboard />} />
-              <Route path="chat" element={<ChatPage />} />
+              <Route path="chat" element={<ChatPage userType="doctor" />} />
               <Route path="" element={<DocHome />} />
             </Route>
             <Route path="*" element={<NotFound />} />

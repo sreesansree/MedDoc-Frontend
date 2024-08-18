@@ -21,7 +21,7 @@ export default function UserRoute() {
               <Route path="doctors-list" element={<DoctorsList />} />
               <Route path="doctor-detail/:id" element={<DoctorDetails />} />
               <Route path="/payment/:slotId" element={<PaymentPage />} />
-              <Route path="chat" element={<ChatPage />} />
+              <Route path="chat" element={<ChatPage userType="user" />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
