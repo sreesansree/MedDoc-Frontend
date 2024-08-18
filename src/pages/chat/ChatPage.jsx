@@ -1,18 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { userChats } from "../../api/chatRequest.js";
 import Conversation from "../../component/chat/Conversation.jsx";
 import ChatBox from "../../component/chat/ChatBox.jsx";
+
+import { io } from "socket.io-client";
 
 const ChatPage = ({ userType }) => {
   const { currentUser } = useSelector((state) => state.user);
   const { currentDoctor } = useSelector((state) => state.doctor);
   const [chats, setChats] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const userID = userType === "user" ? currentUser._id : currentDoctor._id;
-  console.log("User Type ID : ", userID);
-  console.log("Current Doctor : chat ", currentDoctor);
-  console.log("Current User : chat", currentUser);
+  const user = userType === "user" ? currentUser : currentDoctor;
+  const socket = useRef();
+  // console.log("User Type ID : ", userID);
+  // console.log("Current Doctor : chat ", currentDoctor);
+  // console.log("Current User : chat", currentUser);
+
+  useEffect(() => {
+    socket.current = io("http://localhost:5000");
+    socket.current.emit("new-user-add", userID);
+    socket.current.on("get-users", (users) => {
+      setOnlineUsers(users);
+      console.log("Online users : ",onlineUsers)
+    });
+  }, [user]);
 
   useEffect(() => {
     const getChats = async () => {
@@ -56,12 +70,8 @@ const ChatPage = ({ userType }) => {
           {/* <NavIcons /> */}
           <h3>Nav Icons</h3>
         </div>
-       
-        <ChatBox
-          chat={currentChat}
-          currentUser={userID}
-          
-        />
+
+        <ChatBox chat={currentChat} currentUser={userID} />
       </div>
     </div>
   );
