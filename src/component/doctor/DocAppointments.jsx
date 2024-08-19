@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, Modal } from "flowbite-react";
 import axios from "axios";
 import Lottie from "react-lottie";
 import animationData from "../../animations/chatanimation.json";
 import Pagination from "../common/Pagination";
-import ChatPage from '../../pages/chat/ChatPage.jsx'
+import ChatPage from "../../pages/chat/ChatPage.jsx";
 
 // Function to format date to "dd/MM/yyyy"
 const formatDate = (date) => {
@@ -24,7 +24,6 @@ const formatTime = (time) => {
   const formattedMinute = minute.toString().padStart(2, "0");
   return `${formattedHour}:${formattedMinute} ${ampm}`;
 };
-
 
 const DocAppointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -70,15 +69,15 @@ const DocAppointments = () => {
     navigate("/doctor"); // Adjust this route to your actual dashboard or home page
   };
 
-  const handleChat = (userId, appointmentId) => {
-    setSelectedChat({ userId, appointmentId });
-    setIsModalOpen(true);
-  };
+  // const handleChat = (userId, appointmentId) => {
+  //   setSelectedChat({ userId, appointmentId });
+  //   setIsModalOpen(true);
+  // };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedChat({ userId: "", appointmentId: "" });
-  };
+  // const handleCloseModal = () => {
+  //   setIsModalOpen(false);
+  //   setSelectedChat({ userId: "", appointmentId: "" });
+  // };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -87,11 +86,7 @@ const DocAppointments = () => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {currentAppointments.map((appointment) => (
-          <AppointmentCard
-            key={appointment._id}
-            appointment={appointment}
-            onChat={handleChat}
-          />
+          <AppointmentCard key={appointment._id} appointment={appointment} />
         ))}
       </div>
       <div className="text-center mt-8">
@@ -109,19 +104,19 @@ const DocAppointments = () => {
       </div>
 
       {/* Chat Modal */}
-      <Modal show={isModalOpen} onClose={handleCloseModal}>
+      {/* <Modal show={isModalOpen} onClose={handleCloseModal}>
         <Modal.Body>
           <ChatPage
             receiverId={selectedChat.userId}
             appointmentId={selectedChat.appointmentId}
           />
         </Modal.Body>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };
 
-const AppointmentCard = ({ appointment, onChat }) => {
+const AppointmentCard = ({ appointment }) => {
   const { user, date, startTime, endTime, isBooked } = appointment;
   const patientName = user.name || "Unknown Patient";
   const appointmentDate = formatDate(date);
@@ -164,18 +159,20 @@ const AppointmentCard = ({ appointment, onChat }) => {
         >
           {isBooked ? "View Details" : "Not Booked"}
         </Button>
-        <Button
-          gradientDuoTone="purpleToBlue"
-          className="w-full flex items-center justify-center"
-          onClick={() => onChat(user._id, appointment._id)}
-        >
-          <p className="mr-2">Message</p>
-          <Lottie
-            options={defaultOptions}
-            width={30}
-            style={{ marginBottom: 10 }}
-          />
-        </Button>
+        <Link to={'/doctor/chat'}>
+          <Button
+            gradientDuoTone="purpleToBlue"
+            className="w-full flex items-center justify-center"
+            // onClick={() => onChat(user._id, appointment._id)}
+          >
+            <p className="mr-2">Message</p>
+            <Lottie
+              options={defaultOptions}
+              width={30}
+              style={{ marginBottom: 10 }}
+            />
+          </Button>
+        </Link>
       </div>
     </Card>
   );

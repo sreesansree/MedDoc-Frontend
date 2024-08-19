@@ -4,6 +4,8 @@ import axios from "axios";
 import { Card, Button, TextInput, Select } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const DoctorsList = () => {
   const [doctors, setDoctors] = useState([]);
@@ -20,13 +22,15 @@ const DoctorsList = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get("/api/users/doctors-list");
+        const response = await axios.get("/api/users/doctors");
         const approvedDoctors = response.data.filter(
           (doctor) => doctor.isApproved
         );
+        console.log("Approved Doctors: ", approvedDoctors);
         setDoctors(approvedDoctors);
       } catch (error) {
         console.error("Error fetching doctors:", error);
+        toast.error("Error fetching in Doctor ");
       }
     };
     fetchDoctors();
@@ -224,6 +228,7 @@ const DoctorsList = () => {
           )
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };

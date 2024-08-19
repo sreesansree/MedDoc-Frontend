@@ -1,22 +1,37 @@
-import React, { useEffect, useState } from "react";
-import { getUser } from "../../api/userRequest";
-import { getMessages } from "../../api/messageRequest";
-import { format } from "timeago.js";
+import React, { useEffect, useRef, useState } from "react";
 import InputEmoji from "react-input-emoji";
+import { format } from "timeago.js";
+import axios from "axios";
 
-const ChatBox = ({ chat, currentUser }) => {
+const ChatBox = ({
+  userType,
+  chat,
+  currentUser,
+  setSendMessage,
+  receiveMessage,
+}) => {
   const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const scroll = useRef();
 
-  // fetching data for header
+  useEffect(() => {
+    if (receiveMessage !== null && receiveMessage.chatId === chat._id) {
+      setMessages([...messages, receiveMessage]);
+    }
+  }, [receiveMessage]);
+
+  //fetching data from header
   useEffect(() => {
     const userId = chat?.members?.find((id) => id !== currentUser);
     const getUserData = async () => {
       try {
-        const { data } = await getUser(userId);
+        const endPoint =
+          userType === "doctor"
+            ? `/api/doctor/${userId}`
+            : `/api/users/${userId}`;
+        const { data } = await axios.get(endPoint);
         setUserData(data);
-        console.log("From ChatBox : ", data);
       } catch (error) {
         console.log(error);
       }
@@ -24,13 +39,11 @@ const ChatBox = ({ chat, currentUser }) => {
     if (chat !== null) getUserData();
   }, [chat, currentUser]);
 
-  //Fetching data for messages
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const { data } = await getMessages(chat._id);
+        const { data } = await axios.get(`/api/messages/${chat._id}`);
         setMessages(data);
-        console.log("Chat Messages : ", data);
       } catch (error) {
         console.log(error);
       }
@@ -42,59 +55,88 @@ const ChatBox = ({ chat, currentUser }) => {
     setNewMessage(newMessage);
   };
 
+  const handleSend = async (e) => {
+    e.preventDefault();
+    const message = {
+      senderId: currentUser,
+      text: newMessage,
+      chatId: chat._id,
+    };
+    // Send message to database
+    try {
+      const { data } = await axios.post("/api/messages", message);
+      setMessages([...messages, data]);
+      setNewMessage("");
+    } catch (error) {
+      console.log(error);
+    }
+
+    // send message to socket server
+    const receiverId = chat?.members.find((id) => id !== currentUser);
+    setSendMessage({ ...message, receiverId });
+  };
+
+  // Always scroll to the last message
+  useEffect(() => {
+    scroll.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <>
-      <div className="bg-gray-300 ChatBox-container">
-        {chat ? (
-          <>
-            <div className="chat-header">
-              <div className="follower">
-                <div className="flex gap-3 mb-2">
-                  <img
-                    src={userData?.profilePicture}
-                    className="rounded-full"
-                    style={{ width: "50px", height: "50px" }}
-                  />
-                  <div
-                    className="name flex flex-col mx:5"
-                    style={{ fontSize: "0.8rem" }}
-                  >
-                    <span>{userData?.name}</span>
-                  </div>
-                </div>
+    <div className="bg-gray-300 dark:bg-slate-800 rounded-lg grid grid-rows-[14vh_60vh_13vh]">
+      {chat ? (
+        <>
+          <div className="p-4 flex flex-col">
+            <div className="flex items-center gap-3 mb-2">
+              <img
+                src={userData?.profilePicture}
+                className="rounded-full"
+                style={{ width: "50px", height: "50px" }}
+                alt="Profile"
+              />
+              <div className="text-sm">
+                <span>{userData?.name}</span>
               </div>
-              <hr style={{ width: "85%", border: "0.1px solid $ececec" }} />
             </div>
-            {/* Chat Box messages */}
-            <div className="chat-body">
-              {messages.map((message) => (
-                <>
-                  <div
-                    className={
-                      message.senderId === currentUser
-                        ? "Message own"
-                        : "message"
-                    }
-                  >
-                    <span>{message.text}</span>
-                    <span>{format(message.createdAt)}</span>
-                  </div>
-                  {/* chat-send */}
-                  <div className="chat-sender">
-                    <div>+</div>{" "}
-                    {/* for sending images,videos,emojies use this */}
-                    <InputEmoji value={newMessage} onChange={handleChange} />
-                    <div className="send-button button">Send</div>
-                  </div>
-                </>
-              ))}
-            </div>
-          </>
-        ) : (
-          <span className="chatbox-empty-messages">Tap on a Chat to start Conversation...</span>
-        )}
-      </div>
-    </>
+            <hr className="w-[ 95%] border border-gray-200" />
+          </div>
+
+          {/* Chatbox messages */}
+          <div className="flex flex-col gap-2 p-6 overflow-y-scroll">
+            {messages.map((message, index) => (
+              <div
+                ref={scroll}
+                key={index}
+                className={`flex flex-col gap-1 p-3 max-w-lg w-fit rounded-lg text-white ${
+                  message.senderId === currentUser
+                    ? "self-end rounded-br-none bg-gradient-to-r from-teal-400 to-blue-600"
+                    : "rounded-bl-none bg-yellow-500"
+                }`}
+              >
+                <span>{message.text}</span>
+                <span className="text-xs text-gray-300 self-end">
+                  {format(message.createdAt)}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-gray-100 dark:bg-gray-600 flex justify-between items-center gap-4 p-3 m-2 rounded-lg">
+            <div className="p-2 rounded-lg cursor-pointer">+</div>
+            <InputEmoji value={newMessage} onChange={handleChange} />
+            <button
+              className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+              onClick={handleSend}
+            >
+              Send
+            </button>
+          </div>
+        </>
+      ) : (
+        <span className="text-center text-gray-500 mt-4">
+          Tap on a Chat to start a Conversation...
+        </span>
+      )}
+    </div>
   );
 };
 
