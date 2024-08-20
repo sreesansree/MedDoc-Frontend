@@ -6,6 +6,8 @@ import Lottie from "react-lottie";
 import animationData from "../../animations/chatanimation.json";
 import Pagination from "../common/Pagination";
 import ChatPage from "../../pages/chat/ChatPage.jsx";
+import { useSelector } from "react-redux";
+import { createChat } from "../../api/chatRequest.js";
 
 // Function to format date to "dd/MM/yyyy"
 const formatDate = (date) => {
@@ -34,6 +36,8 @@ const DocAppointments = () => {
     userId: "",
     appointmentId: "",
   });
+  const { currentDoctor } = useSelector((state) => state.doctor);
+  const doctorId = currentDoctor._id;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -86,7 +90,11 @@ const DocAppointments = () => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {currentAppointments.map((appointment) => (
-          <AppointmentCard key={appointment._id} appointment={appointment} />
+          <AppointmentCard
+            key={appointment._id}
+            appointment={appointment}
+            doctorId={doctorId}
+          />
         ))}
       </div>
       <div className="text-center mt-8">
@@ -116,7 +124,7 @@ const DocAppointments = () => {
   );
 };
 
-const AppointmentCard = ({ appointment }) => {
+const AppointmentCard = ({ appointment, doctorId }) => {
   const { user, date, startTime, endTime, isBooked } = appointment;
   const patientName = user.name || "Unknown Patient";
   const appointmentDate = formatDate(date);
@@ -131,6 +139,23 @@ const AppointmentCard = ({ appointment }) => {
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
+  };
+  const startNewChat = async (receiverId, appointmentId) => {
+    console.log("receiverId from Appointment", receiverId);
+    console.log("AppointmnetId from Appointment", appointmentId);
+    try {
+      const newChatData = {
+        senderId: doctorId,
+        receiverId: receiverId,
+        appointmentId: appointmentId,
+      };
+      await createChat(newChatData);
+      // const createdChat = await createChat(newChatData);
+      // setChats((prevChats) => [...prevChats, createdChat]);
+      // setCurrentChat(createdChat);
+    } catch (error) {
+      console.error("Error starting new chat:", error);
+    }
   };
 
   return (
@@ -159,11 +184,11 @@ const AppointmentCard = ({ appointment }) => {
         >
           {isBooked ? "View Details" : "Not Booked"}
         </Button>
-        <Link to={'/doctor/chat'}>
+        <Link to={`/doctor/chat/${user._id}/${appointment._id}`}>
           <Button
             gradientDuoTone="purpleToBlue"
             className="w-full flex items-center justify-center"
-            // onClick={() => onChat(user._id, appointment._id)}
+            onClick={() => startNewChat(user._id, appointment._id)}
           >
             <p className="mr-2">Message</p>
             <Lottie

@@ -30,10 +30,11 @@ const SlotList = () => {
   const fetchSlots = async () => {
     try {
       const slotsResponse = await axios.get(
-        `/api/doctor/slots/${currentDoctor._id}`
+        `/api/doctor/slots/${currentDoctor._id}`,
+        { withCredentials: true }
       );
       const now = new Date();
-
+      console.log("Slot REsponse ==>", slotsResponse);
       // Filter and sort slots
       const validSlots = slotsResponse.data
         .filter((slot) => {

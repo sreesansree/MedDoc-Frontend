@@ -6,11 +6,14 @@ import axios from "axios";
 import Lottie from "react-lottie";
 import animationData from "../../animations/chatanimation.json";
 import { formatTime } from "../../utils/dateUtils";
+import { createChat } from "../../api/chatRequest";
+import { useSelector } from "react-redux";
 
 const Appointment = () => {
   const [appointments, setAppointments] = useState([]);
+  const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
-
+  const userId = currentUser._id;
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -44,6 +47,7 @@ const Appointment = () => {
             key={appointment._id}
             appointment={appointment}
             // onChat={handleChat}
+            userId={userId}
           />
         ))}
       </div>
@@ -51,7 +55,7 @@ const Appointment = () => {
   );
 };
 
-const AppointmentCard = ({ appointment }) => {
+const AppointmentCard = ({ appointment, userId }) => {
   const { doctor, date, startTime, endTime, isBooked } = appointment;
   const doctorName = doctor.name || "Unknown Doctor";
   const appointmentDate = new Date(date).toLocaleDateString();
@@ -67,6 +71,23 @@ const AppointmentCard = ({ appointment }) => {
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
+  };
+  const startNewChat = async (receiverId, appointmentId) => {
+    console.log("receiverId from Appointment", receiverId);
+    console.log("AppointmnetId from Appointment", appointmentId);
+    try {
+      const newChatData = {
+        senderId: userId,
+        receiverId: receiverId,
+        appointmentId: appointmentId,
+      };
+      await createChat(newChatData);
+      // const createdChat = await createChat(newChatData);
+      // setChats((prevChats) => [...prevChats, createdChat]);
+      // setCurrentChat(createdChat);
+    } catch (error) {
+      console.error("Error starting new chat:", error);
+    }
   };
 
   return (
@@ -98,11 +119,11 @@ const AppointmentCard = ({ appointment }) => {
           </Button>
         </div>
         <div className="flex justify-center items-center">
-          <Link to={'/user/chat/'}>
+          <Link to={`/user/chat/${doctor._id}/${appointment._id}`}>
             <Button
               gradientDuoTone="purpleToBlue"
               className="w-full text-center h-12"
-              // onClick={() => onChat(doctor._id, appointment._id)}
+              onClick={() => startNewChat(doctor._id, appointment._id)}
             >
               <p className="mr-2">Message </p>
               <Lottie

@@ -4,15 +4,15 @@ import axios from "axios";
 
 const Conversation = ({ userType, data, currentUserId, online }) => {
   const [userData, setUserData] = useState(null);
-
+console.log('data ====>',data)
   useEffect(() => {
     const userId = data.members.find((id) => id !== currentUserId);
     const getUserData = async () => {
       try {
         const endPoint =
           userType === "doctor"
-            ? `/api/doctor/${userId}`
-            : `/api/users/${userId}`;
+            ? `/api/doctor/user/${userId}`
+            : `/api/users/doctor/${userId}`;
         const { data } = await axios.get(endPoint);
         setUserData(data);
         console.log("From Conversation , Get User : ", data);

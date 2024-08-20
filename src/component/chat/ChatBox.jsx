@@ -14,7 +14,7 @@ const ChatBox = ({
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const scroll = useRef();
-
+console.log('Chat : ',chat)
   useEffect(() => {
     if (receiveMessage !== null && receiveMessage.chatId === chat._id) {
       setMessages([...messages, receiveMessage]);
@@ -28,8 +28,8 @@ const ChatBox = ({
       try {
         const endPoint =
           userType === "doctor"
-            ? `/api/doctor/${userId}`
-            : `/api/users/${userId}`;
+            ? `/api/doctor/user/${userId}`
+            : `/api/users/doctor/${userId}`;
         const { data } = await axios.get(endPoint);
         setUserData(data);
       } catch (error) {
