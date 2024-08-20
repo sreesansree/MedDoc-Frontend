@@ -197,17 +197,17 @@ export default function AdminDoctorApproval() {
         show={isApprovalModalOpen}
         onClose={() => setIsApprovalModalOpen(false)}
         size="md"
-        className="w-full"
+        className="w-full "
       >
         <Modal.Header>Approve Doctor</Modal.Header>
         <Modal.Body>
           {selectedDoctor && (
             <>
-              <div className="mb-4">
+              <div className=" mb-4">
                 <img
                   src={selectedDoctor.certificate}
                   alt="Certificate"
-                  className="w-full h-48 object-cover"
+                  className="w-full h-48  object-contain "
                 />
               </div>
               <div className="text-center">

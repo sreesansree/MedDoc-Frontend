@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Button, Table } from "flowbite-react";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
-  console.log(users, "dpctorsssssss");
+
+  // For Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(7);
+
+  // For confirmation Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [actioinType, setActionType] = useState("");
 
   const fetchUsers = async () => {
     try {
@@ -56,6 +65,38 @@ export default function AdminUsers() {
     }
   };
 
+  const openModal = (user, type) => {
+    setSelectedUser(user);
+    setActionType(type);
+    setIsModalOpen(true);
+  };
+
+  const confirmAction = () => {
+    if (actioinType === "block") {
+      handleBlock(selectedUser._id);
+    } else if (actioinType === "unblock") {
+      handleUnblock(selectedUser._id);
+    }
+    setIsModalOpen(false);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+    setActionType("");
+  };
+
+  // Pagination logic
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+  const totalPages = Math.ceil(users.length / usersPerPage);
+  const pageNumbers = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1
+  );
+
   return (
     <div className="container mx-auto px-4">
       <h2 className="text-2xl font-semibold my-4">Admin Users List</h2>
@@ -69,8 +110,8 @@ export default function AdminUsers() {
             <Table.HeadCell>Actions</Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
-            {Array.isArray(users) && users.length > 0 ? (
-              users.map((user) => (
+            {currentUsers.length > 0 ? (
+              currentUsers.map((user) => (
                 <Table.Row
                   key={user._id}
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
@@ -80,30 +121,19 @@ export default function AdminUsers() {
                   <Table.Cell>{user.isVerified ? "Yes" : "No"}</Table.Cell>
                   <Table.Cell>{user.is_blocked ? "Yes" : "No"}</Table.Cell>
 
-                  {/* <Table.Cell>
-                    <button
-                      className="bg-red-500 text-white px-2 py-1 rounded ml-2"
-                      onClick={() => handleBlock(user._id)}
-                    >
-                      Block
-                    </button>
-                    <button
-                      className="bg-yellow-500 text-white px-2 py-1 rounded ml-2"
-                      onClick={() => handleUnblock(user._id)}
-                    >
-                      Unblock
-                    </button>
-                  </Table.Cell> */}
                   <Table.Cell>
                     <button
                       className={` ${
                         user.is_blocked ? "bg-green-500" : "bg-red-500"
                       } text-white w-20 px-2 py-1 rounded ml-2`}
-                      onClick={() =>
-                        user.is_blocked
-                          ? handleUnblock(user._id)
-                          : handleBlock(user._id)
-                      }
+                      // onClick={() =>
+                      //   user.is_blocked
+                      //     ? handleUnblock(user._id)
+                      //     : handleBlock(user._id)
+                      // }
+                      onClick={() => {
+                        openModal(user, user.is_blocked ? "unblock" : "block");
+                      }}
                     >
                       {user.is_blocked ? "Unblock" : "Block"}
                     </button>
@@ -119,7 +149,33 @@ export default function AdminUsers() {
             )}
           </Table.Body>
         </Table>
+
+        {/* Pagination */}
+        <div className="flex justify-center mt-6">
+          {pageNumbers.map((number) => (
+            <Button
+              key={number}
+              onClick={() => setCurrentPage(number)}
+              className={`mx-1 ${
+                currentPage === number ? "bg-blue-800 text-white" : ""
+              }`}
+            >
+              {number}
+            </Button>
+          ))}
+        </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmAction}
+        title={`Confirm ${actioinType === "block" ? "Block" : "Unblock"} User`}
+        message={`Are you sure ? you want to ${
+          actioinType === "block" ? "block" : "unblock"
+        } ${selectedUser?.name} ? `}
+      />
     </div>
   );
 }

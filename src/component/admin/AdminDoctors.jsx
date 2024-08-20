@@ -3,11 +3,15 @@ import axios from "axios";
 import { Button, Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 export default function AdminDoctors() {
   const [doctors, setDoctors] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [doctorsPerPage] = useState(6);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [actioinType, setActionType] = useState(""); // "block" or "unblock"
 
   const fetchDoctors = async () => {
     try {
@@ -61,13 +65,37 @@ export default function AdminDoctors() {
     }
   };
 
+  const openModal = (doctor, type) => {
+    setSelectedDoctor(doctor);
+    setActionType(type);
+    setIsModalOpen(true);
+  };
+
+  const confirmAction = () => {
+    if (actioinType === "block") {
+      handleBlock(selectedDoctor._id);
+    } else if (actioinType === "unblock") {
+      handleUnblock(selectedDoctor._id);
+    }
+    setIsModalOpen(false);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedDoctor(null);
+    setActionType("");
+  };
+
   // Pagination logic
   const indexOfLastDoctor = currentPage * doctorsPerPage;
   const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
   const currentDoctors = doctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
 
   const totalPages = Math.ceil(doctors.length / doctorsPerPage);
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
+  const pageNumbers = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1
+  );
 
   return (
     <div className="container mx-auto px-4">
@@ -114,10 +142,16 @@ export default function AdminDoctors() {
                       className={` ${
                         doctor.is_blocked ? "bg-green-500" : "bg-red-500"
                       } text-white w-20 px-2 py-1 rounded ml-2`}
+                      // onClick={() =>
+                      //   doctor.is_blocked
+                      //     ? handleUnblock(doctor._id)
+                      //     : handleBlock(doctor._id)
+                      // }
                       onClick={() =>
-                        doctor.is_blocked
-                          ? handleUnblock(doctor._id)
-                          : handleBlock(doctor._id)
+                        openModal(
+                          doctor,
+                          doctor.is_blocked ? "unblock" : "block"
+                        )
                       }
                     >
                       {doctor.is_blocked ? "Unblock" : "Block"}
@@ -150,6 +184,18 @@ export default function AdminDoctors() {
           ))}
         </div>
       </div>
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmAction}
+        title={`Confirm ${
+          actioinType === "block" ? "Block" : "Unblock"
+        } Doctor`}
+        message={`Are you sure ? you want to ${
+          actioinType === "block" ? "block" : "unblock"
+        } ${selectedDoctor?.name} ? `}
+      />
     </div>
   );
 }
