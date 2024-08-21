@@ -24,7 +24,7 @@ export default function OTP() {
     try {
       setLoading(true);
       const res = await axios.post(
-        "api/users/resend-otp",
+        "/api/users/resend-otp",
         { email },
         {
           headers: {

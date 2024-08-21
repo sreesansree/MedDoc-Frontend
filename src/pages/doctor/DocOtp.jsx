@@ -21,6 +21,12 @@ export default function DocOTP() {
       }, 5000);
       return () => clearTimeout(timer);
     }
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
   }, [errorMessage]);
 
   useEffect(() => {
@@ -34,7 +40,7 @@ export default function DocOTP() {
     try {
       setLoading(true);
       const res = await axios.post(
-        "api/doctor/resend-otp",
+        "/api/doctor/resend-otp",
         { email },
         {
           headers: {

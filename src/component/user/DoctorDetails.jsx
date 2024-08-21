@@ -23,6 +23,15 @@ const DoctorDetails = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
+  // Function to format date to "dd/MM/yyyy"
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0"); // Add leading zero if necessary
+    const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   useEffect(() => {
     const fetchDoctorDetails = async () => {
       try {
@@ -31,7 +40,7 @@ const DoctorDetails = () => {
 
         const slotsResponse = await axios.get(`/api/doctor/slots/${id}`);
         const now = new Date();
-        
+
         // Combine date and time for sorting
         const validSlots = slotsResponse.data
           .filter((slot) => {
@@ -51,16 +60,16 @@ const DoctorDetails = () => {
             const dateTimeA = new Date(
               dateA.setHours(timeA.getHours(), timeA.getMinutes())
             );
-            
+
             const dateB = new Date(b.date);
             const timeB = new Date(`1970-01-01T${b.startTime}:00`);
             const dateTimeB = new Date(
               dateB.setHours(timeB.getHours(), timeB.getMinutes())
             );
-            
+
             return dateTimeA - dateTimeB;
           });
-          
+
         setSlots(validSlots);
       } catch (error) {
         console.error("Error fetching doctor details:", error);
@@ -145,12 +154,19 @@ const DoctorDetails = () => {
                     Date: {formatDate(slot.date)}
                   </p>
                   <p className="text-gray-800 dark:text-gray-300">
-                    Time: {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
+                    Time: {formatTime(slot.startTime)} -{" "}
+                    {formatTime(slot.endTime)}
                   </p>
-                  <p className="text-gray-800 dark:text-gray-300">Price: ₹{slot.price}</p>
-                  <p className={`text-gray-800 dark:text-gray-300 ${
-                    slot.isBooked ? "text-red-500 dark:text-red-500" : "text-green-500"
-                  }`}>
+                  <p className="text-gray-800 dark:text-gray-300">
+                    Price: ₹{slot.price}
+                  </p>
+                  <p
+                    className={`text-gray-800 dark:text-gray-300 ${
+                      slot.isBooked
+                        ? "text-red-500 dark:text-red-500"
+                        : "text-green-500"
+                    }`}
+                  >
                     {slot.isBooked ? "Booked" : "Available"}
                   </p>
                 </div>

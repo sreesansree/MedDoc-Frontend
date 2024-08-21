@@ -1,10 +1,11 @@
-import React from "react";
-import { Avatar, Button, Dropdown, Navbar, TextInput } from "flowbite-react";
+import React, { useState } from "react";
+import { Avatar, Button, Dropdown, Navbar } from "flowbite-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { FaMoon, FaSun, FaBell } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice";
 import { signOutSuccess } from "../../redux/user/userSlice";
+import NotificationComponent from "../common/NotificationComponent"; // Adjust the import path as necessary
 
 export default function NavBar() {
   const path = useLocation().pathname;
@@ -12,32 +13,35 @@ export default function NavBar() {
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-console.log("Current User : ",currentUser)
+
+  const [showNotifications, setShowNotifications] = useState(false);
+
   const handleSignOut = async () => {
-    const res = await fetch(`/api/users/logout`, {
-      method: "POST",
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      console.log(data.message);
-    } else {
-      dispatch(signOutSuccess());
-      navigate("/", { replace: true });
+    try {
+      const res = await fetch(`/api/users/logout`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        console.log(data.message);
+      } else {
+        dispatch(signOutSuccess());
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      console.error("Error during sign out:", error);
     }
   };
 
   return (
     <Navbar className="border-b-2 self-center whitespace-nowrap text-sm sm:text-xl font font-semibold dark:text-white">
       <Link to="/">
-        <span
-          className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400
-    via-purple-500 to-pink-500 font-bold"
-        >
+        <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 font-bold">
           Med
         </span>
         Doc
       </Link>
-      
+
       <div className="flex gap-2 md:order-2">
         <Button
           className="w-12 h-10 hidden sm:inline"
@@ -48,25 +52,41 @@ console.log("Current User : ",currentUser)
           {theme === "light" ? <FaSun /> : <FaMoon />}
         </Button>
         {currentUser ? (
-          <Dropdown
-            arrowIcon={false}
-            inline
-            label={
-              <Avatar alt="user" img={currentUser?.profilePicture} rounded />
-            }
-          >
-            <Dropdown.Header>
-              <span className="block text-sm">@{currentUser?.name}</span>
-              <span className="block text-sm font-medium truncate">
-                {currentUser?.email}
-              </span>
-            </Dropdown.Header>
-            <Link to={"/dashboard?tab=profile"}>
-              <Dropdown.Item>Profile</Dropdown.Item>
-            </Link>
-            <Dropdown.Divider />
-            <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
-          </Dropdown>
+          <>
+            {/* Notification Icon with Badge */}
+            <div className="relative mt-3 mx-3">
+              <FaBell
+                className="text-xl cursor-pointer"
+                onClick={() => setShowNotifications(!showNotifications)}
+              />
+              {showNotifications && (
+                <NotificationComponent
+                  userType="user"
+                  setShowNotifications={setShowNotifications}
+                />
+              )}
+            </div>
+
+            <Dropdown
+              arrowIcon={false}
+              inline
+              label={
+                <Avatar alt="user" img={currentUser?.profilePicture} rounded />
+              }
+            >
+              <Dropdown.Header>
+                <span className="block text-sm">@{currentUser?.name}</span>
+                <span className="block text-sm font-medium truncate">
+                  {currentUser?.email}
+                </span>
+              </Dropdown.Header>
+              <Link to={"/dashboard?tab=profile"}>
+                <Dropdown.Item>Profile</Dropdown.Item>
+              </Link>
+              <Dropdown.Divider />
+              <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
+            </Dropdown>
+          </>
         ) : (
           <Link to="/signin">
             <Button gradientDuoTone="purpleToBlue" outline pill>
