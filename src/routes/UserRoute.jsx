@@ -9,6 +9,7 @@ import NotFound from "../component/notFound/NotFound";
 import DoctorDetails from "../component/user/DoctorDetails.jsx";
 import PaymentPage from "../component/user/PaymentPage.jsx";
 import ChatPage from "../pages/chat/ChatPage.jsx";
+import CalendarView from "../component/calenderView/CalenderView.jsx";
 
 export default function UserRoute() {
   return (
@@ -26,6 +27,7 @@ export default function UserRoute() {
                 path="chat/:doctorId/:appointmentId"
                 element={<ChatPage userType="user" />}
               />
+              <Route path="calender" element={<CalendarView />}/>
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

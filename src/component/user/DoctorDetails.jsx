@@ -5,6 +5,15 @@ import { Button, Card } from "flowbite-react";
 import { AiOutlineCalendar } from "react-icons/ai";
 import AlertModal from "../dashboard/AlertModal.jsx"; // Import the AlertModal component
 
+// Function to format date to "dd/MM/yyyy"
+const formatDate = (date) => {
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, "0"); // Add leading zero if necessary
+  const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 const DoctorDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -119,7 +128,7 @@ const DoctorDetails = () => {
               <AiOutlineCalendar className="mr-2 text-gray-500 dark:text-gray-300" />
               Available Slots
             </h3>
-            <div className="flex justify-between m-5 gap-3">
+            <div className="flex justify-start m-5 gap-3">
               {slots.map((slot) => (
                 <div
                   key={slot._id}
@@ -133,7 +142,7 @@ const DoctorDetails = () => {
                   onClick={() => !slot.isBooked && handleSlotSelection(slot)}
                 >
                   <p className="text-gray-800 dark:text-gray-300">
-                    Date: {new Date(slot.date).toLocaleDateString()}
+                    Date: {formatDate(slot.date)}
                   </p>
                   <p className="text-gray-800 dark:text-gray-300">
                     Time: {formatTime(slot.startTime)} - {formatTime(slot.endTime)}

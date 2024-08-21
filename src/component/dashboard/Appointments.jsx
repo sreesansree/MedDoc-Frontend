@@ -41,6 +41,9 @@ const Appointment = () => {
       <h2 className="text-2xl font-semibold text-center mb-6">
         My Appointments
       </h2>
+      <Button gradientDuoTone="purpleToBlue" onClick={() => navigate("/calendar")}>
+          View Calendar
+        </Button>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {appointments.map((appointment) => (
           <AppointmentCard
