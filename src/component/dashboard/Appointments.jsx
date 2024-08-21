@@ -9,6 +9,15 @@ import { formatTime } from "../../utils/dateUtils";
 import { createChat } from "../../api/chatRequest";
 import { useSelector } from "react-redux";
 
+// Function to format date to "dd/MM/yyyy"
+const formatDate = (date) => {
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, "0"); // Add leading zero if necessary
+  const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 const Appointment = () => {
   const [appointments, setAppointments] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
@@ -58,7 +67,7 @@ const Appointment = () => {
 const AppointmentCard = ({ appointment, userId }) => {
   const { doctor, date, startTime, endTime, isBooked } = appointment;
   const doctorName = doctor.name || "Unknown Doctor";
-  const appointmentDate = new Date(date).toLocaleDateString();
+  const appointmentDate = formatDate(date)
   const appointmentStartTime = formatTime(startTime);
   const appointmentEndTime = formatTime(endTime);
 

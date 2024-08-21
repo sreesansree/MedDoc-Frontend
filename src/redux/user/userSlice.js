@@ -18,7 +18,7 @@ const userSlice = createSlice({
       state.currentUser = action.payload;
       state.loading = false;
       state.error = null;
-      // localStorage.setItem("userInfo", JSON.stringify(action.payload));
+      localStorage.setItem("userInfo", JSON.stringify(action.payload));
     },
     signInFailure: (state, action) => {
       state.loading = false;
@@ -28,7 +28,7 @@ const userSlice = createSlice({
       state.currentUser = null;
       state.error = null;
       state.loading = false;
-      // localStorage.removeItem("userInfo");
+      localStorage.removeItem("userInfo");
     },
     updateStart: (state) => {
       state.loading = true;

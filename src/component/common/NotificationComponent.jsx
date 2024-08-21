@@ -30,7 +30,7 @@ const NotificationComponent = ({ userType, setShowNotifications }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 w">
-      <div className="bg-white rounded-lg shadow-lg w-100 max-h-[80vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-700 rounded-lg shadow-lg w-100 max-h-[80vh] overflow-y-auto">
         <div className="p-3 font-semibold flex justify-between items-cente border-b border-gray-200">
           <span>Notifications</span>
           <button
@@ -48,7 +48,7 @@ const NotificationComponent = ({ userType, setShowNotifications }) => {
               </div>
             ))
           ) : (
-            <div className="p-3 mb-2 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 cursor-pointer">No notifications</div>
+            <div className="p-3 mb-2 bg-gray-500 rounded-lg shadow-sm hover:bg-gray-400 cursor-pointer">No notifications</div>
           )}
         </div>
       </div>
