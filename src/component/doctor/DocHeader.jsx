@@ -1,19 +1,23 @@
-import React from "react";
-import { Avatar, Button, Dropdown, Navbar } from "flowbite-react";
+import React, { useEffect, useState } from "react";
+import { Avatar, Button, Dropdown, Navbar, Badge } from "flowbite-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { FaMoon, FaSun, FaBell } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice";
 import { signOutSuccessD } from "../../redux/doctor/doctorSlice";
+import NotificationComponent from "../common/NotificationComponent"; // Adjust the import path as necessary
 
 export default function DocHeader() {
   const path = useLocation().pathname;
   const { currentDoctor } = useSelector((state) => state.doctor);
 
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   console.log("currentDoctor in Header:", currentDoctor);
+
   const handleSignOut = async () => {
     try {
       const res = await fetch(`/api/doctor/logout`, {
@@ -36,6 +40,13 @@ export default function DocHeader() {
       console.error("Error during sign out:", error);
     }
   };
+  useEffect(() => {
+    // Simulate receiving notifications
+    setNotifications([
+      { message: "New appointment reminder" },
+      { message: "Upcoming appointment confirmation" },
+    ]);
+  }, []);
 
   return (
     <Navbar
@@ -72,31 +83,51 @@ export default function DocHeader() {
           )}
         </Button>
         {currentDoctor ? (
-          <Dropdown
-            arrowIcon={false}
-            inline
-            label={
-              <Avatar
-                alt="doctor"
-                img={currentDoctor?.profilePicture}
-                rounded
+          <>
+            {/* Notification Icon with Badge */}
+            <div className="relative mt-3 mx-2 ">
+              <FaBell
+                className="text-xl cursor-pointer relative"
+                onClick={() => setShowNotifications(!showNotifications)}
               />
-            }
-          >
-            <Dropdown.Header>
-              <span className="block text-sm">@{currentDoctor?.name}</span>
-              <span className="block text-sm font-medium truncate">
-                {currentDoctor?.email}
-              </span>
-            </Dropdown.Header>
-            <Dropdown.Item
-              onClick={() => navigate("/doctor/dashboard?tab=profile")}
+              {notifications.length > 0 && !showNotifications && (
+                <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full ring-2 ring-white"></div>
+              )}
+              {showNotifications && (
+                <NotificationComponent
+                  userType="doctor"
+                  setShowNotifications={setShowNotifications}
+                  
+                />
+              )}
+            </div>
+
+            <Dropdown
+              arrowIcon={false}
+              inline
+              label={
+                <Avatar
+                  alt="doctor"
+                  img={currentDoctor?.profilePicture}
+                  rounded
+                />
+              }
             >
-              Profile
-            </Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
-          </Dropdown>
+              <Dropdown.Header>
+                <span className="block text-sm">@{currentDoctor?.name}</span>
+                <span className="block text-sm font-medium truncate">
+                  {currentDoctor?.email}
+                </span>
+              </Dropdown.Header>
+              <Dropdown.Item
+                onClick={() => navigate("/doctor/dashboard?tab=profile")}
+              >
+                Profile
+              </Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
+            </Dropdown>
+          </>
         ) : (
           <Link to="/doctor/login">
             <Button gradientDuoTone="purpleToBlue" outline pill>
@@ -120,15 +151,20 @@ export default function DocHeader() {
                 <Link to={`/doctor/slots/${currentDoctor._id}`}>Slot List</Link>
               </Navbar.Link>
 
-              <Navbar.Link active={path === "/doctor/dashboard?tab=appointments"} as={"div"}>
-                <Link to="/doctor/dashboard?tab=appointments">Appointments</Link>
+              <Navbar.Link
+                active={path === "/doctor/dashboard?tab=appointments"}
+                as={"div"}
+              >
+                <Link to="/doctor/dashboard?tab=appointments">
+                  Appointments
+                </Link>
               </Navbar.Link>
               {/* <Navbar.Link active={path === "/messages"} as={"div"}>
                 <Link to="/doctor/">Messages</Link>
               </Navbar.Link> */}
-              <Navbar.Link active={path === "/messages"} as={"div"}>
+              {/* <Navbar.Link active={path === "/messages"} as={"div"}>
                 <Link to="/doctor/">Notifications</Link>
-              </Navbar.Link>
+              </Navbar.Link> */}
             </>
           )}
         </>

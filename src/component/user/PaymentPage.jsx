@@ -50,11 +50,13 @@ const PaymentPage = () => {
               setShowModal(true);
 
               // // Redirect to booked consultation page after 2 seconds
-              // setTimeout(() => {
-              //   navigate("/dashboard?tab=appointments");
-              // }, 1000);
+              setTimeout(() => {
+                navigate("/dashboard?tab=appointments");
+              }, 2000);
             } catch (error) {
               console.error("Payment verification failed:", error);
+              setModalMessage("Transaction Failed try again later");
+              setShowModal(true);
               setErrorMessage(
                 error.response &&
                   error.response.data &&
@@ -64,12 +66,24 @@ const PaymentPage = () => {
               );
             }
           },
+          modal: {
+            ondismiss: () => {
+              // Handle payment cancellation or when the payment window is closed
+              console.log("Payment cancelled or closed by the user.");
+              setErrorMessage(
+                "Payment was canceled or closed. Please try again."
+              );
+              setTimeout(() => {
+                navigate("/user/doctors-list"); // Redirect to appointments tab
+              }, 2000);
+            },
+          },
           theme: {
             color: "#3399cc",
           },
         };
 
-        console.log("Razorpay options:", options);
+        // console.log("Razorpay options:", options);
 
         const paymentObject = new window.Razorpay(options);
         paymentObject.open();

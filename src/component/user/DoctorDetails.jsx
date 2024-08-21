@@ -119,7 +119,7 @@ const DoctorDetails = () => {
               <AiOutlineCalendar className="mr-2 text-gray-500 dark:text-gray-300" />
               Available Slots
             </h3>
-            <div className="flex justify-between m-5 gap-3">
+            <div className="flex justify-start m-5 gap-3">
               {slots.map((slot) => (
                 <div
                   key={slot._id}
