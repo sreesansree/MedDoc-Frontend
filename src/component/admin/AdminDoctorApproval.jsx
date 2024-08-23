@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Table, Modal, TextInput, Button } from "flowbite-react";
 import { GiCheckMark } from "react-icons/gi";
+import ImageZoomModal from "../common/ImageZoomModal";
+
+import Zoom from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
 
 export default function AdminDoctorApproval() {
   const [pendingDoctors, setPendingDoctors] = useState([]);
@@ -10,6 +14,10 @@ export default function AdminDoctorApproval() {
   const [rejectionReason, setRejectionReason] = useState("");
   const [isRejectionModalOpen, setIsRejectionModalOpen] = useState(false);
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   const fetchDoctors = async () => {
     try {
@@ -110,7 +118,7 @@ export default function AdminDoctorApproval() {
                     <img
                       src={doctor.profilePicture}
                       alt="Profile"
-                      className="w-10 h-10 object-cover rounded-full"
+                      className="w-10 h-10 object-cover cursor-pointer rounded-full"
                     />
                   </Table.Cell>
                   <Table.Cell>{doctor.name}</Table.Cell>
@@ -119,7 +127,13 @@ export default function AdminDoctorApproval() {
                     <img
                       src={doctor.certificate}
                       alt="certificate"
-                      className="w-12 h-12"
+                      className="w-12 h-12 cursor-pointer"
+                      onClick={handleOpenModal}
+                    />
+                    <ImageZoomModal
+                      isOpen={isModalOpen}
+                      onClose={handleCloseModal}
+                      ImageSrc={doctor.certificate}
                     />
                   </Table.Cell>
                   <Table.Cell>
@@ -204,17 +218,22 @@ export default function AdminDoctorApproval() {
           {selectedDoctor && (
             <>
               <div className=" mb-4">
-                <img
-                  src={selectedDoctor.certificate}
-                  alt="Certificate"
-                  className="w-full h-48  object-contain "
-                />
+                <Zoom >
+                  <img
+                    src={selectedDoctor.certificate}
+                    alt="Certificate"
+                    className="w-full h-48 object-contain"
+                    // onClick={handleOpenModal}
+                  />
+                </Zoom>
+                {/* <ImageZoomModal
+                  isOpen={isModalOpen}
+                  onClose={handleCloseModal}
+                  ImageSrc={selectedDoctor.certificate}
+                /> */}
               </div>
               <div className="text-center">
-                <Button
-                  color="success"
-                  onClick={handleApprove}
-                >
+                <Button color="success" onClick={handleApprove}>
                   Approve
                 </Button>
               </div>
