@@ -34,7 +34,7 @@ export default function DocOTP() {
     try {
       setLoading(true);
       const res = await axios.post(
-        "api/doctor/resend-otp",
+        "/api/doctor/resend-otp",
         { email },
         {
           headers: {
