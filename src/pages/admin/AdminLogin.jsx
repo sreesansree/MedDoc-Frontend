@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Spinner, TextInput, Label } from "flowbite-react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -123,6 +123,12 @@ export default function AdminLogin() {
               "Login"
             )}
           </Button>
+          <div className="flex justify-center text-sm">
+            <span> Forget your password?</span>
+            <Link to="/admin/forgot-password" className="text-blue-500">
+              click here
+            </Link>
+          </div>
         </form>
         {errorMessage && (
           <div className="text-sm text-red-500 mt-2">{errorMessage}</div>

@@ -60,11 +60,13 @@ const CreateSlot = () => {
       toast.error("Date must be today or in the future.");
       return;
     }
+    const formattedDate = date.toISOString().split("T")[0];
 
     try {
       const [fixedStartTime, fixedEndTime] = fixedSlot
         ? selectedFixedSlot.split(" - ")
         : [startTime, endTime];
+      console.log(date, " : Date");
       const response = await axios.post("/api/doctor/slots", {
         date,
         startTime: parseTime(fixedStartTime),
@@ -72,6 +74,7 @@ const CreateSlot = () => {
         price,
         fixedSlot,
       });
+      console.log(formattedDate, " : Date");
       // console.log("Slot created:", response.data);
       setDate(null);
       setStartTime("");

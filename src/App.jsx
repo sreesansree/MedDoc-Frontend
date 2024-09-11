@@ -11,11 +11,13 @@ import Loader from "./loader/Loader.jsx";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 2500);
-  });
+  },[]);// Add empty dependency array to avoid infinite loop
+  
   return (
     <>
       {loading ? (

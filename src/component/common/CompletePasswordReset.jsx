@@ -14,7 +14,6 @@ const CompletePasswordReset = ({ userType }) => {
   const queryParams = new URLSearchParams(location.search);
   const email = queryParams.get("email");
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -26,10 +25,18 @@ const CompletePasswordReset = ({ userType }) => {
     }
 
     try {
-      const endPoint =
-        userType === "doctor"
-          ? "/api/doctor/reset-password"
-          : "/api/users/reset-password";
+      // const endPoint =
+      //   userType === "doctor"
+      //     ? "/api/doctor/reset-password"
+      //     : "/api/users/reset-password";
+      let endPoint;
+      if (userType === "doctor") {
+        endPoint = "/api/doctor/reset-password";
+      } else if (userType === "admin") {
+        endPoint = "/api/admin/reset-password";
+      } else {
+        endPoint = "/api/users/reset-password";
+      }
       const response = await axios.post(endPoint, {
         email,
         otp: otp,
@@ -38,9 +45,12 @@ const CompletePasswordReset = ({ userType }) => {
       if (userType === "user") {
         setMessage(response.data.message);
         navigate("/signin");
-      } else {
+      } else if (userType === "doctor") {
         setMessage(response.data.message);
         navigate("/doctor/login");
+      } else {
+        setMessage(response.data.message);
+        navigate("/admin/login");
       }
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred");
@@ -61,7 +71,6 @@ const CompletePasswordReset = ({ userType }) => {
         </Alert>
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
-      
         <div>
           <Label htmlFor="otp">OTP</Label>
           <TextInput

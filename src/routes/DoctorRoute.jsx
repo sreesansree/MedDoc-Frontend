@@ -14,13 +14,18 @@ import DocDashboard from "../pages/doctor/DocDashboard";
 import CreateSlot from "../component/doctor/CreateSlot";
 import SlotList from "../component/doctor/SlotList";
 import ChatPage from "../pages/chat/ChatPage";
+import ReminderNotification from "../component/common/Reminder/ReminderNotification";
+import ReminderListener from "../component/common/Reminder/ReminderListener";
 
 export default function DoctorRoute() {
+  const userType = "doctor";
   return (
     <>
       <div className="flex flex-col min-h-screen">
         <main className="flex-grow">
           <DocHeader />
+          <ReminderListener userType={userType} />
+          <ReminderNotification />
           <Routes>
             <Route path="register" element={<DocRegister />} />
             <Route path="login" element={<DoctorLogin />} />

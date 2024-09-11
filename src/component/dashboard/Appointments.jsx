@@ -50,9 +50,12 @@ const Appointment = () => {
       <h2 className="text-2xl font-semibold text-center mb-6">
         My Appointments
       </h2>
-      <Button gradientDuoTone="purpleToBlue" onClick={() => navigate("/calendar")}>
-          View Calendar
-        </Button>
+      <Button
+        gradientDuoTone="purpleToBlue"
+        onClick={() => navigate("/user/calender")}
+      >
+        View Calendar
+      </Button>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {appointments.map((appointment) => (
           <AppointmentCard
@@ -70,7 +73,7 @@ const Appointment = () => {
 const AppointmentCard = ({ appointment, userId }) => {
   const { doctor, date, startTime, endTime, isBooked } = appointment;
   const doctorName = doctor.name || "Unknown Doctor";
-  const appointmentDate = formatDate(date)
+  const appointmentDate = formatDate(date);
   const appointmentStartTime = formatTime(startTime);
   const appointmentEndTime = formatTime(endTime);
 

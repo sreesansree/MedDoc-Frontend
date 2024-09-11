@@ -15,15 +15,25 @@ const ForgetPassword = ({ userType }) => {
     setMessage("");
 
     try {
-      const endPoint =
-        userType === "doctor"
-          ? "/api/doctor/forget-password"
-          : "/api/users/forget-password";
+      // const endPoint =
+      //   userType === "doctor"
+      //     ? "/api/doctor/forget-password"
+      //     : "/api/users/forget-password";
+      let endPoint;
+      if (userType === "doctor") {
+        endPoint = "/api/doctor/forget-password";
+      } else if (userType === "admin") {
+        endPoint = "/api/admin/forget-password";
+      } else {
+        endPoint = "/api/users/forget-password";
+      }
       const response = await axios.post(endPoint, { email });
       setMessage(response.data.message);
       // Navigate to CompletePasswordReset with query parameters
       if (userType === "doctor") {
         navigate(`/doctor/reset-password?email=${email}&userType=${userType}`);
+      } else if (userType === "admin") {
+        navigate(`/admin/reset-password?email=${email}&userType=${userType}`);
       } else {
         navigate(`/reset-password?email=${email}&userType=${userType}`);
       }
