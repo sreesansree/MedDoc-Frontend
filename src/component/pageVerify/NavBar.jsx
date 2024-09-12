@@ -5,7 +5,9 @@ import { FaMoon, FaSun, FaBell } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice";
 import { signOutSuccess } from "../../redux/user/userSlice";
-import NotificationComponent from "../common/NotificationComponent"; // Adjust the import path as necessary
+// import NotificationComponent from "../common/NotificationComponent"; // Adjust the import path as necessary
+import { markAllAsRead } from "../../redux/notification/notificationSlice";
+import ChatNotification from "../common/ChatNotification";
 
 export default function NavBar() {
   const path = useLocation().pathname;
@@ -13,8 +15,23 @@ export default function NavBar() {
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const { notifications, unreadCount } = useSelector(
+    (state) => state.notifications
+  );
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationList, setNotificationList] = useState(notifications);
+
+  const handleNotificationClick = () => {
+    setShowNotifications(!showNotifications);
+    dispatch(markAllAsRead()); // Mark all notifications as read when opened
+  };
+
+  const handleRemoveNotification = (indexToRemove) => {
+    const updatedNotifications = notificationList.filter(
+      (notification, index) => index !== indexToRemove
+    );
+    setNotificationList(updatedNotifications); // Update the state with the new list
+  };
 
   const handleSignOut = async () => {
     try {
@@ -54,7 +71,7 @@ export default function NavBar() {
         {currentUser ? (
           <>
             {/* Notification Icon with Badge */}
-            <div className="relative mt-3 mx-3">
+            {/* <div className="relative mt-3 mx-3">
               <FaBell
                 className="text-xl cursor-pointer"
                 onClick={() => setShowNotifications(!showNotifications)}
@@ -64,6 +81,23 @@ export default function NavBar() {
                   userType="user"
                   setShowNotifications={setShowNotifications}
                 />
+              )}
+            </div> */}
+            <div className="relative mt-3 mx-2">
+              <FaBell
+                className="text-xl cursor-pointer"
+                onClick={handleNotificationClick}
+              />
+              {unreadCount > 0 && (
+                <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full"></div>
+              )}
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-1000 dark:bg-slate-700 bg-white border rounded-lg shadow-lg z-50">
+                  <ChatNotification
+                    notifications={notificationList} // Pass current notifications
+                    removeNotification={handleRemoveNotification} // Pass removal function
+                  />
+                </div>
               )}
             </div>
 

@@ -6,6 +6,7 @@ const chatSlice = createSlice({
   initialState: {
     messages: [],
     currentChat: null,
+    newMessageNotification: null,
   },
   reducers: {
     setMessages(state, action) {
@@ -17,8 +18,16 @@ const chatSlice = createSlice({
     setCurrentChat(state, action) {
       state.currentChat = action.payload;
     },
+    setNewMessageNotification(state, action) {
+      state.newMessageNotification = action.payload;
+    },
   },
 });
 
-export const { setMessages, addMessage, setCurrentChat } = chatSlice.actions;
+export const {
+  setMessages,
+  addMessage,
+  setCurrentChat,
+  setNewMessageNotification,
+} = chatSlice.actions;
 export default chatSlice.reducer;

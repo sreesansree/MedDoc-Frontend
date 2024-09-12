@@ -1,23 +1,31 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { userChats, createChat } from "../../api/chatRequest.js";
+
 import Conversation from "../../component/chat/Conversation.jsx";
 import ChatBox from "../../component/chat/ChatBox.jsx";
 import { io } from "socket.io-client";
 import { useParams } from "react-router-dom";
+// import { setNewMessageNotification } from "../../redux/chat/chatSlice.js";
+import { toast } from "react-toastify";
+import { addNotification } from "../../redux/notification/notificationSlice.js";
 
 const ChatPage = ({ userType }) => {
+  const dispatch = useDispatch();
+
   const { receiverId, appointmentId } = useParams();
   // console.log("receiverId", receiverId);
   // console.log("AppointmentId", appointmentId);
   const { currentUser } = useSelector((state) => state.user);
   const { currentDoctor } = useSelector((state) => state.doctor);
+
   const [chats, setChats] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [sendMessage, setSendMessage] = useState(null);
   const [receiveMessage, setReceiveMessage] = useState(null);
-
+  console.log("currentChat : ", currentChat);
+  console.log("chats : ", chats);
   const userID = userType === "user" ? currentUser._id : currentDoctor._id;
   const user = userType === "user" ? currentUser : currentDoctor;
   const socket = useRef();
@@ -44,9 +52,33 @@ const ChatPage = ({ userType }) => {
   // Receive message from Socket server
   useEffect(() => {
     socket.current.on("receive-message", (data) => {
+      console.log("Received message data:", data);
       setReceiveMessage(data);
+      if (currentChat?._id !== data.chatId) {
+        // Show notification if the chat is not currently open
+        // dispatch(setNewMessageNotification(data));
+        dispatch(
+          addNotification({
+            message: `New message from ${data.senderName}`,
+            chatId: data.chatId,
+          })
+        );
+      }
     });
-  }, []);
+    // Notification listener for new messages
+    socket.current.on("getNotification", (data) => {
+      console.log("Notification received", data);
+      console.log("Notification received chatID", data.chatId);
+      dispatch(
+        addNotification({
+          message: `New message from ${data.senderName}`,
+          chatId: data.chatId,
+        })
+      );
+      toast(`New message from ${data.senderName}`);
+    });
+  }, [currentChat, dispatch]);
+
   const startNewChat = async (receiverId, appointmentId) => {
     console.log("receiverId from startNewChat : ", receiverId);
     console.log("appointmentId from startNewChat : ", appointmentId);
@@ -123,6 +155,7 @@ const ChatPage = ({ userType }) => {
           userType={userType}
           chat={currentChat}
           currentUser={userID}
+          currentUserName={user.name}
           setSendMessage={setSendMessage}
           receiveMessage={receiveMessage}
         />

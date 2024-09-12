@@ -4,15 +4,19 @@ import { format } from "timeago.js";
 import axios from "axios";
 import { Modal, Button } from "flowbite-react";
 import { FaPlus } from "react-icons/fa";
+import { IoMdSend } from "react-icons/io";
 import { uploadFileToFirebase } from "../../firebase/firebase";
 
 const ChatBox = ({
   userType,
   chat,
   currentUser,
+  currentUserName,
   setSendMessage,
   receiveMessage,
 }) => {
+  console.log("currentUser", currentUser);
+  console.log("currentUserName", currentUserName);
   const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -73,6 +77,7 @@ const ChatBox = ({
     e.preventDefault();
     const message = {
       senderId: currentUser,
+      senderName: currentUserName,
       text: newMessage,
       chatId: chat._id,
     };
@@ -109,7 +114,7 @@ const ChatBox = ({
 
     // Send message to Socket.io server
     const receiverId = chat?.members.find((id) => id !== currentUser);
-    setSendMessage({ ...message, receiverId });
+    setSendMessage({ ...message, receiverId, senderName: currentUserName });
   };
 
   const startRecording = () => {
@@ -173,27 +178,30 @@ const ChatBox = ({
                 }`}
               >
                 {message.file ? (
-  message.fileType?.startsWith("image") ? (
-    <img
-      src={message.file}
-      alt="Sent"
-      style={{
-        maxWidth: "200px",
-        maxHeight: "200px",
-        objectFit: "cover",
-      }}
-    />
-  ) : message.fileType?.startsWith("video") ? (
-    <video controls src={message.file} style={{ maxWidth: "200px" }} />
-  ) : message.fileType?.startsWith("audio") ? (
-    <audio controls src={message.file} />
-  ) : (
-    <span>Unsupported file type</span>
-  )
-) : (
-  <span>{message.text}</span>
-)}
-
+                  message.fileType?.startsWith("image") ? (
+                    <img
+                      src={message.file}
+                      alt="Sent"
+                      style={{
+                        maxWidth: "200px",
+                        maxHeight: "200px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : message.fileType?.startsWith("video") ? (
+                    <video
+                      controls
+                      src={message.file}
+                      style={{ maxWidth: "200px" }}
+                    />
+                  ) : message.fileType?.startsWith("audio") ? (
+                    <audio controls src={message.file} />
+                  ) : (
+                    <span>Unsupported file type</span>
+                  )
+                ) : (
+                  <span>{message.text}</span>
+                )}
 
                 <span className="text-xs text-gray-300 self-end">
                   {format(message.createdAt)}
@@ -239,10 +247,10 @@ const ChatBox = ({
 
             <InputEmoji value={newMessage} onChange={handleChange} />
             <button
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+              className="bg-blue-500 w-auto text-white  py-2 px-4 rounded-lg"
               onClick={handleSend}
             >
-              Send
+              <IoMdSend />
             </button>
           </div>
         </>
