@@ -3,8 +3,9 @@ import InputEmoji from "react-input-emoji";
 import { format } from "timeago.js";
 import axios from "axios";
 import { Modal, Button } from "flowbite-react";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaReply } from "react-icons/fa";
 import { IoMdSend } from "react-icons/io";
+import { MdDelete } from "react-icons/md";
 import { uploadFileToFirebase } from "../../firebase/firebase";
 
 const ChatBox = ({
@@ -15,8 +16,8 @@ const ChatBox = ({
   setSendMessage,
   receiveMessage,
 }) => {
-  console.log("currentUser", currentUser);
-  console.log("currentUserName", currentUserName);
+  // console.log("currentUser", currentUser);
+  // console.log("currentUserName", currentUserName);
   const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -25,13 +26,16 @@ const ChatBox = ({
   const [isRecording, setIsRecording] = useState(false);
   const [audioURL, setAudioURL] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // State to control delete confirmation modal
+  const [messageToDelete, setMessageToDelete] = useState(null); // State to track which message to delete
   const scroll = useRef();
 
   useEffect(() => {
     if (receiveMessage !== null && receiveMessage.chatId === chat._id) {
       setMessages((prevMessages) => [...prevMessages, receiveMessage]);
     }
-  }, [receiveMessage]);
+  }, [receiveMessage, chat]);
+
 
   const userId = useMemo(() => {
     return chat?.members?.find((id) => id !== currentUser);
@@ -73,17 +77,23 @@ const ChatBox = ({
     setFile(e.target.files[0]);
   };
 
+  // State to track reply
+  const [replyTo, setReplyTo] = useState(null);
+
   const handleSend = async (e) => {
     e.preventDefault();
+    if (!newMessage && !file && !audioURL) return; // Prevent sending empty messages
+
     const message = {
       senderId: currentUser,
       senderName: currentUserName,
       text: newMessage,
       chatId: chat._id,
+      replyTo: replyTo ? replyTo._id : null, // Include the reply
     };
 
     try {
-      let messageData;
+      // let messageData;
       if (file) {
         // Upload file to Firebase and get the download URL
         const downloadURL = await uploadFileToFirebase(file);
@@ -102,12 +112,21 @@ const ChatBox = ({
       }
 
       // Send the message to the backend
-      const { data } = await axios.post("/api/messages", message);
-      messageData = data;
+      // const { data  } = await axios.post("/api/messages", message);
+      // messageData = data;
+      const { data: messageData } = await axios.post("/api/messages", message);
 
       // Add the new message to the chat
       setMessages((prevMessages) => [...prevMessages, messageData]);
       setNewMessage("");
+      setReplyTo(null);
+      // Send the message to Socket.io server
+      const receiverId = chat?.members.find((id) => id !== currentUser);
+      setSendMessage({
+        ...messageData,
+        receiverId,
+        senderName: currentUserName,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -147,6 +166,27 @@ const ChatBox = ({
     scroll.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Handle delete with confirmation modal
+  const confirmDeleteMessage = (message) => {
+    setMessageToDelete(message); // Store message to delete
+    setIsDeleteModalOpen(true); // Open confirmation modal
+  };
+
+  // Handle delete
+  const handleDeleteMessage = async () => {
+    try {
+      await axios.delete(`/api/messages/${messageToDelete._id}`);
+      setMessages(messages.filter((msg) => msg._id !== messageToDelete._id));
+      setIsDeleteModalOpen(false); // Close modal after deletion
+    } catch (error) {
+      console.log("Error deleting message", error);
+    }
+  };
+  const handleReply = (message) => {
+    setReplyTo(message); // Set the message being replied to
+    console.log("Replying to message:", message);
+  };
+
   return (
     <div className="bg-gray-300 dark:bg-slate-800 rounded-lg grid grid-rows-[14vh_60vh_13vh]">
       {chat ? (
@@ -174,38 +214,65 @@ const ChatBox = ({
                 className={`flex flex-col gap-1 p-3 max-w-lg w-fit rounded-lg text-white ${
                   message.senderId === currentUser
                     ? "self-end rounded-br-none bg-gradient-to-r from-teal-400 to-blue-600"
-                    : "rounded-bl-none bg-yellow-500"
+                    : "rounded-bl-none bg-yellow-400"
                 }`}
               >
-                {message.file ? (
-                  message.fileType?.startsWith("image") ? (
-                    <img
-                      src={message.file}
-                      alt="Sent"
-                      style={{
-                        maxWidth: "200px",
-                        maxHeight: "200px",
-                        objectFit: "cover",
-                      }}
-                    />
-                  ) : message.fileType?.startsWith("video") ? (
-                    <video
-                      controls
-                      src={message.file}
-                      style={{ maxWidth: "200px" }}
-                    />
-                  ) : message.fileType?.startsWith("audio") ? (
-                    <audio controls src={message.file} />
-                  ) : (
-                    <span>Unsupported file type</span>
-                  )
-                ) : (
-                  <span>{message.text}</span>
+                {message.replyTo && (
+                  <div className="reply-preview">
+                    <span className="text-sm text-gray-600 ">
+                      Replying to: {message.replyTo?.text || "Deleted message"}
+                    </span>
+                  </div>
                 )}
+                <div className="flex justify-between">
+                  {message.file ? (
+                    message.fileType?.startsWith("image") ? (
+                      <img
+                        src={message.file}
+                        alt="Sent"
+                        style={{
+                          maxWidth: "200px",
+                          maxHeight: "200px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : message.fileType?.startsWith("video") ? (
+                      <video
+                        controls
+                        src={message.file}
+                        style={{ maxWidth: "200px" }}
+                      />
+                    ) : message.fileType?.startsWith("audio") ? (
+                      <audio controls src={message.file} />
+                    ) : (
+                      <span>Unsupported file type</span>
+                    )
+                  ) : (
+                    <span>{message.text}</span>
+                  )}
+                  {/* Add a delete button */}
+                  {message.senderId === currentUser && (
+                    <button
+                      onClick={() => confirmDeleteMessage(message)}
+                      className="text-gray-800 text-sm"
+                    >
+                      <MdDelete />
+                    </button>
+                  )}
+                </div>
 
                 <span className="text-xs text-gray-300 self-end">
                   {format(message.createdAt)}
                 </span>
+                {/* Reply button */}
+                <button
+                  onClick={() => setReplyTo(message)}
+                  className="text-sm text-gray-700"
+                >
+                  <FaReply />
+                </button>
+
+                {/* Display the reply */}
               </div>
             ))}
           </div>
@@ -244,6 +311,19 @@ const ChatBox = ({
                 <Button onClick={() => setIsModalOpen(false)}>Close</Button>
               </Modal.Footer>
             </Modal>
+            {replyTo && (
+              <div className="reply-preview bg-gray-200 p-2 rounded-lg mb-2">
+                <span className="text-sm text-gray-700">
+                  Replying to: {replyTo.text || "Deleted message"}
+                </span>
+                <button
+                  onClick={() => setReplyTo(null)}
+                  className="text-red-500 ml-2"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
 
             <InputEmoji value={newMessage} onChange={handleChange} />
             <button
@@ -252,6 +332,25 @@ const ChatBox = ({
             >
               <IoMdSend />
             </button>
+            {/* Delete confirmation modal */}
+            <Modal
+              show={isDeleteModalOpen}
+              onClose={() => setIsDeleteModalOpen(false)}
+            >
+              <Modal.Header>Delete Message</Modal.Header>
+              <Modal.Body>
+                <p>Are you sure you want to delete this message?</p>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onClick={handleDeleteMessage}>Yes, delete it</Button>
+                <Button
+                  color="gray"
+                  onClick={() => setIsDeleteModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </div>
         </>
       ) : (

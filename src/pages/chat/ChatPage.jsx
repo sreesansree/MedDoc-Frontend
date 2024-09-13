@@ -14,8 +14,6 @@ const ChatPage = ({ userType }) => {
   const dispatch = useDispatch();
 
   const { receiverId, appointmentId } = useParams();
-  // console.log("receiverId", receiverId);
-  // console.log("AppointmentId", appointmentId);
   const { currentUser } = useSelector((state) => state.user);
   const { currentDoctor } = useSelector((state) => state.doctor);
 
@@ -24,18 +22,10 @@ const ChatPage = ({ userType }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [sendMessage, setSendMessage] = useState(null);
   const [receiveMessage, setReceiveMessage] = useState(null);
-  console.log("currentChat : ", currentChat);
-  console.log("chats : ", chats);
+
   const userID = userType === "user" ? currentUser._id : currentDoctor._id;
   const user = userType === "user" ? currentUser : currentDoctor;
   const socket = useRef();
-
-  // Sending message to socket server
-  useEffect(() => {
-    if (sendMessage !== null) {
-      socket.current.emit("send-message", sendMessage);
-    }
-  }, [sendMessage]);
 
   // Connect to socket
   useEffect(() => {
@@ -49,34 +39,73 @@ const ChatPage = ({ userType }) => {
     };
   }, [userID]);
 
+  // Sending message to socket server
+  useEffect(() => {
+    if (sendMessage !== null) {
+      socket.current.emit("send-message", sendMessage);
+    }
+  }, [sendMessage]);
+
+  useEffect(() => {
+    console.log("Sending message:", sendMessage);
+    console.log("Received message:", receiveMessage);
+  }, [sendMessage, receiveMessage]);
+
   // Receive message from Socket server
+  // useEffect(() => {
+  //   socket.current.on("receive-message", (data) => {
+  //     // console.log("Received message data:", data);
+  //     if (data.chatId === currentChat?._id) {
+  //       setReceiveMessage(message);
+  //     }
+  //     // setReceiveMessage(data);
+  //     if (currentChat?._id !== data.chatId) {
+  //       // Show notification if the chat is not currently open
+  //       // dispatch(setNewMessageNotification(data));
+  //       dispatch(
+  //         addNotification({
+  //           message: `New message from ${data.senderName}`,
+  //           chatId: data.chatId,
+  //         })
+  //       );
+  //     }
+  //     toast(`New message from ${data.senderName}`);
+  //   });
+
+  //   // Notification listener for new messages
+  //   // socket.current.on("getNotification", (data) => {
+  //   //   console.log("Notification received", data);
+  //   //   console.log("Notification received chatID", data.chatId);
+  //   //   dispatch(
+  //   //     addNotification({
+  //   //       message: `New message from ${data.senderName}`,
+  //   //       chatId: data.chatId,
+  //   //     })
+  //   //   );
+  //   //   toast(`New message from ${data.senderName}`);
+  //   // });
+  // }, [currentChat, dispatch]);
+
   useEffect(() => {
     socket.current.on("receive-message", (data) => {
       console.log("Received message data:", data);
-      setReceiveMessage(data);
-      if (currentChat?._id !== data.chatId) {
-        // Show notification if the chat is not currently open
-        // dispatch(setNewMessageNotification(data));
+      if (currentChat?._id && data.chatId === currentChat._id) {
+        setReceiveMessage(data);
+      } else {
+        // Handle notification or other updates for unopened chat
         dispatch(
           addNotification({
             message: `New message from ${data.senderName}`,
             chatId: data.chatId,
           })
         );
+        toast(`New message from ${data.senderName}`);
       }
     });
-    // Notification listener for new messages
-    socket.current.on("getNotification", (data) => {
-      console.log("Notification received", data);
-      console.log("Notification received chatID", data.chatId);
-      dispatch(
-        addNotification({
-          message: `New message from ${data.senderName}`,
-          chatId: data.chatId,
-        })
-      );
-      toast(`New message from ${data.senderName}`);
-    });
+
+    return () => {
+      socket.current.off("receive-message");
+    };
   }, [currentChat, dispatch]);
 
   const startNewChat = async (receiverId, appointmentId) => {
