@@ -16,6 +16,7 @@ import SlotList from "../component/doctor/SlotList";
 import ChatPage from "../pages/chat/ChatPage";
 import ReminderNotification from "../component/common/Reminder/ReminderNotification";
 import ReminderListener from "../component/common/Reminder/ReminderListener";
+import DocAppointmentDetails from "../component/doctor/DocAppointmentDetails";
 
 export default function DoctorRoute() {
   const userType = "doctor";
@@ -44,11 +45,14 @@ export default function DoctorRoute() {
               <Route path="dashboard" element={<DocDashboard />} />
               {/* <Route path="chat" element={<ChatPage userType="doctor" />} /> */}
               <Route
-                path="chat/:userId/:appointmentId"
+                path="chat/:receiverId"
                 element={<ChatPage userType="doctor" />}
               />
-
               <Route path="" element={<DocHome />} />
+              <Route
+                path="/appointments/:id"
+                element={<DocAppointmentDetails />}
+              />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

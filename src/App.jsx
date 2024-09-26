@@ -10,6 +10,8 @@ import {
 import Loader from "./loader/Loader.jsx";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export default function App() {
   const [loading, setLoading] = useState(true);

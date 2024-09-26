@@ -177,30 +177,57 @@ export default function DocHeader() {
         <>
           {currentDoctor && (
             <>
-              <Navbar.Link active={path === "/doctor"} as={"div"}>
-                <Link to="/doctor">Home</Link>
-              </Navbar.Link>
-              <Navbar.Link active={path === "/create-slot"} as={"div"}>
-                <Link to="/doctor/create-slot">Create Slot</Link>
-              </Navbar.Link>
-              <Navbar.Link active={path === "/Slot-list"} as={"div"}>
-                <Link to={`/doctor/slots/${currentDoctor._id}`}>Slot List</Link>
+              <Navbar.Link as={"div"}>
+                <Link
+                  to="/doctor"
+                  className={`${
+                    path === "/doctor"
+                      ? "text-indigo-600 font-semibold" // Active styles
+                      : "text-gray-700 dark:text-gray-300" // Inactive styles
+                  }`}
+                >
+                  Home
+                </Link>
               </Navbar.Link>
 
-              <Navbar.Link
-                active={path === "/doctor/dashboard?tab=appointments"}
-                as={"div"}
-              >
-                <Link to="/doctor/dashboard?tab=appointments">
+              <Navbar.Link as={"div"}>
+                <Link
+                  to="/doctor/create-slot"
+                  className={`${
+                    path === "/doctor/create-slot"
+                      ? "text-indigo-600 font-semibold" // Active styles
+                      : "text-gray-700 dark:text-gray-300" // Inactive styles
+                  }`}
+                >
+                  Create Slot
+                </Link>
+              </Navbar.Link>
+
+              <Navbar.Link as={"div"}>
+                <Link
+                  to={`/doctor/slots/${currentDoctor._id}`}
+                  className={`${
+                    path === `/doctor/slots/${currentDoctor._id}`
+                      ? "text-indigo-600 font-semibold" // Active styles
+                      : "text-gray-700 dark:text-gray-300" // Inactive styles
+                  }`}
+                >
+                  Slot List
+                </Link>
+              </Navbar.Link>
+
+              <Navbar.Link as={"div"}>
+                <Link
+                  to="/doctor/dashboard?tab=appointments"
+                  className={`${
+                    path === "/doctor/dashboard?tab=appointments"
+                      ? "text-indigo-600 font-semibold;" // Active styles
+                      : "text-gray-700 dark:text-gray-300" // Inactive styles
+                  }`}
+                >
                   Appointments
                 </Link>
               </Navbar.Link>
-              {/* <Navbar.Link active={path === "/messages"} as={"div"}>
-                <Link to="/doctor/">Messages</Link>
-              </Navbar.Link> */}
-              {/* <Navbar.Link active={path === "/messages"} as={"div"}>
-                <Link to="/doctor/">Notifications</Link>
-              </Navbar.Link> */}
             </>
           )}
         </>

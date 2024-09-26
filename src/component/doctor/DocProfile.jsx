@@ -51,8 +51,7 @@ export default function DocProfile() {
   const [showCertificateModal, setShowCertificateModal] = useState(false);
   const { currentDoctor, error, loading } = useSelector(
     (state) => state.doctor
-  );
-  console.log("Current Doctor profile : ",currentDoctor)
+  ); 
 
   useEffect(() => {
     if (currentDoctor) {
@@ -68,7 +67,7 @@ export default function DocProfile() {
       });
     }
   }, [currentDoctor]);
-console.log(formData,'Form Data')
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -201,7 +200,6 @@ console.log(formData,'Form Data')
           withCredentials: true,
         }
       );
-      console.log(response.data, "response dataa");
 
       if (response.status !== 200 && response.status !== 201) {
         dispatch(updateFailureD(response.data.message));

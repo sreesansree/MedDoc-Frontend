@@ -36,18 +36,18 @@ const ChatBox = ({
     }
   }, [receiveMessage, chat]);
 
-
   const userId = useMemo(() => {
     return chat?.members?.find((id) => id !== currentUser);
   }, [chat, currentUser]);
 
   useEffect(() => {
     const getUserData = async () => {
+      console.log(userId, "userID from chatBox");
       try {
         const endPoint =
-          userType === "doctor"
-            ? `/api/doctor/user/${userId}`
-            : `/api/users/doctor/${userId}`;
+          userType === "user"
+            ? `/api/users/doctor/${userId}`
+            : `/api/doctor/user/${userId}`;
         const { data } = await axios.get(endPoint);
         setUserData(data);
       } catch (error) {

@@ -12,6 +12,7 @@ import ChatPage from "../pages/chat/ChatPage.jsx";
 import CalendarView from "../component/calenderView/CalenderView.jsx";
 import ReminderNotification from "../component/common/Reminder/ReminderNotification.jsx";
 import ReminderListener from "../component/common/Reminder/ReminderListener.jsx";
+import AppointmentDetails from "../component/dashboard/AppointmentDetails.jsx";
 
 export default function UserRoute() {
   const userType = "user"; // Define the user type for the UserRoute
@@ -21,9 +22,8 @@ export default function UserRoute() {
       <div className="flex flex-col min-h-screen">
         <main className="flex-grow">
           <NavBar />
-            <ReminderListener userType={userType} />
+          <ReminderListener userType={userType} />
           <Routes>
-
             <Route element={<PrivateRoute />}>
               <Route
                 path="reminder-notification"
@@ -34,11 +34,17 @@ export default function UserRoute() {
               <Route path="/payment/:slotId" element={<PaymentPage />} />
               {/* <Route path="chat" element={<ChatPage userType="user" />} /> */}
               <Route
-                path="chat/:doctorId/:appointmentId"
+                /*   path="chat/:doctorId/:appointmentId"*/
+                path="chat/:receiverId"
                 element={<ChatPage userType="user" />}
               />
               <Route path="calender" element={<CalendarView />} />
+              <Route
+                path="/appointments/:id"
+                element={<AppointmentDetails />}
+              />
             </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

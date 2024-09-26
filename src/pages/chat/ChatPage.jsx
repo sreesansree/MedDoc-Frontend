@@ -13,7 +13,9 @@ import { addNotification } from "../../redux/notification/notificationSlice.js";
 const ChatPage = ({ userType }) => {
   const dispatch = useDispatch();
 
-  const { receiverId, appointmentId } = useParams();
+  // const { receiverId, appointmentId } = useParams();
+  const { receiverId } = useParams();
+  console.log(receiverId ," : receiver Id from chatPage")
   const { currentUser } = useSelector((state) => state.user);
   const { currentDoctor } = useSelector((state) => state.doctor);
 
@@ -46,10 +48,10 @@ const ChatPage = ({ userType }) => {
     }
   }, [sendMessage]);
 
-  useEffect(() => {
-    console.log("Sending message:", sendMessage);
-    console.log("Received message:", receiveMessage);
-  }, [sendMessage, receiveMessage]);
+  // useEffect(() => {
+  //   console.log("Sending message:", sendMessage);
+  //   console.log("Received message:", receiveMessage);
+  // }, [sendMessage, receiveMessage]);
 
   // Receive message from Socket server
   // useEffect(() => {
@@ -88,7 +90,7 @@ const ChatPage = ({ userType }) => {
 
   useEffect(() => {
     socket.current.on("receive-message", (data) => {
-      console.log("Received message data:", data);
+      // console.log("Received message data:", data);
       if (currentChat?._id && data.chatId === currentChat._id) {
         setReceiveMessage(data);
       } else {
@@ -108,14 +110,15 @@ const ChatPage = ({ userType }) => {
     };
   }, [currentChat, dispatch]);
 
-  const startNewChat = async (receiverId, appointmentId) => {
+  // const startNewChat = async (receiverId, appointmentId) => {
+  const startNewChat = async (receiverId) => {
     console.log("receiverId from startNewChat : ", receiverId);
-    console.log("appointmentId from startNewChat : ", appointmentId);
+    // console.log("appointmentId from startNewChat : ", appointmentId);
     try {
       const newChatData = {
         senderId: userID,
         receiverId: receiverId,
-        appointmentId: appointmentId,
+        // appointmentId: appointmentId,
       };
       const createdChat = await createChat(newChatData);
       setChats((prevChats) => [...prevChats, createdChat]);
@@ -125,26 +128,48 @@ const ChatPage = ({ userType }) => {
     }
   };
 
-  useEffect(() => {
+ /*  useEffect(() => {
     const getChats = async () => {
       try {
         const { data } = await userChats(userID);
-        setChats(data);
+        setChats(data || []);
         console.log("getChats: ", data);
 
-        const someConditionToStartChat = !data.some(
-          (chat) => chat.appointmentId === appointmentId
-        );
+        // const someConditionToStartChat = !data.some(
+        //   (chat) => chat.appointmentId === appointmentId
+        // );
 
-        if (data.length === 0 && someConditionToStartChat) {
-          await startNewChat(receiverId, appointmentId);
+        // if (data.length === 0 && someConditionToStartChat) {
+        //   await startNewChat(receiverId, appointmentId);
+        // }
+        if (data.length === 0) {
+          await startNewChat(receiverId);
         }
       } catch (error) {
         console.log("Error fetching chats:", error);
       }
     };
     getChats();
-  }, [userID, receiverId, appointmentId]);
+  }, [userID, receiverId]); */
+  // }, [userID, receiverId, appointmentId]);
+  useEffect(() => {
+    const getChats = async () => {
+      try {
+        const chatData = await userChats(userID); // The response should now be an array
+        setChats(chatData || []); // Directly set the chat array
+        console.log("getChats: ", chatData);
+  
+        // If there are no chats, start a new one
+        if (chatData.length === 0) {
+          await startNewChat(receiverId);
+        }
+      } catch (error) {
+        console.log("Error fetching chats:", error);
+      }
+    };
+    getChats();
+  }, [userID, receiverId]);
+  
 
   const checkOnlineStatus = (chat) => {
     const chatMember = chat?.members.find((member) => member !== user._id);
