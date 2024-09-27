@@ -64,7 +64,7 @@ const DocAppointmentDetails = () => {
       );
       const { message } = response.data;
       setRefundStatus(
-        refundSuccess ? "Refunded" : "Refund Failed or Not Applicable"
+        refundStatus ? "Refunded" : "Refund Failed or Not Applicable"
       );
       toast.success(message);
       setShowCancelModal(false);
@@ -107,7 +107,7 @@ const DocAppointmentDetails = () => {
             className="w-16 h-16 rounded-full object-cover"
           />
           <p>
-            <strong>Patient:</strong> {appointment?.patient?.name}
+            <strong>Patient:</strong> {appointment?.user?.name}
           </p>
 
           <p>
@@ -116,16 +116,16 @@ const DocAppointmentDetails = () => {
             {formatTime(appointment.endTime)}
           </p>
 
-          <Button color="red" pill onClick={() => setShowCancelModal(true)}>
-            Cancel Appointment
-          </Button>
-
           <Button
-            className="mt-2"
+            className="m-2"
             gradientDuoTone="purpleToBlue"
             onClick={() => setShowCompleteModal(true)}
           >
             Complete Consultation
+          </Button>
+
+          <Button color="red" pill onClick={() => setShowCancelModal(true)}>
+            Cancel Appointment
           </Button>
 
           {/* Display refund status after cancellation */}

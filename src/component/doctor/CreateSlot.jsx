@@ -35,6 +35,7 @@ const fixedTimeSlots = [
   { startTime: "13:00", endTime: "13:30" },
   { startTime: "14:00", endTime: "14:30" },
   { startTime: "15:00", endTime: "15:30" },
+  { startTime: "16:00", endTime: "16:30" },
   { startTime: "18:00", endTime: "18:30" },
 ];
 
@@ -74,8 +75,7 @@ const CreateSlot = () => {
         price,
         fixedSlot,
       });
-      console.log(formattedDate, " : Date");
-      // console.log("Slot created:", response.data);
+      
       setDate(null);
       setStartTime("");
       setEndTime("");
@@ -95,8 +95,17 @@ const CreateSlot = () => {
   return (
     <>
       <Card className="max-w-lg mx-auto mt-6 mb-6 p-6 shadow-lg border rounded-lg">
-        <h2 className="text-2xl font-semibold mb-6">Create a New Slot</h2>
+        <h2 className="flex justify-center opacity-90 hover:opacity-100 text-2xl font-semibold mb-6">Create a New Slot</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
+          <label className="flex justify-end items-center space-x-4">
+            <span className="text-sm font-medium">Fixed Slot</span>
+            <input
+              type="checkbox"
+              className="form-checkbox h-5 w-5 text-blue-600"
+              checked={fixedSlot}
+              onChange={(e) => setFixedSlot(e.target.checked)}
+            />
+          </label>
           <div className="flex flex-col gap-2">
             <Label htmlFor="date" className="text-lg font-medium">
               Date
@@ -181,16 +190,6 @@ const CreateSlot = () => {
               required
             />
           </div>
-
-          <label className="flex items-center space-x-4">
-            <span className="text-sm font-medium">Fixed Slot</span>
-            <input
-              type="checkbox"
-              className="form-checkbox h-5 w-5 text-blue-600"
-              checked={fixedSlot}
-              onChange={(e) => setFixedSlot(e.target.checked)}
-            />
-          </label>
 
           <Button
             type="submit"

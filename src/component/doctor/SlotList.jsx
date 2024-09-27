@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Modal, Button } from "flowbite-react";
+import { Card, Modal, Button, Textarea, Alert } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEdit, FaTrash } from "react-icons/fa"; // Import icons
+import { useNavigate } from "react-router-dom";
 
 const formatTime = (time) => {
   const [hours, minutes] = time.split(":");
@@ -20,12 +21,17 @@ const SlotList = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [refundStatus, setRefundStatus] = useState(null);
+  const [error, setError] = useState(null);
   const [updateForm, setUpdateForm] = useState({
     date: "",
     startTime: "",
     endTime: "",
     price: "",
   });
+  const navigate = useNavigate();
 
   const fetchSlots = async () => {
     try {
@@ -46,7 +52,7 @@ const SlotList = () => {
               slotStartTime.getMinutes()
             )
           );
-          return slotStartDateTime >= now;
+          return slotStartDateTime >= now && slot.status !== "completed";
         })
         .sort((a, b) => {
           const dateA = new Date(a.date);
@@ -74,6 +80,29 @@ const SlotList = () => {
     }
   };
 
+  const handleCancelAppointment = async () => {
+    try {
+      console.log("selected slots : ", selectedSlot._id);
+      const response = await axios.post(
+        `/api/doctor/doctor-appointments/${selectedSlot._id}/cancel`,
+        {
+          reason: cancelReason,
+        }
+      );
+      console.log("canceled response data : ", response.data);
+      const { message } = response.data;
+      setRefundStatus(
+        refundStatus ? "Refunded" : "Refund Failed or Not Applicable"
+      );
+      toast.success(message);
+      setShowCancelModal(false);
+      navigate("/doctor/dashboard?tab=appointments");
+    } catch (error) {
+      setError("Error cancelling appointment");
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     fetchSlots();
   }, [currentDoctor._id]);
@@ -92,6 +121,11 @@ const SlotList = () => {
   const handleDeleteClick = (slot) => {
     setSelectedSlot(slot);
     setShowDeleteModal(true);
+  };
+
+  const handleCancelClick = (slot) => {
+    setSelectedSlot(slot);
+    setShowCancelModal(true);
   };
 
   const handleUpdateSubmit = async () => {
@@ -145,26 +179,43 @@ const SlotList = () => {
                 {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
               </p>
               <p>₹{slot.price}</p>
-              <p>{slot.isBooked ? "Booked" : "Available"}</p>
+              <p>{slot.isBooked ? "Slot Booked" : "Available"}</p>
               <div className="absolute top-2 right-2 flex gap-2">
                 <button
                   onClick={() => handleUpdateClick(slot)}
                   className="text-blue-500"
                 >
-                  <FaEdit />
+                  {slot.isBooked ? "" : <FaEdit />}
                 </button>
                 <button
                   onClick={() => handleDeleteClick(slot)}
                   className="text-red-500"
                 >
-                  <FaTrash />
+                  {slot.isBooked ? "" : <FaTrash />}
                 </button>
               </div>
+              {slot.isBooked ? (
+                <Button
+                  className=""
+                  onClick={() => handleCancelClick(slot)}
+                  pill
+                >
+                  Cancel appointment
+                </Button>
+              ) : (
+                ""
+              )}
             </Card>
           ))
         )}
-        <ToastContainer />
+        {/* Display refund status after cancellation */}
+        {refundStatus && (
+          <p className="mt-4 text-lg">
+            Refund Status: <strong>{refundStatus}</strong>
+          </p>
+        )}
       </div>
+      <ToastContainer />
 
       {/* Update Slot Modal */}
       <Modal show={showUpdateModal} onClose={() => setShowUpdateModal(false)}>
@@ -228,6 +279,27 @@ const SlotList = () => {
         <Modal.Footer>
           <Button onClick={handleUpdateSubmit}>Update Slot</Button>
           <Button onClick={() => setShowUpdateModal(false)}>Cancel</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal for Cancel Reason */}
+      <Modal show={showCancelModal} onClose={() => setShowCancelModal(false)}>
+        <Modal.Header>Cancel Appointment</Modal.Header>
+        <Modal.Body>
+          <Textarea
+            placeholder="Reason for cancellation"
+            value={cancelReason}
+            onChange={(e) => setCancelReason(e.target.value)}
+          />
+          {error && <Alert color="red">{error}</Alert>}
+        </Modal.Body>
+        <Modal.Footer>
+          {slots._id}
+
+          <Button onClick={handleCancelAppointment}>Submit</Button>
+          <Button onClick={() => setShowCancelModal(false)} color="gray">
+            Cancel
+          </Button>
         </Modal.Footer>
       </Modal>
 
