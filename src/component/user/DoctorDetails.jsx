@@ -52,7 +52,7 @@ const DoctorDetails = () => {
                 slotStartTime.getMinutes()
               )
             );
-            return slotStartDateTime >= now;
+            return slotStartDateTime >= now && slot.status !== "completed";
           })
           .sort((a, b) => {
             const dateA = new Date(a.date);
@@ -126,7 +126,7 @@ const DoctorDetails = () => {
               Experience: {doctor.experience} years
             </p>
             <p className="text-gray-500 text-center dark:text-gray-400">
-              Rating: {doctor.starRating} / 5
+              Rating: {doctor.averageRating} / 5
             </p>
             <p className="text-gray-500 text-center dark:text-gray-400">
               Department: {doctor?.department?.name || "N/A"}
@@ -138,39 +138,43 @@ const DoctorDetails = () => {
               Available Slots
             </h3>
             <div className="flex justify-start m-5 gap-3">
-              {slots.map((slot) => (
-                <div
-                  key={slot._id}
-                  className={`border p-4 rounded-lg cursor-pointer ${
-                    slot.isBooked
-                      ? "bg-red-200 dark:bg-red-900  cursor-not-allowed"
-                      : selectedSlot?._id === slot._id
-                      ? "bg-gray-300 dark:bg-gray-600"
-                      : "bg-white dark:bg-green-800"
-                  }`}
-                  onClick={() => !slot.isBooked && handleSlotSelection(slot)}
-                >
-                  <p className="text-gray-800 dark:text-gray-300">
-                    Date: {formatDate(slot.date)}
-                  </p>
-                  <p className="text-gray-800 dark:text-gray-300">
-                    Time: {formatTime(slot.startTime)} -{" "}
-                    {formatTime(slot.endTime)}
-                  </p>
-                  <p className="text-gray-800 dark:text-gray-300">
-                    Price: ₹{slot.price}
-                  </p>
-                  <p
-                    className={`text-gray-800 dark:text-gray-300 ${
+              {slots.length > 0 ? (
+                slots.map((slot) => (
+                  <div
+                    key={slot._id}
+                    className={`border p-4 rounded-lg cursor-pointer ${
                       slot.isBooked
-                        ? "text-red-500 dark:text-red-500"
-                        : "text-green-500"
+                        ? "bg-red-200 dark:bg-red-900  cursor-not-allowed"
+                        : selectedSlot?._id === slot._id
+                        ? "bg-gray-300 dark:bg-gray-600"
+                        : "bg-white dark:bg-green-800"
                     }`}
+                    onClick={() => !slot.isBooked && handleSlotSelection(slot)}
                   >
-                    {slot.isBooked ? "Booked" : "Available"}
-                  </p>
-                </div>
-              ))}
+                    <p className="text-gray-800 dark:text-gray-300">
+                      Date: {formatDate(slot.date)}
+                    </p>
+                    <p className="text-gray-800 dark:text-gray-300">
+                      Time: {formatTime(slot.startTime)} -{" "}
+                      {formatTime(slot.endTime)}
+                    </p>
+                    <p className="text-gray-800 dark:text-gray-300">
+                      Price: ₹{slot.price}
+                    </p>
+                    <p
+                      className={`text-gray-800 dark:text-gray-300 ${
+                        slot.isBooked
+                          ? "text-red-500 dark:text-red-500"
+                          : "text-green-500"
+                      }`}
+                    >
+                      {slot.isBooked ? "Booked" : "Available"}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p>No Available Slots</p>
+              )}
             </div>
             <Button
               gradientDuoTone="purpleToBlue"

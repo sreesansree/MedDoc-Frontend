@@ -1,13 +1,14 @@
 // components/Appointment.js
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Card, Table } from "flowbite-react";
+import { Button, Card, Table, Rating, RatingStar } from "flowbite-react";
 import axios from "axios";
 import Lottie from "react-lottie";
 import animationData from "../../animations/chatanimation.json";
 import { formatTime } from "../../utils/dateUtils";
 import { createChat } from "../../api/chatRequest";
 import { useSelector } from "react-redux";
+import { jsPDF } from "jspdf";
 
 // Function to format date to "dd/MM/yyyy"
 const formatDate = (date) => {
@@ -54,8 +55,20 @@ const Appointment = () => {
       }
     };
 
+    const fetchCompletedAppointments = async () => {
+      try {
+        const response = await axios.get(
+          "/api/users/user-completed-appointments"
+        );
+        setCompletedAppointments(response.data);
+      } catch (error) {
+        console.error("Error fetching canceled appointments", error);
+      }
+    };
+
     fetchAppointments();
     fetchCanceledAppointments();
+    fetchCompletedAppointments();
   }, []);
 
   const handleViewChange = (newView) => {
@@ -85,15 +98,25 @@ const Appointment = () => {
         </Button>
       </div>
       {view === "upcoming" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-3">
-          {appointments.map((appointment) => (
-            <AppointmentCard
-              key={appointment._id}
-              appointment={appointment}
-              // onChat={handleChat}
-              userId={userId}
-            />
-          ))}
+        <div
+          className={`grid  gap-6 ${
+            appointments.length === 1
+              ? "place-items-center  pt-3"
+              : "grid-cols-1 md:grid-cols-2  pt-3 "
+          } `}
+        >
+          {appointments.length > 0 ? (
+            appointments.map((appointment) => (
+              <AppointmentCard
+                key={appointment._id}
+                appointment={appointment}
+                // onChat={handleChat}
+                userId={userId}
+              />
+            ))
+          ) : (
+            <p>No Upcoming Appointments</p>
+          )}
         </div>
       )}
       {view === "completed" && (
@@ -194,31 +217,200 @@ const AppointmentCard = ({ appointment, userId }) => {
   );
 };
 
-const CompletedAppointmentsTable = ({ appointments }) => (
-  <Table hoverable>
-    <Table.Head>
-      <Table.HeadCell>Doctor</Table.HeadCell>
-      <Table.HeadCell>Consultation Time</Table.HeadCell>
-      <Table.HeadCell>Prescription</Table.HeadCell>
-      <Table.HeadCell>Rating</Table.HeadCell>
-    </Table.Head>
-    <Table.Body>
-      {appointments.map((appointment) => (
-        <Table.Row key={appointment._id}>
-          <Table.Cell>{appointment?.doctor?.name}</Table.Cell>
-          <Table.Cell>{`${formatDate(appointment.date)} ${formatTime(
-            appointment.startTime
-          )}`}</Table.Cell>
-          <Table.Cell>
-            <Button gradientDuoTone="purpleToBlue">
-              Download Prescription
-            </Button>
-          </Table.Cell>
-        </Table.Row>
-      ))}
-    </Table.Body>
-  </Table>
-);
+const CompletedAppointmentsTable = ({ appointments }) => {
+  const [ratings, setRatings] = useState({});
+  const [submittedRatings, setSubmittedRatings] = useState({}); // Track submitted ratings
+
+  const handleDownloadPrescription = (appointment) => {
+    const doc = new jsPDF();
+
+    if (!appointment?.prescription) {
+      alert("No prescription data found for this appointment");
+      return;
+    }
+    // Add Company Details on the Right Side
+    doc.setFontSize(16);
+    doc.text("MedDoc", 190, 20, { align: "right" });
+    doc.setFontSize(10);
+    doc.text("MedDoc@company.com | +123456789", 190, 26, { align: "right" });
+
+    // Add Doctor Details on the Left Side
+    doc.setFontSize(12);
+    doc.text(`Doctor: ${appointment?.doctor?.name}`, 20, 20);
+    doc.text(`Email: ${appointment?.doctor?.email}`, 20, 26);
+
+    // Draw a Horizontal Line under Header
+    doc.line(20, 32, 190, 32); // Line at Y = 32
+
+    // Prescription Content - Add Below Header
+    const prescriptionContent = `
+      Prescription for ${appointment?.user?.name}
+      Date: ${formatDate(appointment?.date)}
+      Time: ${formatTime(appointment.startTime)}
+    `;
+
+    // Adding the prescription content to the PDF
+    doc.setFontSize(12);
+    doc.text(prescriptionContent, 20, 40); // Start slightly below the line (Y = 40)
+
+    // Medicines Section
+    const medicines = appointment?.prescription?.medicines || [];
+    const startingYPosition = 60; // Start medicines list at Y = 60 for better spacing
+
+    // List each medicine with proper spacing
+    doc.text("Medicines:", 20, startingYPosition); // Label for Medicines
+    medicines.forEach((medicine, index) => {
+      doc.text(
+        `${index + 1}. ${medicine.name} - ${medicine.dosage} - ${
+          medicine.instructions
+        }`,
+        20,
+        startingYPosition + (index + 1) * 10 // Position each medicine below the label
+      );
+    });
+
+    // Doctor's Notes Section
+    const notesStartingY = startingYPosition + medicines.length * 10 + 20; // Adjust based on medicine list length
+    doc.text("Doctor's Notes:", 20, notesStartingY);
+    doc.text(
+      appointment?.prescription?.notes || "No additional notes",
+      20,
+      notesStartingY + 10
+    );
+
+    // Save the PDF with a descriptive file name
+    doc.save(
+      `Prescription_${appointment?.user?.name}_${formatDate(
+        appointment.date
+      )}.pdf`
+    );
+  };
+
+  //Fetch saved ratings from the backend if available
+  useEffect(() => {
+    const intitialRatings = {};
+    const initialSubmittedRatings = {};
+    appointments.forEach((appointment) => {
+      if (appointment.doctor?.averageRating) {
+        intitialRatings[appointment._id] = appointment?.doctor?.averageRating;
+        // Assume the rating is already submitted if averageRating exists
+        initialSubmittedRatings[appointment._id] = true;
+      }
+    });
+    setRatings(intitialRatings);
+    setSubmittedRatings(initialSubmittedRatings);
+  }, [appointments]);
+
+  // Update local rating state
+  const handleRatingChange = (appointmentId, value) => {
+    setRatings((prev) => ({ ...prev, [appointmentId]: value }));
+  };
+
+  // Submit the rating to the server
+  const handleSubmitRating = async (appointmentId, doctorId) => {
+    const rating = ratings[appointmentId];
+    if (!rating) {
+      alert("Please select a rating before submitting");
+      return;
+    }
+    try {
+      await axios.post("/api/users/rate-doctor", {
+        appointmentId,
+        doctorId,
+        rating,
+      });
+
+      alert("Rating submitted successfully");
+    } catch (error) {
+      console.error("Error submitting rating:", error);
+      alert("Failed to submit rating");
+    }
+  };
+
+  return (
+    <>
+      {appointments.length > 0 ? (
+        <Table>
+          <Table.Head>
+            <Table.HeadCell>Doctor</Table.HeadCell>
+            <Table.HeadCell>Consultation Time</Table.HeadCell>
+            <Table.HeadCell>Prescription</Table.HeadCell>
+            <Table.HeadCell>Rating</Table.HeadCell>
+          </Table.Head>
+          <Table.Body>
+            {appointments.map((appointment) => {
+              // Get the saved rating from the backend or local state
+              const currentRating = ratings[appointment._id] || 0;
+              // Check if the rating is already submitted for this appointment
+              const isSubmitted = submittedRatings[appointment._id];
+
+              return (
+                <Table.Row key={appointment._id}>
+                  <Table.Cell>{appointment?.doctor?.name}</Table.Cell>
+                  <Table.Cell>{`${formatDate(appointment.date)} ${formatTime(
+                    appointment.startTime
+                  )}`}</Table.Cell>
+                  <Table.Cell>
+                    <Button
+                      gradientDuoTone="purpleToBlue"
+                      onClick={() => handleDownloadPrescription(appointment)}
+                    >
+                      Download Prescription
+                    </Button>
+                  </Table.Cell>
+                  <Table.Cell className="flex flex-col gap-2">
+                    {/* Display doctor average rating */}
+                    <div className="flex">
+                      {/* Rating component for selecting feedback */}
+                      <Rating>
+                        <div className="flex items-center">
+                          {[1, 2, 3, 4, 5].map((starValue) => (
+                            <Rating.Star
+                              key={starValue}
+                              filled={currentRating >= starValue} // Fill stars based on saved rating
+                              onClick={() =>
+                                handleRatingChange(appointment._id, starValue)
+                              }
+                              className="cursor-pointer"
+                            />
+                          ))}
+                        </div>
+                      </Rating>
+                      <p className="ml-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+                        {appointment?.doctor?.averageRating
+                          ? `${appointment.doctor.averageRating.toFixed(
+                              1
+                            )} out of 5`
+                          : "Not rated yet"}
+                      </p>
+                    </div>
+
+                    {/* Button to submit rating */}
+                    <Button
+                      gradientDuoTone={"purpleToBlue"}
+                      onClick={() =>
+                        handleSubmitRating(
+                          appointment._id,
+                          appointment.doctor._id
+                        )
+                      }
+                      disabled={isSubmitted} // Disable button if rating is submitted
+                      size={"sm"}
+                    >
+                      {isSubmitted ? "Rating Submitted" : "Submit Rating"}
+                    </Button>
+                  </Table.Cell>
+                </Table.Row>
+              );
+            })}
+          </Table.Body>
+        </Table>
+      ) : (
+        <p>No completed appointments</p>
+      )}
+    </>
+  );
+};
 
 const CanceldAppointmentsTable = ({ appointments }) => (
   <Table hoverable>

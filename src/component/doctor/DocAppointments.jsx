@@ -112,15 +112,6 @@ const DocAppointments = () => {
     navigate("/doctor"); // Adjust this route to your actual dashboard or home page
   };
 
-  // const handleChat = (userId, appointmentId) => {
-  //   setSelectedChat({ userId, appointmentId });
-  //   setIsModalOpen(true);
-  // };
-
-  // const handleCloseModal = () => {
-  //   setIsModalOpen(false);
-  //   setSelectedChat({ userId: "", appointmentId: "" });
-  // };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -204,15 +195,6 @@ const DocAppointments = () => {
         />
       </div>
 
-      {/* Chat Modal */}
-      {/* <Modal show={isModalOpen} onClose={handleCloseModal}>
-        <Modal.Body>
-          <ChatPage
-            receiverId={selectedChat.userId}
-            appointmentId={selectedChat.appointmentId}
-          />
-        </Modal.Body>
-      </Modal> */}
     </div>
   );
 };
