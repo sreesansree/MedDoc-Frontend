@@ -115,7 +115,10 @@ export default function NavBar() {
                 </span>
               </Dropdown.Header>
               <Link to={"/dashboard?tab=profile"}>
-                <Dropdown.Item>Profile</Dropdown.Item>
+                <Dropdown.Item>My Profile</Dropdown.Item>
+              </Link>
+              <Link to={"/dashboard?tab=appointments"}>
+                <Dropdown.Item>My Appointment</Dropdown.Item>
               </Link>
               <Dropdown.Divider />
               <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
@@ -136,13 +139,16 @@ export default function NavBar() {
         </Navbar.Link>
         {currentUser && (
           <>
-            <Navbar.Link active={path === "/user/doctors"} as={"div"}>
+            <Navbar.Link active={path === "/user/doctors-list"} as={"div"}>
               <Link to="/user/doctors-list">Doctors</Link>
             </Navbar.Link>
 
-            <Navbar.Link active={path === "/user/doctors"} as={"div"}>
+            {/* <Navbar.Link
+              active={path === "/dashboard?tab=appointments"}
+              as={"div"}
+            >
               <Link to="/dashboard?tab=appointments">Appointments</Link>
-            </Navbar.Link>
+            </Navbar.Link> */}
           </>
         )}
         <Navbar.Link active={path === "/about"} as={"div"}>

@@ -2,7 +2,12 @@ import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import axios from "axios";
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
 import OAuth from "../../component/google/OAuth.jsx";
 
 export default function DocRegister() {
@@ -12,8 +17,10 @@ export default function DocRegister() {
   const [loading, setLoading] = useState(false);
   const [certificate, setCertificate] = useState(null);
   const [certificateFileUrl, setCertificateFileUrl] = useState(null);
-  const [certificateFileUploadError, setCertificateFileUploadError] = useState(null);
-  const [certificateFileUploading, setCertificateFileUploading] = useState(false);
+  const [certificateFileUploadError, setCertificateFileUploadError] =
+    useState(null);
+  const [certificateFileUploading, setCertificateFileUploading] =
+    useState(false);
 
   const navigate = useNavigate();
 
@@ -29,7 +36,7 @@ export default function DocRegister() {
     if (!certificate) return;
     setCertificateFileUploading(true);
     setCertificateFileUploadError(null);
-    
+
     const storage = getStorage(); // Use default app instance if needed
     const fileName = new Date().getTime() + certificate.name;
     const storageRef = ref(storage, fileName);
@@ -40,7 +47,9 @@ export default function DocRegister() {
         "state_changed",
         (snapshot) => {},
         (error) => {
-          setCertificateFileUploadError("Could not upload certificate (File must be less than 2MB)");
+          setCertificateFileUploadError(
+            "Could not upload certificate (File must be less than 2MB)"
+          );
           reject(error);
         },
         () => {
@@ -57,8 +66,15 @@ export default function DocRegister() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.password || !certificate) {
-      setErrorMessage("Please fill out all fields and upload your certificate.");
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !certificate
+    ) {
+      setErrorMessage(
+        "Please fill out all fields and upload your certificate."
+      );
       return;
     }
 
@@ -68,14 +84,20 @@ export default function DocRegister() {
 
       const certificateUrl = await uploadCertificate();
 
-      const res = await axios.post("/api/doctor/register", { ...formData, certificate: certificateUrl }, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await axios.post(
+        "/api/doctor/register",
+        { ...formData, certificate: certificateUrl },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (res.status !== 200 && res.status !== 201) {
-        setErrorMessage(res.data.message || "Something went wrong. Please try again.");
+        setErrorMessage(
+          res.data.message || "Something went wrong. Please try again."
+        );
       } else {
         navigate("/doctor/verify-otp");
       }
@@ -96,7 +118,8 @@ export default function DocRegister() {
             </span>
           </Link>
           <p className="text-sm mt-5">
-            Register as a doctor to provide consultations and manage appointments. Sign up with your email and password.
+            Register as a doctor to provide consultations and manage
+            appointments. Sign up with your email and password.
           </p>
         </div>
 
@@ -105,15 +128,30 @@ export default function DocRegister() {
             <h1 className="text-lg font-bold text-center">Doctor Register</h1>
             <div>
               <Label value="Name" />
-              <TextInput type="text" placeholder="Enter your name" id="name" onChange={handleChange} />
+              <TextInput
+                type="text"
+                placeholder="Enter your name"
+                id="name"
+                onChange={handleChange}
+              />
             </div>
             <div>
               <Label value="Email" />
-              <TextInput type="email" placeholder="Enter your email address" id="email" onChange={handleChange} />
+              <TextInput
+                type="email"
+                placeholder="Enter your email address"
+                id="email"
+                onChange={handleChange}
+              />
             </div>
             <div>
               <Label value="Password" />
-              <TextInput type="password" placeholder="Password" id="password" onChange={handleChange} />
+              <TextInput
+                type="password"
+                placeholder="Password"
+                id="password"
+                onChange={handleChange}
+              />
             </div>
             <div>
               <Label value="Certificate" />
@@ -122,9 +160,15 @@ export default function DocRegister() {
                 id="certificate"
                 accept=".pdf, .doc, .docx, .jpg, .jpeg, .png"
                 onChange={handleChange}
+                className="w-full rounded-full text-sm   bg-slate-100 dark:bg-slate-500 file:border-0 "
               />
             </div>
-            <Button gradientDuoTone={"purpleToPink"} type="submit" outline disabled={loading}>
+            <Button
+              gradientDuoTone={"purpleToPink"}
+              type="submit"
+              outline
+              disabled={loading}
+            >
               {loading ? (
                 <>
                   <Spinner size="sm" />
