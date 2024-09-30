@@ -12,6 +12,8 @@ import axios from "axios"; // Import axios for making API calls
 export default function AdminHome() {
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalDoctors, setTotalDoctors] = useState(0);
+  const [totalPendings, setTotalPendings] = useState(0);
+
   const navigate = useNavigate();
   const location = useLocation();
   const isDashboard = location.pathname.includes("dashboard");
@@ -32,7 +34,16 @@ export default function AdminHome() {
           },
           withCredentials: true, // Include this to send cookies
         });
-
+        const upcomingAppointments = await axios.get(
+          "/api/admin/upcoming-slots",
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+        setTotalPendings(upcomingAppointments.data.length);
         setTotalUsers(usersResponse.data.length);
         setTotalDoctors(doctorsResponse.data.length);
       } catch (error) {
@@ -76,7 +87,7 @@ export default function AdminHome() {
           <HiClipboardList className="text-3xl text-yellow-600" />
           <div>
             <h2 className="text-lg font-medium">Pending Appointments</h2>
-            <p className="text-2xl font-semibold">45</p>
+            <p className="text-2xl font-semibold">{totalPendings}</p>
           </div>
         </Card>
         <Card className="flex items-center space-x-4">
@@ -116,10 +127,10 @@ export default function AdminHome() {
         <h2 className="text-xl font-semibold">Quick Actions</h2>
         <div className="flex gap-4">
           <Link to="/admin/dashboard?tab=users">
-          <Button gradientDuoTone="cyanToBlue">View All Users</Button>
+            <Button gradientDuoTone="cyanToBlue">View All Users</Button>
           </Link>
           <Link to="/admin/dashboard?tab=doctors">
-          <Button  gradientDuoTone="cyanToBlue">View All Doctors</Button>
+            <Button gradientDuoTone="cyanToBlue">View All Doctors</Button>
           </Link>
           <Button gradientDuoTone="cyanToBlue">Manage Departments</Button>
           <Button gradientDuoTone="cyanToBlue">Check Appointments</Button>
