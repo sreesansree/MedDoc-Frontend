@@ -61,13 +61,22 @@ const CreateSlot = () => {
       toast.error("Date must be today or in the future.");
       return;
     }
-    const formattedDate = date.toISOString().split("T")[0];
+    // const formattedDate = date.toISOString().split("T")[0];
+
+    const [fixedStartTime, fixedEndTime] = fixedSlot
+      ? selectedFixedSlot.split(" - ")
+      : [startTime, endTime];
+
+    // Validation minimum 10 minutes difference between startTime and EndTime
+    const startMinutes = parseTime(fixedStartTime);
+    const endMinutes = parseTime(fixedEndTime);
+
+    if (endMinutes - startMinutes < 10) {
+      toast.error("The time difference must be at least 10 minutes. ");
+      return;
+    }
 
     try {
-      const [fixedStartTime, fixedEndTime] = fixedSlot
-        ? selectedFixedSlot.split(" - ")
-        : [startTime, endTime];
-      console.log(date, " : Date");
       const response = await axios.post("/api/doctor/slots", {
         date,
         startTime: parseTime(fixedStartTime),
@@ -75,7 +84,7 @@ const CreateSlot = () => {
         price,
         fixedSlot,
       });
-      
+
       setDate(null);
       setStartTime("");
       setEndTime("");
@@ -95,7 +104,9 @@ const CreateSlot = () => {
   return (
     <>
       <Card className="max-w-lg mx-auto mt-6 mb-6 p-6 shadow-lg border rounded-lg">
-        <h2 className="flex justify-center opacity-90 hover:opacity-100 text-2xl font-semibold mb-6">Create a New Slot</h2>
+        <h2 className="flex justify-center opacity-90 hover:opacity-100 text-2xl font-semibold mb-6">
+          Create a New Slot
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <label className="flex justify-end items-center space-x-4">
             <span className="text-sm font-medium">Fixed Slot</span>
