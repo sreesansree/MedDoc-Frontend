@@ -4,14 +4,7 @@ import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { app } from "../../firebase/firebase.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  Button,
-  TextInput,
-  Label,
-  Alert,
-  Select,
-  Modal,
-} from "flowbite-react";
+import { Button, TextInput, Label, Alert, Select, Modal } from "flowbite-react";
 import {
   getDownloadURL,
   getStorage,
@@ -51,7 +44,7 @@ export default function DocProfile() {
   const [showCertificateModal, setShowCertificateModal] = useState(false);
   const { currentDoctor, error, loading } = useSelector(
     (state) => state.doctor
-  ); 
+  );
 
   useEffect(() => {
     if (currentDoctor) {
@@ -106,7 +99,7 @@ export default function DocProfile() {
     };
     fetchDepartments();
   }, []);
-    
+
   const uploadImage = async () => {
     setImageFileUploading(true);
     setImageFileUploadError(null);
@@ -336,16 +329,15 @@ export default function DocProfile() {
               </option>
             ))}
           </Select>
-          <TextInput 
-           id="experience"
-           type="text"
-           placeholder="Enter your Experience"
-           required
-           defaultValue={currentDoctor?.experience || ""}
-           onChange={handleInputChange}
-           className="w-full"
+          <TextInput
+            id="experience"
+            type="text"
+            placeholder="Enter your Experience"
+            required
+            defaultValue={currentDoctor?.experience || ""}
+            onChange={handleInputChange}
+            className="w-full"
           />
-
         </div>
         <div>
           <Label htmlFor="state" value="State" />
@@ -359,7 +351,7 @@ export default function DocProfile() {
             className="w-full ml-2"
           />
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-4 ">
           <div
             className="relative w-full self-center cursor-pointer shadow-md overflow-hidden"
             onClick={() => certificatePickRef.current.click()}
@@ -376,13 +368,15 @@ export default function DocProfile() {
             </div>
           </div>
 
-          {certificateFileUrl && (
+          {currentDoctor.certificate && (
+            // {certificateFileUrl && (
             <Button
               color="info"
               onClick={() => setShowCertificateModal(true)}
               className="ml-4"
+              size={"sm"}
             >
-              View Certificate
+              View
             </Button>
           )}
         </div>
@@ -455,14 +449,30 @@ export default function DocProfile() {
       >
         <Modal.Header>Certificate</Modal.Header>
         <Modal.Body>
-          <img
-            src={certificateFileUrl}
-            alt="certificate"
-            className="rounded-lg w-full h-full object-cover"
-          />
+          {currentDoctor.certificate ? (
+            // <img
+            //   src={certificateFileUrl}
+            //   alt="certificate"
+            //   className="rounded-lg w-full h-full object-cover"
+            <img
+              src={currentDoctor.certificate}
+              className="w-full h-96"
+              title="Doctor Certificate"
+            />
+          ) : (
+            <p>No certificate available to preview.</p>
+          )}
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="flex justify-between">
           <Button onClick={() => setShowCertificateModal(false)}>Close</Button>
+          {/* Download button */}
+          <a
+            href={currentDoctor.certificate}
+            download={`Doctor-${currentDoctor.name}-Certificate`}
+            className="ml-4 text-blue-600 underline"
+          >
+            Download
+          </a>
         </Modal.Footer>
       </Modal>
     </div>
