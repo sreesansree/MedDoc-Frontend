@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Modal, Button, Textarea, Alert } from "flowbite-react";
 import { useSelector } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { FaEdit, FaTrash } from "react-icons/fa"; // Import icons
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const formatTime = (time) => {
   const [hours, minutes] = time.split(":");
@@ -22,15 +22,18 @@ const SlotList = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [refundStatus, setRefundStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [newSlots, setNewSlots] = useState([]);
   const [updateForm, setUpdateForm] = useState({
     date: "",
     startTime: "",
     endTime: "",
     price: "",
   });
+
   const navigate = useNavigate();
 
   const fetchSlots = async () => {
@@ -40,7 +43,7 @@ const SlotList = () => {
         { withCredentials: true }
       );
       const now = new Date();
-      console.log("Slot REsponse ==>", slotsResponse);
+      // console.log("Slot REsponse ==>", slotsResponse);
       // Filter and sort slots
       const validSlots = slotsResponse.data
         .filter((slot) => {
@@ -71,7 +74,7 @@ const SlotList = () => {
         });
 
       // Log the sorted slots for debugging
-      console.log("Sorted Slots:", validSlots);
+      // console.log("Sorted Slots:", validSlots);
 
       setSlots(validSlots);
     } catch (error) {
@@ -82,14 +85,12 @@ const SlotList = () => {
 
   const handleCancelAppointment = async () => {
     try {
-      console.log("selected slots : ", selectedSlot._id);
       const response = await axios.post(
         `/api/doctor/doctor-appointments/${selectedSlot._id}/cancel`,
         {
           reason: cancelReason,
         }
       );
-      console.log("canceled response data : ", response.data);
       const { message } = response.data;
       setRefundStatus(
         refundStatus ? "Refunded" : "Refund Failed or Not Applicable"
@@ -100,6 +101,34 @@ const SlotList = () => {
     } catch (error) {
       setError("Error cancelling appointment");
       console.error(error);
+    }
+  };
+
+  // Add new Slot to the array
+  const addNewSlot = () => {
+    setNewSlots([...newSlots, { date: "", startTime: "", endTime: "" }]);
+  };
+  // Update a specific slot in the array
+  const updateSlot = (index, key, value) => {
+    const updatedSlots = newSlots.map((slot, idx) =>
+      idx === index ? { ...slot, [key]: value } : slot
+    );
+    setNewSlots(updatedSlots);
+  };
+
+  const handleRescheduleAppointment = async () => {
+    try {
+      const response = await axios.post(
+        `/api/doctor/reshedule/${selectedSlot._id}`,
+        { newSlots }
+      );
+      const { message } = response.data;
+      toast.success(message);
+      setShowRescheduleModal(false);
+    } catch (error) {
+      console.error("Error:", error);
+      const errorMessage = error.response?.data?.message || "An error occurred";
+      toast.error(errorMessage);
     }
   };
 
@@ -126,6 +155,10 @@ const SlotList = () => {
   const handleCancelClick = (slot) => {
     setSelectedSlot(slot);
     setShowCancelModal(true);
+  };
+  const handleReschuleClick = (slot) => {
+    setSelectedSlot(slot);
+    setShowRescheduleModal(true);
   };
 
   const handleUpdateSubmit = async () => {
@@ -158,7 +191,11 @@ const SlotList = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Available Slots</h2>
+      {/* <ToastContainer /> */}
+      <h2 className="text-2xl font-bold mb-4 flex justify-center">
+        Available Slots
+      </h2>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {slots.length === 0 ? (
           <p>No slots available.</p>
@@ -195,19 +232,32 @@ const SlotList = () => {
                 </button>
               </div>
               {slot.isBooked ? (
-                <Button
-                  className=""
-                  onClick={() => handleCancelClick(slot)}
-                  pill
-                >
-                  Cancel appointment
-                </Button>
+                <>
+                  <Button
+                    onClick={() => handleReschuleClick(slot)}
+                    size={"sm"}
+                    pill
+                    disabled={slot?.rescheduled}
+                  >
+                    {slot.rescheduled
+                      ? "Already Rescheduled"
+                      : " Reshedule appointment"}
+                  </Button>
+                  <Button
+                    onClick={() => handleCancelClick(slot)}
+                    pill
+                    size={"sm"}
+                  >
+                    Cancel appointment
+                  </Button>
+                </>
               ) : (
                 ""
               )}
             </Card>
           ))
         )}
+
         {/* Display refund status after cancellation */}
         {refundStatus && (
           <p className="mt-4 text-lg">
@@ -215,7 +265,6 @@ const SlotList = () => {
           </p>
         )}
       </div>
-      <ToastContainer />
 
       {/* Update Slot Modal */}
       <Modal show={showUpdateModal} onClose={() => setShowUpdateModal(false)}>
@@ -295,9 +344,72 @@ const SlotList = () => {
         </Modal.Body>
         <Modal.Footer>
           {slots._id}
-
           <Button onClick={handleCancelAppointment}>Submit</Button>
           <Button onClick={() => setShowCancelModal(false)} color="gray">
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Reschedule modal */}
+      <Modal
+        show={showRescheduleModal}
+        onClose={() => setShowRescheduleModal(false)}
+      >
+        <Modal.Header>Reschedule Appointment</Modal.Header>
+        <Modal.Body>
+          {/* Display form for creating new slots */}
+          {newSlots.map((slot, index) => (
+            <div key={index} className="flex gap-4 mb-4">
+              <div className="w-1/3">
+                <label className="block text-sm font-medium text-gray-700">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  value={slot.date}
+                  onChange={(e) => updateSlot(index, "date", e.target.value)}
+                  className="mt-1 block w-full"
+                />
+              </div>
+              <div className="w-1/3">
+                <label className="block text-sm font-medium text-gray-700">
+                  Start Time
+                </label>
+                <input
+                  type="time"
+                  value={slot.startTime}
+                  onChange={(e) =>
+                    updateSlot(index, "startTime", e.target.value)
+                  }
+                  className="mt-1 block w-full"
+                />
+              </div>
+              <div className="w-1/3">
+                <label className="block text-sm font-medium text-gray-700">
+                  End Time
+                </label>
+                <input
+                  type="time"
+                  value={slot.endTime}
+                  onChange={(e) => updateSlot(index, "endTime", e.target.value)}
+                  className="mt-1 block w-full"
+                />
+              </div>
+            </div>
+          ))}
+
+          {/* Button to add more slots */}
+          <button
+            onClick={addNewSlot}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Add New Slot
+          </button>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={handleRescheduleAppointment}>Submit</Button>
+          <Button onClick={() => setShowRescheduleModal(false)} color={"gray"}>
             Cancel
           </Button>
         </Modal.Footer>

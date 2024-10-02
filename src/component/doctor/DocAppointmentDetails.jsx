@@ -6,6 +6,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { formatTime, formatDate } from "../../utils/dateUtils";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+// import { HiOutlineEllipsisVertical } from "react-icons/hi2";
 
 const DocAppointmentDetails = () => {
   const { id } = useParams(); // Appointment ID from the URL
@@ -15,6 +16,8 @@ const DocAppointmentDetails = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [refundStatus, setRefundStatus] = useState(null);
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+  const [newSlots, setNewSlots] = useState([]);
   const [medicines, setMedicines] = useState([
     { name: "", dosage: "", instructions: "" },
   ]);
@@ -93,6 +96,33 @@ const DocAppointmentDetails = () => {
       console.error(error);
     }
   };
+  // Add new Slot to the array
+  const addNewSlot = () => {
+    setNewSlots([...newSlots, { date: "", startTime: "", endTime: "" }]);
+  };
+  // Update a specific slot in the array
+  const updateSlot = (index, key, value) => {
+    const updatedSlots = newSlots.map((slot, idx) =>
+      idx === index ? { ...slot, [key]: value } : slot
+    );
+    setNewSlots(updatedSlots);
+  };
+
+  const handleRescheduleAppointment = async () => {
+    try {
+      const response = await axios.post(
+        `/api/doctor/reshedule/${appointment._id}`,
+        { newSlots }
+      );
+      const { message } = response.data;
+      toast.success(message);
+      setShowRescheduleModal(false);
+    } catch (error) {
+      console.error("Error:", error);
+      const errorMessage = error.response?.data?.message || "An error occurred";
+      toast.error(errorMessage);
+    }
+  };
 
   if (!appointment) return <p>Loading...</p>;
 
@@ -101,6 +131,9 @@ const DocAppointmentDetails = () => {
       <h2 className="text-2xl font-semibold">Appointment Details</h2>
       <div className="bg-white w-max dark:bg-slate-600 p-6  rounded-lg shadow-md mt-4">
         <div className="flex flex-col justify-center items-center">
+          {/* <div className="flex">
+            <HiOutlineEllipsisVertical />
+          </div> */}
           <img
             src={appointment?.user?.profilePicture}
             alt={""}
@@ -123,9 +156,26 @@ const DocAppointmentDetails = () => {
           >
             Complete Consultation
           </Button>
-
-          <Button color="red" pill onClick={() => setShowCancelModal(true)}>
+          <Button
+            className="m-2"
+            color="red"
+            pill
+            onClick={() => setShowCancelModal(true)}
+          >
             Cancel Appointment
+          </Button>
+          <Button
+            color={"yellow"}
+            size={"sm"}
+            // onClick={() => handleReschuleClick(appointment)}
+            onClick={() => setShowRescheduleModal(true)}
+            className="m-2"
+            pill
+            disabled={appointment.rescheduled}
+          >
+            {appointment?.rescheduled
+              ? "Already Rescheduled"
+              : "Reschedule Appointment"}
           </Button>
 
           {/* Display refund status after cancellation */}
@@ -277,6 +327,70 @@ const DocAppointmentDetails = () => {
           >
             Save
           </p>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Reschedule modal */}
+      <Modal
+        show={showRescheduleModal}
+        onClose={() => setShowRescheduleModal(false)}
+      >
+        <Modal.Header>Reschedule Appointment</Modal.Header>
+        <Modal.Body>
+          {/* Display form for creating new slots */}
+          {newSlots.map((slot, index) => (
+            <div key={index} className="flex gap-4 mb-4">
+              <div className="w-1/3">
+                <label className="block text-sm font-medium text-gray-700">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  value={slot.date}
+                  onChange={(e) => updateSlot(index, "date", e.target.value)}
+                  className="mt-1 block w-full"
+                />
+              </div>
+              <div className="w-1/3">
+                <label className="block text-sm font-medium text-gray-700">
+                  Start Time
+                </label>
+                <input
+                  type="time"
+                  value={slot.startTime}
+                  onChange={(e) =>
+                    updateSlot(index, "startTime", e.target.value)
+                  }
+                  className="mt-1 block w-full"
+                />
+              </div>
+              <div className="w-1/3">
+                <label className="block text-sm font-medium text-gray-700">
+                  End Time
+                </label>
+                <input
+                  type="time"
+                  value={slot.endTime}
+                  onChange={(e) => updateSlot(index, "endTime", e.target.value)}
+                  className="mt-1 block w-full"
+                />
+              </div>
+            </div>
+          ))}
+
+          {/* Button to add more slots */}
+          <button
+            onClick={addNewSlot}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Add New Slot
+          </button>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={handleRescheduleAppointment}>Submit</Button>
+          <Button onClick={() => setShowRescheduleModal(false)} color={"gray"}>
+            Cancel
+          </Button>
         </Modal.Footer>
       </Modal>
 

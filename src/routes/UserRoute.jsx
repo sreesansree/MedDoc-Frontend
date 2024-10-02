@@ -13,6 +13,7 @@ import CalendarView from "../component/calenderView/CalenderView.jsx";
 import ReminderNotification from "../component/common/Reminder/ReminderNotification.jsx";
 import ReminderListener from "../component/common/Reminder/ReminderListener.jsx";
 import AppointmentDetails from "../component/dashboard/AppointmentDetails.jsx";
+import ReschedulePage from "../pages/user/ReschedulePage.jsx";
 
 export default function UserRoute() {
   const userType = "user"; // Define the user type for the UserRoute
@@ -42,6 +43,10 @@ export default function UserRoute() {
               <Route
                 path="/appointments/:id"
                 element={<AppointmentDetails />}
+              />
+              <Route
+                path="/reschedule/:appointmentId"
+                element={<ReschedulePage />}
               />
             </Route>
 
