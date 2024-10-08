@@ -5,36 +5,48 @@ import { FaMoon, FaSun, FaBell } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice";
 import { signOutSuccessD } from "../../redux/doctor/doctorSlice";
-// import NotificationComponent from "../common/NotificationComponent"; // Adjust the import path as necessary
-import { markAllAsRead } from "../../redux/notification/notificationSlice";
 import ChatNotification from "../common/ChatNotification";
+import { io } from "socket.io-client";
+import {
+  markAllAsRead,
+  addNotification,
+} from "../../redux/notification/notificationSlice";
+
+const socket = io("http://localhost:5000"); // Replace with your backend URL
 
 export default function DocHeader() {
   const path = useLocation().pathname;
   const { currentDoctor } = useSelector((state) => state.doctor);
-
-  // const [notifications, setNotifications] = useState([]);
+  const { theme } = useSelector((state) => state.theme);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { notifications, unreadCount } = useSelector(
     (state) => state.notifications
   );
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notificationList, setNotificationList] = useState(notifications);
 
-  const { theme } = useSelector((state) => state.theme);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  // console.log("currentDoctor in Header:", currentDoctor);
+  useEffect(() => {
+    // Listening for incoming notifications
+    socket.on("getNotification", (notification) => {
+      dispatch(addNotification(notification)); // Dispatch the notification to the Redux store
+    });
 
-  const handleNotificationClick = () => {
+    socket.on("getStoredNotifications", (storedNotifications) => {
+      storedNotifications.forEach((notification) => {
+        dispatch(addNotification(notification)); // Add each notification to Redux store
+      });
+    });
+    return () => {
+      socket.off("getNotification"); // Clean up socket listener on component unmount
+      socket.off("getStoredNotifications");
+    };
+  }, [dispatch]);
+
+  const handleBellClick = () => {
     setShowNotifications(!showNotifications);
-    dispatch(markAllAsRead()); // Mark all notifications as read when opened
-  };
-
-  const handleRemoveNotification = (indexToRemove) => {
-    const updatedNotifications = notificationList.filter(
-      (notification, index) => index !== indexToRemove
-    );
-    setNotificationList(updatedNotifications); // Update the state with the new list
+    if (!showNotifications) {
+      dispatch(markAllAsRead()); // Mark all notifications as read when opened
+    }
   };
 
   const handleSignOut = async () => {
@@ -59,13 +71,6 @@ export default function DocHeader() {
       console.error("Error during sign out:", error);
     }
   };
-  // useEffect(() => {
-  //   // Simulate receiving notifications
-  //   setNotifications([
-  //     { message: "New appointment reminder" },
-  //     { message: "Upcoming appointment confirmation" },
-  //   ]);
-  // }, []);
 
   return (
     <Navbar
@@ -103,37 +108,20 @@ export default function DocHeader() {
         </Button>
         {currentDoctor ? (
           <>
-            {/* Notification Icon with Badge */}
-            {/* <div className="relative mt-3 mx-2 ">
-              <FaBell
-                className="text-xl cursor-pointer relative"
-                onClick={() => setShowNotifications(!showNotifications)}
-              />
-              {notifications.length > 0 && !showNotifications && (
-                <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full ring-2 ring-white"></div>
-              )}
-              {showNotifications && (
-                <NotificationComponent
-                  userType="doctor"
-                  setShowNotifications={setShowNotifications}
-                  
-                />
-              )}
-            </div> */}
             <div className="relative mt-3 mx-2">
               <FaBell
                 className="text-xl cursor-pointer"
-                onClick={handleNotificationClick}
+                onClick={handleBellClick}
               />
               {unreadCount > 0 && (
-                <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full"></div>
+                <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs px-2">
+                  {unreadCount}
+                </span>
               )}
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-100 bg-white dark:bg-gray-700 border rounded-lg shadow-lg z-50">
-                  <ChatNotification
-                    notifications={notificationList} // Pass current notifications
-                    removeNotification={handleRemoveNotification} // Pass removal function
-                  />
+                <div className="absolute right-0 mt-2 w-100 bg-white shadow-lg rounded-lg p-2 z-10">
+                  {/* <ChatNotification notifications={notificationList} /> */}
+                  <ChatNotification notifications={notifications} />
                 </div>
               )}
             </div>
@@ -158,7 +146,12 @@ export default function DocHeader() {
               <Dropdown.Item
                 onClick={() => navigate("/doctor/dashboard?tab=profile")}
               >
-                Profile
+                My Profile
+              </Dropdown.Item>
+              <Dropdown.Item
+                onClick={() => navigate("/doctor/dashboard?tab=appointments")}
+              >
+                My Appointment
               </Dropdown.Item>
               <Dropdown.Divider />
               <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
@@ -216,7 +209,7 @@ export default function DocHeader() {
                 </Link>
               </Navbar.Link>
 
-              <Navbar.Link as={"div"}>
+              {/* <Navbar.Link as={"div"}>
                 <Link
                   to="/doctor/dashboard?tab=appointments"
                   className={`${
@@ -227,7 +220,7 @@ export default function DocHeader() {
                 >
                   Appointments
                 </Link>
-              </Navbar.Link>
+              </Navbar.Link> */}
             </>
           )}
         </>

@@ -108,6 +108,7 @@ export default function AdminDoctors() {
       <div className="overflow-x-auto">
         <Table className="min-w-full divide-y divide-gray-200" hoverable>
           <Table.Head>
+            <Table.HeadCell>Sl.no</Table.HeadCell>
             <Table.HeadCell>Name</Table.HeadCell>
             <Table.HeadCell>Email</Table.HeadCell>
             <Table.HeadCell>Profile Picture</Table.HeadCell>
@@ -116,11 +117,12 @@ export default function AdminDoctors() {
           </Table.Head>
           <Table.Body className="divide-y">
             {currentDoctors.length > 0 ? (
-              currentDoctors.map((doctor) => (
+              currentDoctors.map((doctor, index) => (
                 <Table.Row
                   key={doctor._id}
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
                 >
+                  <Table.Cell>{index + 1}</Table.Cell>
                   <Table.Cell>{doctor.name}</Table.Cell>
                   <Table.Cell>{doctor.email}</Table.Cell>
                   <Table.Cell>

@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Avatar, Button, Dropdown, Navbar } from "flowbite-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaMoon, FaSun, FaBell } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice";
 import { signOutSuccess } from "../../redux/user/userSlice";
-// import NotificationComponent from "../common/NotificationComponent"; // Adjust the import path as necessary
-import { markAllAsRead } from "../../redux/notification/notificationSlice";
+import {
+  markAllAsRead,
+  addNotification,
+} from "../../redux/notification/notificationSlice";
 import ChatNotification from "../common/ChatNotification";
+import { io } from "socket.io-client";
+
+// const socket = useRef();
+const socket = io("http://localhost:5000"); // Replace with your backend URL
 
 export default function NavBar() {
   const path = useLocation().pathname;
@@ -19,18 +25,32 @@ export default function NavBar() {
     (state) => state.notifications
   );
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notificationList, setNotificationList] = useState(notifications);
+  console.log("notification from navBAr", notifications);
 
-  const handleNotificationClick = () => {
-    setShowNotifications(!showNotifications);
-    dispatch(markAllAsRead()); // Mark all notifications as read when opened
-  };
+  useEffect(() => {
+    // Listening for incoming notifications
+    socket.on("getNotification", (notification) => {
+      dispatch(addNotification(notification)); // Dispatch the notification to the Redux store
+    });
 
-  const handleRemoveNotification = (indexToRemove) => {
-    const updatedNotifications = notificationList.filter(
-      (notification, index) => index !== indexToRemove
-    );
-    setNotificationList(updatedNotifications); // Update the state with the new list
+    socket.on("getStoredNotifications", (storedNotifications) => {
+      storedNotifications.forEach((notification) => {
+        dispatch(addNotification(notification)); // Add each notification to Redux store
+      });
+    });
+
+    return () => {
+      socket.off("getNotification"); // Clean up socket listener on component unmount
+      socket.off("getStoredNotifications");
+    };
+  }, [dispatch]);
+  // Handle notification dropdown toggle
+
+  const handleBellClick = () => {
+    setShowNotifications((prev) => !prev);
+    if (!showNotifications) {
+      dispatch(markAllAsRead()); // Mark all notifications as read when opened
+    }
   };
 
   const handleSignOut = async () => {
@@ -70,33 +90,20 @@ export default function NavBar() {
         </Button>
         {currentUser ? (
           <>
-            {/* Notification Icon with Badge */}
-            {/* <div className="relative mt-3 mx-3">
-              <FaBell
-                className="text-xl cursor-pointer"
-                onClick={() => setShowNotifications(!showNotifications)}
-              />
-              {showNotifications && (
-                <NotificationComponent
-                  userType="user"
-                  setShowNotifications={setShowNotifications}
-                />
-              )}
-            </div> */}
             <div className="relative mt-3 mx-2">
               <FaBell
                 className="text-xl cursor-pointer"
-                onClick={handleNotificationClick}
+                onClick={handleBellClick}
               />
               {unreadCount > 0 && (
-                <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full"></div>
+                <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs px-2">
+                  {unreadCount}
+                </span>
               )}
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-1000 dark:bg-slate-700 bg-white border rounded-lg shadow-lg z-50">
-                  <ChatNotification
-                    notifications={notificationList} // Pass current notifications
-                    removeNotification={handleRemoveNotification} // Pass removal function
-                  />
+                <div className="absolute right-0  mt-2 w-100 bg-white dark:bg-gray-600 shadow-lg rounded-lg p-2 z-10 ">
+                  <h3 className="text-sm font-bold">Notifications</h3>
+                  <ChatNotification notifications={notifications} />
                 </div>
               )}
             </div>

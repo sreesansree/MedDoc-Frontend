@@ -112,7 +112,6 @@ const DocAppointments = () => {
     navigate("/doctor"); // Adjust this route to your actual dashboard or home page
   };
 
-
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold text-center mb-6 opacity-80 hover:opacity-100 scale-105">
@@ -170,15 +169,27 @@ const DocAppointments = () => {
               />
             ))
           ) : (
-            <p className="flex justify-center">No Appointments</p>
+            <p className="flex justify-center">No Upcoming Appointments</p>
           )}
         </div>
       )}
       {view === "completed" && (
-        <CompletedAppointmentsTable appointments={completedAppointments} />
+        <div>
+          {completedAppointments.length > 0 ? (
+            <CompletedAppointmentsTable appointments={completedAppointments} />
+          ) : (
+            <p className="flex justify-center">No Completed Appointments</p>
+          )}
+        </div>
       )}
       {view === "canceled" && (
-        <CanceldAppointmentsTable appointments={canceledAppointments} />
+        <div>
+          {canceledAppointments.length > 0 ? (
+            <CanceldAppointmentsTable appointments={canceledAppointments} />
+          ) : ( 
+            <p className="flex justify-center">No Canceled Appointments</p>
+          )}
+        </div>
       )}
 
       <div className=" flex text-center mt-8 justify-center">
@@ -194,7 +205,6 @@ const DocAppointments = () => {
           currentPage={currentPage}
         />
       </div>
-
     </div>
   );
 };
@@ -352,35 +362,31 @@ const CompletedAppointmentsTable = ({ appointments }) => {
 
   return (
     <>
-      {appointments.length > 0 ? (
-        <Table hoverable>
-          <Table.Head>
-            <Table.HeadCell>Patient</Table.HeadCell>
-            <Table.HeadCell>Consultation Date & Time</Table.HeadCell>
-            <Table.HeadCell>Prescription</Table.HeadCell>
-          </Table.Head>
-          <Table.Body>
-            {appointments.map((appointment) => (
-              <Table.Row key={appointment._id}>
-                <Table.Cell>{appointment?.user?.name}</Table.Cell>
-                <Table.Cell>{`${formatDate(appointment.date)} ${formatTime(
-                  appointment.startTime
-                )}`}</Table.Cell>
-                <Table.Cell>
-                  <Button
-                    gradientDuoTone="purpleToBlue"
-                    onClick={() => handleDownloadPrescription(appointment)}
-                  >
-                    Download Prescription{" "}
-                  </Button>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      ) : (
-        <p>No completed appointments</p>
-      )}
+      <Table hoverable>
+        <Table.Head>
+          <Table.HeadCell>Patient</Table.HeadCell>
+          <Table.HeadCell>Consultation Date & Time</Table.HeadCell>
+          <Table.HeadCell>Prescription</Table.HeadCell>
+        </Table.Head>
+        <Table.Body>
+          {appointments.map((appointment) => (
+            <Table.Row key={appointment._id}>
+              <Table.Cell>{appointment?.user?.name}</Table.Cell>
+              <Table.Cell>{`${formatDate(appointment.date)} ${formatTime(
+                appointment.startTime
+              )}`}</Table.Cell>
+              <Table.Cell>
+                <Button
+                  gradientDuoTone="purpleToBlue"
+                  onClick={() => handleDownloadPrescription(appointment)}
+                >
+                  Download Prescription{" "}
+                </Button>
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table>
     </>
   );
 };

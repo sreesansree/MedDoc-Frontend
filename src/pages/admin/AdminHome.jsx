@@ -90,13 +90,13 @@ export default function AdminHome() {
             <p className="text-2xl font-semibold">{totalPendings}</p>
           </div>
         </Card>
-        <Card className="flex items-center space-x-4">
+        {/* <Card className="flex items-center space-x-4">
           <HiChartPie className="text-3xl text-red-600" />
           <div>
             <h2 className="text-lg font-medium">Revenue</h2>
             <p className="text-2xl font-semibold">₹ 0000</p>
           </div>
-        </Card>
+        </Card> */}
       </section>
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Recent Activities</h2>

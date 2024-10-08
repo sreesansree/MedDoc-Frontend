@@ -1,26 +1,27 @@
 import React from "react";
 
-export default function ChatNotification({ notifications, removeNotification }) {
+const ChatNotification = ({ notifications }) => {
+  // console.log(notifications);
+  const limitedNotifications = notifications.slice(-8);
   return (
-    <div className="p-4 m-2">
-      <h3 className="text-lg font-bold">Notifications</h3>
-      <ul className="mt-2">
-        {notifications.length > 0 ? (
-          notifications.map((notification, index) => (
-            <li key={index} className="p-2 border-b flex justify-between">
-              <span>{notification.message}</span>
-              <button
-                className="text-red-500 ml-2 font-bold"
-                onClick={() => removeNotification(index)} // Call function correctly
-              >
-                X
-              </button>
-            </li>
-          ))
-        ) : (
-          <li className="p-2">No notifications</li>
-        )}
-      </ul>
+    <div className="overflow-y-auto rounded-md border border-gray-200 p-2">
+      {notifications.length === 0 ? (
+        <p className="text-gray-500 text-center">No new notifications</p>
+      ) : (
+        limitedNotifications.map((notification, index) => (
+          <div key={index} className="border-b border-gray-200 p-2">
+            <p className="text-sm flex items-center">
+              {/* <strong className="mr-2"> {notification.senderName}</strong> sent you a message:{" "} */}
+              <span className="flex-grow">{notification.message || "No message"}</span>  
+            </p>
+            <p className="text-xs text-gray-400">
+              {new Date(notification.date).toLocaleString()}
+            </p>
+          </div>
+        ))
+      )}
     </div>
   );
-}
+};
+
+export default ChatNotification;

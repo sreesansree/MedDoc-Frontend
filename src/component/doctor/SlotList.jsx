@@ -192,79 +192,81 @@ const SlotList = () => {
   return (
     <div className="container mx-auto p-4">
       {/* <ToastContainer /> */}
-      <h2 className="text-2xl font-bold mb-4 flex justify-center">
+      <h2 className="text-2xl font-bold mb-4 flex">
         Available Slots
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {slots.length === 0 ? (
-          <p>No slots available.</p>
-        ) : (
-          slots.map((slot) => (
-            <Card
-              key={slot._id}
-              className={`p-4 ${
-                slot.isBooked
-                  ? "border-gray-400 bg-red-200 dark:bg-red-900"
-                  : "bg-white border-blue-500 dark:bg-green-800"
-              } border rounded-md shadow-md transition-colors relative`}
-            >
-              <h3 className="text-xl font-semibold">
-                {new Date(slot.date).toDateString()}
-              </h3>
-              <p>
-                {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-              </p>
-              <p>₹{slot.price}</p>
-              <p>{slot.isBooked ? "Slot Booked" : "Available"}</p>
-              <div className="absolute top-2 right-2 flex gap-2">
-                <button
-                  onClick={() => handleUpdateClick(slot)}
-                  className="text-blue-500"
+      {/* Centering the card grid */}
+  <div className="flex justify-center">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      {slots.length === 0 ? (
+        <p>No slots available.</p>
+      ) : (
+        slots.map((slot) => (
+          <Card
+            key={slot._id}
+            className={`p-4 ${
+              slot.isBooked
+                ? "border-gray-400 bg-red-200 dark:bg-red-900"
+                : "bg-white border-blue-500 dark:bg-green-800"
+            } border rounded-md shadow-md transition-colors relative`}
+          >
+            <h3 className="text-xl font-semibold">
+              {new Date(slot.date).toDateString()}
+            </h3>
+            <p>
+              {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
+            </p>
+            <p>₹{slot.price}</p>
+            <p>{slot.isBooked ? "Slot Booked" : "Available"}</p>
+            <div className="absolute top-2 right-2 flex gap-2">
+              <button
+                onClick={() => handleUpdateClick(slot)}
+                className="text-blue-500"
+              >
+                {slot.isBooked ? "" : <FaEdit />}
+              </button>
+              <button
+                onClick={() => handleDeleteClick(slot)}
+                className="text-red-500"
+              >
+                {slot.isBooked ? "" : <FaTrash />}
+              </button>
+            </div>
+            {slot.isBooked ? (
+              <>
+                <Button
+                  onClick={() => handleReschuleClick(slot)}
+                  size={"sm"}
+                  pill
+                  disabled={slot?.rescheduled}
                 >
-                  {slot.isBooked ? "" : <FaEdit />}
-                </button>
-                <button
-                  onClick={() => handleDeleteClick(slot)}
-                  className="text-red-500"
+                  {slot.rescheduled
+                    ? "Already Rescheduled"
+                    : " Reshedule appointment"}
+                </Button>
+                <Button
+                  onClick={() => handleCancelClick(slot)}
+                  pill
+                  size={"sm"}
                 >
-                  {slot.isBooked ? "" : <FaTrash />}
-                </button>
-              </div>
-              {slot.isBooked ? (
-                <>
-                  <Button
-                    onClick={() => handleReschuleClick(slot)}
-                    size={"sm"}
-                    pill
-                    disabled={slot?.rescheduled}
-                  >
-                    {slot.rescheduled
-                      ? "Already Rescheduled"
-                      : " Reshedule appointment"}
-                  </Button>
-                  <Button
-                    onClick={() => handleCancelClick(slot)}
-                    pill
-                    size={"sm"}
-                  >
-                    Cancel appointment
-                  </Button>
-                </>
-              ) : (
-                ""
-              )}
-            </Card>
-          ))
-        )}
-
-        {/* Display refund status after cancellation */}
-        {refundStatus && (
-          <p className="mt-4 text-lg">
-            Refund Status: <strong>{refundStatus}</strong>
-          </p>
-        )}
-      </div>
+                  Cancel appointment
+                </Button>
+              </>
+            ) : (
+              ""
+            )}
+          </Card>
+        ))
+      )}
+    </div>
+  </div>
+      {/* Display refund status after cancellation */}
+      {refundStatus && (
+        <p className="mt-4 text-lg">
+          Refund Status: <strong>{refundStatus}</strong>
+        </p>
+      )}
 
       {/* Update Slot Modal */}
       <Modal show={showUpdateModal} onClose={() => setShowUpdateModal(false)}>

@@ -25,7 +25,7 @@ const ReschedulePage = () => {
   }, [appointmentId]);
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center m-2 mb-4">
       <h2 className="m-6 font-bold text-lg shadow-sm p-3 text-center shadow-blue-200 rounded-lg">Reschedule Appointment</h2>
       {availableSlots.length > 0 ? (
         <RescheduleForm

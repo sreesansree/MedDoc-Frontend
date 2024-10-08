@@ -87,13 +87,34 @@ const Appointment = () => {
         View Calendar
       </Button>
       <div className="flex justify-center gap-4 mb-6 mt-3">
-        <Button onClick={() => handleViewChange("upcoming")}>
+        <Button
+          onClick={() => handleViewChange("upcoming")}
+          className={`${
+            view === "upcoming"
+              ? "opacity-100 scale-105"
+              : "opacity-30 hover:opacity-80"
+          }`}
+        >
           Upcoming Appointments
         </Button>
-        <Button onClick={() => handleViewChange("completed")}>
+        <Button
+          onClick={() => handleViewChange("completed")}
+          className={`${
+            view === "completed"
+              ? "opacity-100 scale-105"
+              : "opacity-30  hover:opacity-80"
+          }`}
+        >
           Completed Appointments
         </Button>
-        <Button onClick={() => handleViewChange("canceled")}>
+        <Button
+          onClick={() => handleViewChange("canceled")}
+          className={`${
+            view === "canceled"
+              ? "opacity-100 scale-105"
+              : "opacity-30  hover:opacity-80 "
+          }`}
+        >
           Canceled Appointments
         </Button>
       </div>
@@ -115,15 +136,27 @@ const Appointment = () => {
               />
             ))
           ) : (
-            <p>No Upcoming Appointments</p>
+            <p className="flex justify-center">No Upcoming Appointments</p>
           )}
         </div>
       )}
       {view === "completed" && (
-        <CompletedAppointmentsTable appointments={completedAppointments} />
+        <>
+          {completedAppointments.length > 0 ? (
+            <CompletedAppointmentsTable appointments={completedAppointments} />
+          ) : (
+            <p className="flex justify-center">No Completed Appointments</p>
+          )}
+        </>
       )}
       {view === "canceled" && (
-        <CanceldAppointmentsTable appointments={canceledAppointments} />
+        <>
+          {canceledAppointments.length > 0 ? (
+            <CanceldAppointmentsTable appointments={canceledAppointments} />
+          ) : (
+            <p className="flex justify-center">No Canceled Appointments</p>
+          )}
+        </>
       )}
     </div>
   );
@@ -329,85 +362,81 @@ const CompletedAppointmentsTable = ({ appointments }) => {
 
   return (
     <>
-      {appointments.length > 0 ? (
-        <Table>
-          <Table.Head>
-            <Table.HeadCell>Doctor</Table.HeadCell>
-            <Table.HeadCell>Consultation Time</Table.HeadCell>
-            <Table.HeadCell>Prescription</Table.HeadCell>
-            <Table.HeadCell>Rating</Table.HeadCell>
-          </Table.Head>
-          <Table.Body>
-            {appointments.map((appointment) => {
-              // Get the saved rating from the backend or local state
-              const currentRating = ratings[appointment._id] || 0;
-              // Check if the rating is already submitted for this appointment
-              const isSubmitted = submittedRatings[appointment._id];
+      <Table>
+        <Table.Head>
+          <Table.HeadCell>Doctor</Table.HeadCell>
+          <Table.HeadCell>Consultation Time</Table.HeadCell>
+          <Table.HeadCell>Prescription</Table.HeadCell>
+          <Table.HeadCell>Rating</Table.HeadCell>
+        </Table.Head>
+        <Table.Body>
+          {appointments.map((appointment) => {
+            // Get the saved rating from the backend or local state
+            const currentRating = ratings[appointment._id] || 0;
+            // Check if the rating is already submitted for this appointment
+            const isSubmitted = submittedRatings[appointment._id];
 
-              return (
-                <Table.Row key={appointment._id}>
-                  <Table.Cell>{appointment?.doctor?.name}</Table.Cell>
-                  <Table.Cell>{`${formatDate(appointment.date)} ${formatTime(
-                    appointment.startTime
-                  )}`}</Table.Cell>
-                  <Table.Cell>
-                    <Button
-                      gradientDuoTone="purpleToBlue"
-                      onClick={() => handleDownloadPrescription(appointment)}
-                    >
-                      Download Prescription
-                    </Button>
-                  </Table.Cell>
-                  <Table.Cell className="flex flex-col gap-2">
-                    {/* Display doctor average rating */}
-                    <div className="flex">
-                      {/* Rating component for selecting feedback */}
-                      <Rating>
-                        <div className="flex items-center">
-                          {[1, 2, 3, 4, 5].map((starValue) => (
-                            <Rating.Star
-                              key={starValue}
-                              filled={currentRating >= starValue} // Fill stars based on saved rating
-                              onClick={() =>
-                                handleRatingChange(appointment._id, starValue)
-                              }
-                              className="cursor-pointer"
-                            />
-                          ))}
-                        </div>
-                      </Rating>
-                      <p className="ml-2 text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {appointment?.doctor?.averageRating
-                          ? `${appointment.doctor.averageRating.toFixed(
-                              1
-                            )} out of 5`
-                          : "Not rated yet"}
-                      </p>
-                    </div>
+            return (
+              <Table.Row key={appointment._id}>
+                <Table.Cell>{appointment?.doctor?.name}</Table.Cell>
+                <Table.Cell>{`${formatDate(appointment.date)} ${formatTime(
+                  appointment.startTime
+                )}`}</Table.Cell>
+                <Table.Cell>
+                  <Button
+                    gradientDuoTone="purpleToBlue"
+                    onClick={() => handleDownloadPrescription(appointment)}
+                  >
+                    Download Prescription
+                  </Button>
+                </Table.Cell>
+                <Table.Cell className="flex flex-col gap-2">
+                  {/* Display doctor average rating */}
+                  <div className="flex">
+                    {/* Rating component for selecting feedback */}
+                    <Rating>
+                      <div className="flex items-center">
+                        {[1, 2, 3, 4, 5].map((starValue) => (
+                          <Rating.Star
+                            key={starValue}
+                            filled={currentRating >= starValue} // Fill stars based on saved rating
+                            onClick={() =>
+                              handleRatingChange(appointment._id, starValue)
+                            }
+                            className="cursor-pointer"
+                          />
+                        ))}
+                      </div>
+                    </Rating>
+                    <p className="ml-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+                      {appointment?.doctor?.averageRating
+                        ? `${appointment.doctor.averageRating.toFixed(
+                            1
+                          )} out of 5`
+                        : "Not rated yet"}
+                    </p>
+                  </div>
 
-                    {/* Button to submit rating */}
-                    <Button
-                      gradientDuoTone={"purpleToBlue"}
-                      onClick={() =>
-                        handleSubmitRating(
-                          appointment._id,
-                          appointment.doctor._id
-                        )
-                      }
-                      disabled={isSubmitted} // Disable button if rating is submitted
-                      size={"sm"}
-                    >
-                      {isSubmitted ? "Rating Submitted" : "Submit Rating"}
-                    </Button>
-                  </Table.Cell>
-                </Table.Row>
-              );
-            })}
-          </Table.Body>
-        </Table>
-      ) : (
-        <p>No completed appointments</p>
-      )}
+                  {/* Button to submit rating */}
+                  <Button
+                    gradientDuoTone={"purpleToBlue"}
+                    onClick={() =>
+                      handleSubmitRating(
+                        appointment._id,
+                        appointment.doctor._id
+                      )
+                    }
+                    disabled={isSubmitted} // Disable button if rating is submitted
+                    size={"sm"}
+                  >
+                    {isSubmitted ? "Rating Submitted" : "Submit Rating"}
+                  </Button>
+                </Table.Cell>
+              </Table.Row>
+            );
+          })}
+        </Table.Body>
+      </Table>
     </>
   );
 };
@@ -415,13 +444,15 @@ const CompletedAppointmentsTable = ({ appointments }) => {
 const CanceldAppointmentsTable = ({ appointments }) => (
   <Table hoverable>
     <Table.Head>
+      <Table.HeadCell>Sl .No</Table.HeadCell>
       <Table.HeadCell>Doctor</Table.HeadCell>
       <Table.HeadCell>Time</Table.HeadCell>
       <Table.HeadCell>Reason</Table.HeadCell>
     </Table.Head>
     <Table.Body>
-      {appointments.map((appointment) => (
+      {appointments.map((appointment, index) => (
         <Table.Row key={appointment._id}>
+          <Table.Cell>{index + 1  }</Table.Cell>
           <Table.Cell>{appointment?.doctor?.name}</Table.Cell>
           <Table.Cell>{`${formatDate(appointment.date)} ${formatTime(
             appointment.startTime

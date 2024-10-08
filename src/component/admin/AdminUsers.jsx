@@ -103,6 +103,7 @@ export default function AdminUsers() {
       <div className="overflow-x-auto">
         <Table className="min-w-full divide-y divide-gray-200" hoverable>
           <Table.Head>
+            <Table.HeadCell>Sl.no</Table.HeadCell>
             <Table.HeadCell>Name</Table.HeadCell>
             <Table.HeadCell>Email</Table.HeadCell>
             <Table.HeadCell>Verified</Table.HeadCell>
@@ -111,11 +112,12 @@ export default function AdminUsers() {
           </Table.Head>
           <Table.Body className="divide-y">
             {currentUsers.length > 0 ? (
-              currentUsers.map((user) => (
+              currentUsers.map((user, index) => (
                 <Table.Row
                   key={user._id}
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
                 >
+                  <Table.Cell>{index + 1}</Table.Cell>
                   <Table.Cell>{user.name}</Table.Cell>
                   <Table.Cell>{user.email}</Table.Cell>
                   <Table.Cell>{user.isVerified ? "Yes" : "No"}</Table.Cell>

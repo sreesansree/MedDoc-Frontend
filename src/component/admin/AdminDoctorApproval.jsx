@@ -100,6 +100,7 @@ export default function AdminDoctorApproval() {
       <div className="overflow-x-auto">
         <Table className="min-w-full divide-y divide-gray-200" hoverable>
           <Table.Head>
+            <Table.HeadCell>Sl.no</Table.HeadCell>
             <Table.HeadCell>Profile Picture</Table.HeadCell>
             <Table.HeadCell>Name</Table.HeadCell>
             <Table.HeadCell>Email</Table.HeadCell>
@@ -109,11 +110,12 @@ export default function AdminDoctorApproval() {
           </Table.Head>
           <Table.Body className="divide-y">
             {Array.isArray(pendingDoctors) && pendingDoctors.length > 0 ? (
-              pendingDoctors.map((doctor) => (
+              pendingDoctors.map((doctor, index) => (
                 <Table.Row
                   key={doctor._id}
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
                 >
+                  <Table.Cell>{index + 1}</Table.Cell>
                   <Table.Cell>
                     <img
                       src={doctor.profilePicture}
@@ -175,6 +177,7 @@ export default function AdminDoctorApproval() {
       <div className="overflow-x-auto">
         <Table className="min-w-full divide-y divide-gray-200" hoverable>
           <Table.Head>
+            <Table.HeadCell>Sl.no</Table.HeadCell>
             <Table.HeadCell>Name</Table.HeadCell>
             <Table.HeadCell>Email</Table.HeadCell>
             <Table.HeadCell>Verified</Table.HeadCell>
@@ -182,11 +185,12 @@ export default function AdminDoctorApproval() {
           </Table.Head>
           <Table.Body className="divide-y">
             {Array.isArray(rejectedDoctors) && rejectedDoctors.length > 0 ? (
-              rejectedDoctors.map((doctor) => (
+              rejectedDoctors.map((doctor, index) => (
                 <Table.Row
                   key={doctor._id}
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
                 >
+                  <Table.Cell>{index + 1 }</Table.Cell>
                   <Table.Cell>{doctor.name}</Table.Cell>
                   <Table.Cell>{doctor.email}</Table.Cell>
                   <Table.Cell>
@@ -218,7 +222,7 @@ export default function AdminDoctorApproval() {
           {selectedDoctor && (
             <>
               <div className=" mb-4">
-                <Zoom >
+                <Zoom>
                   <img
                     src={selectedDoctor.certificate}
                     alt="Certificate"
