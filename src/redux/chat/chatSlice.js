@@ -4,9 +4,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const chatSlice = createSlice({
   name: "chat",
   initialState: {
-    messages: [],
+    messages: [], 
     currentChat: null,
-    newMessageNotification: null,
+    isChatOpen: false,
   },
   reducers: {
     setMessages(state, action) {
@@ -18,8 +18,11 @@ const chatSlice = createSlice({
     setCurrentChat(state, action) {
       state.currentChat = action.payload;
     },
-    setNewMessageNotification(state, action) {
-      state.newMessageNotification = action.payload;
+    openChat(state, action) {
+      state.isChatOpen = action.payload;
+    },
+    closeChat(state, action) {
+      state.isChatOpen = action.payload;
     },
   },
 });
@@ -29,5 +32,7 @@ export const {
   addMessage,
   setCurrentChat,
   setNewMessageNotification,
+  openChat,
+  closeChat,
 } = chatSlice.actions;
 export default chatSlice.reducer;

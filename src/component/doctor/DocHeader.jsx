@@ -6,13 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice";
 import { signOutSuccessD } from "../../redux/doctor/doctorSlice";
 import ChatNotification from "../common/ChatNotification";
-import { io } from "socket.io-client";
-import {
-  markAllAsRead,
-  addNotification,
-} from "../../redux/notification/notificationSlice";
-
-const socket = io("http://localhost:5000"); // Replace with your backend URL
+import { markAllAsRead } from "../../redux/notification/notificationSlice";
+import useSocket from "../../Hooks/useSocket";
 
 export default function DocHeader() {
   const path = useLocation().pathname;
@@ -25,22 +20,7 @@ export default function DocHeader() {
   );
   const [showNotifications, setShowNotifications] = useState(false);
 
-  useEffect(() => {
-    // Listening for incoming notifications
-    socket.on("getNotification", (notification) => {
-      dispatch(addNotification(notification)); // Dispatch the notification to the Redux store
-    });
-
-    socket.on("getStoredNotifications", (storedNotifications) => {
-      storedNotifications.forEach((notification) => {
-        dispatch(addNotification(notification)); // Add each notification to Redux store
-      });
-    });
-    return () => {
-      socket.off("getNotification"); // Clean up socket listener on component unmount
-      socket.off("getStoredNotifications");
-    };
-  }, [dispatch]);
+  useSocket(currentDoctor?._id);
 
   const handleBellClick = () => {
     setShowNotifications(!showNotifications);
@@ -120,7 +100,7 @@ export default function DocHeader() {
               )}
               {showNotifications && (
                 <div className="absolute right-0 mt-2 w-100 bg-white shadow-lg rounded-lg p-2 z-10">
-                  {/* <ChatNotification notifications={notificationList} /> */}
+                  <h3 className="text-sm font-bold">Notifications</h3>
                   <ChatNotification notifications={notifications} />
                 </div>
               )}

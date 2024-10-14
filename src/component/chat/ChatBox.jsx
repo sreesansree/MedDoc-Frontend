@@ -31,7 +31,11 @@ const ChatBox = ({
   const scroll = useRef();
 
   useEffect(() => {
-    if (receiveMessage !== null && receiveMessage.chatId === chat._id) {
+    if (
+      receiveMessage !== null &&
+      chat !== null &&
+      receiveMessage.chatId === chat._id
+    ) {
       setMessages((prevMessages) => [...prevMessages, receiveMessage]);
     }
   }, [receiveMessage, chat]);

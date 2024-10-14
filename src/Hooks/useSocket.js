@@ -1,7 +1,7 @@
+// Hooks/useSocket.js
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-// import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addNotification } from "../redux/notification/notificationSlice";
 
 const useSocket = (userID, userType) => {
@@ -9,14 +9,18 @@ const useSocket = (userID, userType) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [sendMessage, setSendMessage] = useState(null);
   const [receiveMessage, setReceiveMessage] = useState(null);
-
+  // const [notification, setNotification] = useState([]);
+  // const { currentChat } = useSelector((state) => state.chat);
+  // const { isChatOpen } = useSelector((state) => state.chat);
+  // const { notifications } = useSelector((state) => state.notifications);
   const dispatch = useDispatch();
 
-  // Connect to socket
   useEffect(() => {
     socket.current = io("http://localhost:5000");
-    socket.current.emit("new-user-add", userID);
-    // console.log("Socket connected:", socket.current);
+    
+    if (userID) {
+      socket.current.emit("new-user-add", userID);
+    }
     socket.current.on("get-users", (users) => {
       setOnlineUsers(users);
     });
@@ -38,33 +42,48 @@ const useSocket = (userID, userType) => {
         socket.current.emit("store-notification", sendMessage); // Store notification for offline receiver
       }
     }
-  }, [sendMessage]);
+  }, [sendMessage, onlineUsers]);
 
   // Receiving messages and handling notifications
   useEffect(() => {
+
+    
     socket.current.on("receive-message", (data) => {
-      if (data.senderId !== userID) {
-        dispatch(
-          addNotification({
-            message: `New message from ${data.senderName}`,
-            chatId: data.chatId,
-            date: new Date(),
-          })
-        );
-        // toast(`New message from ${data.senderName}`);
-        setReceiveMessage(data);
-      }
+      setReceiveMessage(data);
     });
 
-    // // Listen for stored notifications (offline messages)
 
+    socket.current.on("getNotification", (res) => {
+      // const isChatOpen = currentChat?.members
+      //   ? currentChat.members.some((id) => id === res.senderId)
+      //   : false;
+      // console.log("isChat is open :", isChatOpen);
+      dispatch(addNotification(res));
+      // if (isChatOpen) {
+      //   // setNotification((prev) => [{ ...res, isRead: isChatOpen }, ...prev]);
+      // } else { 
+      //   // setNotification((prev) => [res, ...prev]);
+      //   dispatch(addNotification(res));
+      // }
+    });
+
+    // Listen for stored notifications (offline messages)
     socket.current.on("store-notification", (notification) => {
       dispatch(addNotification(notification));
+    });
+    // Listen for stored notifications (when user reconnects)
+    socket.current.on("getStoredNotifications", (storedNotifications) => {
+      storedNotifications.forEach((notification) => {
+        dispatch(addNotification(notification)); // Add each stored notification
+      });
     });
 
     return () => {
       socket.current.off("receive-message");
       socket.current.off("store-notification");
+      socket.current.off("getNotification");
+      socket.current.off("getStoredNotifications");
+      socket.current.off("get-users");
     };
   }, [dispatch, userID]);
 

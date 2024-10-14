@@ -5,15 +5,9 @@ import { FaMoon, FaSun, FaBell } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice";
 import { signOutSuccess } from "../../redux/user/userSlice";
-import {
-  markAllAsRead,
-  addNotification,
-} from "../../redux/notification/notificationSlice";
+import { markAllAsRead } from "../../redux/notification/notificationSlice";
 import ChatNotification from "../common/ChatNotification";
-import { io } from "socket.io-client";
-
-// const socket = useRef();
-const socket = io("http://localhost:5000"); // Replace with your backend URL
+import useSocket from "../../Hooks/useSocket";
 
 export default function NavBar() {
   const path = useLocation().pathname;
@@ -25,30 +19,12 @@ export default function NavBar() {
     (state) => state.notifications
   );
   const [showNotifications, setShowNotifications] = useState(false);
-  console.log("notification from navBAr", notifications);
 
-  useEffect(() => {
-    // Listening for incoming notifications
-    socket.on("getNotification", (notification) => {
-      dispatch(addNotification(notification)); // Dispatch the notification to the Redux store
-    });
-
-    socket.on("getStoredNotifications", (storedNotifications) => {
-      storedNotifications.forEach((notification) => {
-        dispatch(addNotification(notification)); // Add each notification to Redux store
-      });
-    });
-
-    return () => {
-      socket.off("getNotification"); // Clean up socket listener on component unmount
-      socket.off("getStoredNotifications");
-    };
-  }, [dispatch]);
-  // Handle notification dropdown toggle
+  useSocket(currentUser?._id);
 
   const handleBellClick = () => {
     setShowNotifications((prev) => !prev);
-    if (!showNotifications) {
+    if (!showNotifications && unreadCount > 0) {
       dispatch(markAllAsRead()); // Mark all notifications as read when opened
     }
   };
