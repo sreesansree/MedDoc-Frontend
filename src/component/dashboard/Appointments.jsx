@@ -74,7 +74,16 @@ const Appointment = () => {
   const handleViewChange = (newView) => {
     setView(newView);
   };
+  const currentDate = new Date();
+  const upComingAppointments = appointments.filter((appointment) => {
+    const appointmentDate = new Date(appointment.date);
+    const [startHours, startMinutes] = appointment.startTime.split(":");
+    appointmentDate.setHours(startHours);
+    appointmentDate.setMinutes(startMinutes);
 
+    // Only return appointments where date and time are in the future
+    return appointmentDate > currentDate;
+  });
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-semibold text-center mb-6">
@@ -121,13 +130,13 @@ const Appointment = () => {
       {view === "upcoming" && (
         <div
           className={`grid  gap-6 ${
-            appointments.length === 1
+            upComingAppointments.length === 1
               ? "place-items-center  pt-3"
               : "grid-cols-1 md:grid-cols-2  pt-3 "
           } `}
         >
-          {appointments.length > 0 ? (
-            appointments.map((appointment) => (
+          {upComingAppointments.length > 0 ? (
+            upComingAppointments.map((appointment) => (
               <AppointmentCard
                 key={appointment._id}
                 appointment={appointment}
@@ -452,7 +461,7 @@ const CanceldAppointmentsTable = ({ appointments }) => (
     <Table.Body>
       {appointments.map((appointment, index) => (
         <Table.Row key={appointment._id}>
-          <Table.Cell>{index + 1  }</Table.Cell>
+          <Table.Cell>{index + 1}</Table.Cell>
           <Table.Cell>{appointment?.doctor?.name}</Table.Cell>
           <Table.Cell>{`${formatDate(appointment.date)} ${formatTime(
             appointment.startTime

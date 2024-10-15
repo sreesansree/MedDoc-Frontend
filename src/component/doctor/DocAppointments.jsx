@@ -96,6 +96,7 @@ const DocAppointments = () => {
   const handleViewChange = (newView) => {
     setView(newView);
   };
+  const currentDate = new Date();
 
   // Calculate the indexes for slicing
   const indexOfLastAppointment = currentPage * appointmentsPerPage;
@@ -104,6 +105,15 @@ const DocAppointments = () => {
     indexOfFirstAppointment,
     indexOfLastAppointment
   );
+  const upcomingAppointments = currentAppointments.filter((appointment) => {
+    const appointmentDate = new Date(appointment.date);
+    const [startHours, startMinutes] = appointment.startTime.split(":");
+    appointmentDate.setHours(startHours);
+    appointmentDate.setMinutes(startMinutes);
+
+    // Only return appointments where date and time are in the future
+    return appointmentDate > currentDate;
+  });
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -155,13 +165,13 @@ const DocAppointments = () => {
       {view === "upcoming" && (
         <div
           className={`grid gap-6 ${
-            currentAppointments.length === 1
+            upcomingAppointments.length === 1
               ? "grid-cols-1 place-items-center" // Center the single card
               : "grid-cols-1 md:grid-cols-2" // Regular grid layout for more than one card
           }`}
         >
-          {currentAppointments.length > 0 ? (
-            currentAppointments.map((appointment) => (
+          {upcomingAppointments.length > 0 ? (
+            upcomingAppointments.map((appointment) => (
               <AppointmentCard
                 key={appointment._id}
                 appointment={appointment}
@@ -186,7 +196,7 @@ const DocAppointments = () => {
         <div>
           {canceledAppointments.length > 0 ? (
             <CanceldAppointmentsTable appointments={canceledAppointments} />
-          ) : ( 
+          ) : (
             <p className="flex justify-center">No Canceled Appointments</p>
           )}
         </div>
@@ -211,6 +221,7 @@ const DocAppointments = () => {
 
 const AppointmentCard = ({ appointment, doctorId }) => {
   const { user, date, startTime, endTime, isBooked } = appointment;
+
   const patientName = user.name || "Unknown Patient";
   const appointmentDate = formatDate(date);
   const appointmentStartTime = formatTime(startTime);
@@ -227,19 +238,13 @@ const AppointmentCard = ({ appointment, doctorId }) => {
   };
   const navigate = useNavigate();
 
-  const startNewChat = async (receiverId, appointmentId) => {
-    console.log("receiverId from Appointment", receiverId);
-    // console.log("AppointmnetId from Appointment", appointmentId);
+  const startNewChat = async (receiverId) => {
     try {
       const newChatData = {
         senderId: doctorId,
         receiverId: receiverId,
-        // appointmentId: appointmentId,
       };
       await createChat(newChatData);
-      // const createdChat = await createChat(newChatData);
-      // setChats((prevChats) => [...prevChats, createdChat]);
-      // setCurrentChat(createdChat);
     } catch (error) {
       console.error("Error starting new chat:", error);
     }
