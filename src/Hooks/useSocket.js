@@ -11,13 +11,14 @@ const useSocket = (userID, userType) => {
   const [receiveMessage, setReceiveMessage] = useState(null);
   // const [notification, setNotification] = useState([]);
   // const { currentChat } = useSelector((state) => state.chat);
-  // const { isChatOpen } = useSelector((state) => state.chat);
   // const { notifications } = useSelector((state) => state.notifications);
   const dispatch = useDispatch();
 
+  // Get current chat and chat open state from Redux
+  const { currentChat, isChatOpen } = useSelector((state) => state.chat);
   useEffect(() => {
     socket.current = io("http://localhost:5000");
-    
+
     if (userID) {
       socket.current.emit("new-user-add", userID);
     }
@@ -46,25 +47,19 @@ const useSocket = (userID, userType) => {
 
   // Receiving messages and handling notifications
   useEffect(() => {
-
-    
     socket.current.on("receive-message", (data) => {
       setReceiveMessage(data);
     });
 
-
     socket.current.on("getNotification", (res) => {
-      // const isChatOpen = currentChat?.members
-      //   ? currentChat.members.some((id) => id === res.senderId)
-      //   : false;
-      // console.log("isChat is open :", isChatOpen);
-      dispatch(addNotification(res));
-      // if (isChatOpen) {
-      //   // setNotification((prev) => [{ ...res, isRead: isChatOpen }, ...prev]);
-      // } else { 
-      //   // setNotification((prev) => [res, ...prev]);
-      //   dispatch(addNotification(res));
-      // }
+      // Check if the chat is open with the sender
+      const isCurrentChatOpenWithSender = currentChat?.members?.some(
+        (id) => id === res.senderId
+      );
+      if (!isChatOpen || !isCurrentChatOpenWithSender) {
+        // Only dispatch notification if chat is NOT open
+        dispatch(addNotification(res));
+      }
     });
 
     // Listen for stored notifications (offline messages)

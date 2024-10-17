@@ -6,7 +6,7 @@ import ChatBox from "../../component/chat/ChatBox.jsx";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import useSocket from "../../Hooks/useSocket.js";
-// import { openChat, closeChat } from "../../redux/chat/chatSlice.js";
+import { openChat, closeChat } from "../../redux/chat/chatSlice.js";
 
 const ChatPage = ({ userType }) => {
   const dispatch = useDispatch();
@@ -26,12 +26,17 @@ const ChatPage = ({ userType }) => {
     user
   );
 
-  // useEffect(() => {
-  //   dispatch(openChat());
-  //   return () => {
-  //     dispatch(closeChat());
-  //   };
-  // }, [dispatch]);
+  useEffect(() => {
+    if (currentChat) {
+      dispatch(openChat(true)); // Set isChatOpen to true when a chat is opened
+    } else {
+      dispatch(closeChat(false)); // Set isChatOpen to false when no chat is open
+    }
+
+    return () => {
+      dispatch(closeChat(false)); // Ensure chat is closed when leaving the page
+    };
+  }, [currentChat, dispatch]);
 
   const startNewChat = async (receiverId) => {
     try {

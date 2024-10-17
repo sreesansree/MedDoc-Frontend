@@ -78,7 +78,7 @@ const DocAppointments = () => {
         const response = await axios.get(
           "/api/doctor/doctor-completed-appointments"
         );
-        console.log("Completed Appointments : ", response.data);
+        // console.log("Completed Appointments : ", response.data);
         setCompletedAppointments(response.data);
       } catch (error) {
         console.error(

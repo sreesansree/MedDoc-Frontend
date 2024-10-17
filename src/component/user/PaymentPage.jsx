@@ -17,7 +17,7 @@ const PaymentPage = () => {
         const { orderId, amount, currency, key_id } = response.data;
 
         // Log the response data for debugging
-        console.log("Response data:", response.data);
+        // console.log("Response data :", response.data);
 
         const options = {
           key: key_id,
