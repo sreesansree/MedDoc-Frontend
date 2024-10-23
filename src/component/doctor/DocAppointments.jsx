@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, Modal, Table } from "flowbite-react";
 import axios from "axios";
-import Lottie from "react-lottie";
 import animationData from "../../animations/chatanimation.json";
 import Pagination from "../common/Pagination";
 // import ChatPage from "../../pages/chat/ChatPage.jsx";
@@ -282,15 +281,9 @@ const AppointmentCard = ({ appointment, doctorId }) => {
           <Button
             gradientDuoTone="purpleToBlue"
             className="w-full flex items-center justify-center"
-            // onClick={() => startNewChat(user._id, appointment._id)}
             onClick={() => startNewChat(user._id)}
           >
             <p className="mr-2">Message</p>
-            <Lottie
-              options={defaultOptions}
-              width={30}
-              style={{ marginBottom: 10 }}
-            />
           </Button>
         </Link>
       </div>

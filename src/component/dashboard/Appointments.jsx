@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, Table, Rating, RatingStar } from "flowbite-react";
 import axios from "axios";
-import Lottie from "react-lottie";
 import animationData from "../../animations/chatanimation.json";
 import { formatTime } from "../../utils/dateUtils";
 import { createChat } from "../../api/chatRequest";
@@ -241,16 +240,9 @@ const AppointmentCard = ({ appointment, userId }) => {
           <Link to={`/user/chat/${doctor._id}`}>
             <Button
               gradientDuoTone="purpleToBlue"
-              className="w-full text-center h-12 flex items-center justify-center pt-5"
-              // onClick={() => startNewChat(doctor._id, appointment._id)}
               onClick={() => startNewChat(doctor._id)}
             >
               <p className="mr-2">Message </p>
-              <Lottie
-                options={defaultOptions}
-                width={30}
-                style={{ marginBottom: 10 }}
-              />
             </Button>
           </Link>
         </div>
