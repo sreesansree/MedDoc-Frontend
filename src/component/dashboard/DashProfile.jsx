@@ -6,7 +6,6 @@ import {
   ModalHeader,
   TextInput,
 } from "flowbite-react";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { app } from "../../firebase/firebase.js";
@@ -23,9 +22,8 @@ import {
   updateSuccess,
   updateFailure,
   signOutSuccess,
-
 } from "../../redux/user/userSlice.js";
-import {Link} from "react-router-dom";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 export default function DashProfile() {
   const dispatch = useDispatch();
@@ -39,10 +37,22 @@ export default function DashProfile() {
   const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
   const [updateUserError, setUpdateUserError] = useState(null);
   const [formData, setFormData] = useState({});
-  const [showModel, setShowModal] = useState(false);
-console.log(formData,'Form Data')
-console.log(currentUser.profilePicture,'Profile picture');
-console.log(currentUser.mobile,'mobile')
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const [showPassword, setShowPassword] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
+
+  const [passwordChangeSuccess, setPasswordChangeSuccess] = useState(null);
+  const [passwordChangeError, setPasswordChangeError] = useState(null);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -51,8 +61,6 @@ console.log(currentUser.mobile,'mobile')
       setImageFileUrl(URL.createObjectURL(file));
     }
   };
-
-  // console.log(imageFile, imageFileUrl);
 
   useEffect(() => {
     if (imageFile) {
@@ -109,6 +117,16 @@ console.log(currentUser.mobile,'mobile')
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
+  const handlePasswordChange = (e) => {
+    setPasswordData({ ...passwordData, [e.target.id]: e.target.value });
+  };
+    const togglePasswordVisibility = (field) => {
+    setShowPassword((prevState) => ({
+      ...prevState,
+      [field]: !prevState[field],
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUpdateUserError(null);
@@ -132,13 +150,13 @@ console.log(currentUser.mobile,'mobile')
       });
 
       const data = await res.json();
-      console.log(data,'dataaaaaaaaaa')
+
       if (!res.ok) {
         dispatch(updateFailure(data.message));
         setUpdateUserError(data.message);
       } else {
         dispatch(updateSuccess(data));
-        setImageFileUploadProgress(null)
+        setImageFileUploadProgress(null);
         setUpdateUserSuccess("User's profile updated successfully");
       }
     } catch (error) {
@@ -147,23 +165,69 @@ console.log(currentUser.mobile,'mobile')
     }
   };
 
-  const handleDeleteUser = async () => {
-    // setShowModal(false);
-    // try {
-    //   dispatch(deleteUserStart());
-    //   const res = await fetch(`api/users/delete/${currentUser._id}`, {
-    //     method: `DELETE`,
-    //   });
-    //   const data = await res.json();
-    //   if (!res.ok) {
-    //     dispatch(deleteUserFailure(data.message));
-    //   } else {
-    //     dispatch(deleteUserSuccess(data));
-    //   }
-    // } catch (error) {
-    //   dispatch(deleteUserFailure(error.message));
-    // }
+  const handlePasswordSubmit = async () => {
+    setPasswordChangeError(null);
+    setPasswordChangeSuccess(null);
+
+    // Check if any of the fields are empty
+    if (
+      !passwordData.currentPassword ||
+      !passwordData.newPassword ||
+      !passwordData.confirmPassword
+    ) {
+      setPasswordChangeError("Please fill out all fields.");
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordChangeError("New passwords do not match");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/users/change-password/${currentUser._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(passwordData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPasswordChangeError(data.message);
+      } else {
+        setPasswordChangeSuccess("Password changed successfully");
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+
+        // Optionally, close the modal after a short delay
+        setTimeout(() => {
+          setShowChangePasswordModal(false);
+          setPasswordChangeSuccess(null);
+        }, 2000); // Adjust delay as needed
+      }
+    } catch (error) {
+      setPasswordChangeError("Error changing password");
+    }
   };
+
+  // const handleDeleteUser = async () => {
+  // setShowModal(false);
+  // try {
+  //   dispatch(deleteUserStart());
+  //   const res = await fetch(`api/users/delete/${currentUser._id}`, {
+  //     method: `DELETE`,
+  //   });
+  //   const data = await res.json();
+  //   if (!res.ok) {
+  //     dispatch(deleteUserFailure(data.message));
+  //   } else {
+  //     dispatch(deleteUserSuccess(data));
+  //   }
+  // } catch (error) {
+  //   dispatch(deleteUserFailure(error.message));
+  // }
+  // };
 
   const handleSignOut = async () => {
     try {
@@ -218,11 +282,11 @@ console.log(currentUser.mobile,'mobile')
             src={imageFileUrl || currentUser?.profilePicture}
             alt="user"
             className={`rounded-full w-full h-full object-cover border-8
-             border-[lightgray] ${
-               imageFileUploadProgress &&
-               imageFileUploadProgress < 100 &&
-               "opacity-60"
-             }`}
+              border-[lightgray] ${
+                imageFileUploadProgress &&
+                imageFileUploadProgress < 100 &&
+                "opacity-60"
+              }`}
           />
         </div>
         {imageFileUploadError && (
@@ -243,12 +307,16 @@ console.log(currentUser.mobile,'mobile')
           defaultValue={currentUser.email}
           onChange={handleChange}
         />
-        <TextInput
-          type="password"
-          id="password"
-          placeholder="password"
-          onChange={handleChange}
-        />
+        {/* <TextInput
+            type="password"
+            id="password"
+            placeholder="password"
+            onChange={handleChange}
+          /> */}
+        <Button onClick={() => setShowChangePasswordModal(true)}>
+          Change Password
+        </Button>
+
         <Button
           type="submit"
           gradientDuoTone={"purpleToBlue"}
@@ -257,12 +325,11 @@ console.log(currentUser.mobile,'mobile')
         >
           {loading ? "Loading..." : "Update"}
         </Button>
-       
       </form>
       <div className="text-red-500 flex justify-center mt-5">
         {/* <span onClick={() => setShowModal(true)} className="cursor-pointer">
-          Delete Account
-        </span> */}
+            Delete Account
+          </span> */}
         <span onClick={handleSignOut} className="cursor-pointer">
           Sign Out
         </span>
@@ -283,24 +350,95 @@ console.log(currentUser.mobile,'mobile')
         </Alert>
       )}
       <Modal
-        show={showModel}
-        onClose={() => setShowModal(false)}
-        popup
-        size="md"
+        show={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
       >
-        <ModalHeader />
+        <ModalHeader>Change Password</ModalHeader>
         <ModalBody>
-          <div className="text-center">
-            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 mb-4 mx-auto" />
-            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-              Are you sure? You want to delete your account?
-            </h3>
-            <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={handleDeleteUser}>
-                Yes, I'm Sure
-              </Button>
-              <Button onClick={()=>setShowModal(false)} color="gray">No,Cancel</Button>
-            </div>
+          <p className="mb-3 ">
+            Use the form below to change the password for your MedDoc account
+          </p>
+          <div className="relative">
+            <TextInput
+              // type="password"
+              type={showPassword.currentPassword ? "text" : "password"}
+              id="currentPassword"
+              placeholder="Current Password"
+              onChange={handlePasswordChange}
+              className="m-2"
+            />
+            <button
+              type="button"
+              onClick={() => togglePasswordVisibility("currentPassword")}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+            >
+              {/* {showPassword.currentPassword ? (
+                <AiOutlineEyeInvisible className="h-5 w-5" />
+              ) : (
+                <AiOutlineEye className="h-5 w-5" />
+              )} */}
+              {showPassword.currentPassword ? (
+                <AiOutlineEyeInvisible size={20} />
+              ) : (
+                <AiOutlineEye size={20} />
+              )}
+            </button>
+          </div>
+          <div className="relative">
+            <TextInput
+              type={showPassword.newPassword ? "text" : "password"}
+              id="newPassword"
+              placeholder="New Password"
+              onChange={handlePasswordChange}
+              className="m-2"
+            />
+            <button
+              type="button"
+              onClick={() => togglePasswordVisibility("newPassword")}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+            >
+              {showPassword.newPassword ? (
+                <AiOutlineEyeInvisible size={20} />
+              ) : (
+                <AiOutlineEye size={20} />
+              )}
+            </button>
+          </div>
+          <div className="relative">
+            <TextInput
+              type={showPassword.confirmPassword ? "text" : "password"}
+              id="confirmPassword"
+              placeholder="Confirm New Password"
+              onChange={handlePasswordChange}
+              className="m-2"
+            />
+            <button
+              type="button"
+              onClick={() => togglePasswordVisibility("confirmPassword")}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+            >
+              {showPassword.confirmPassword ? (
+                <AiOutlineEyeInvisible size={20} />
+              ) : (
+                <AiOutlineEye size={20} />
+              )}
+            </button>
+          </div>
+          {passwordChangeSuccess && (
+            <Alert color="success" className="mt-3">
+              {passwordChangeSuccess}
+            </Alert>
+          )}
+          {passwordChangeError && (
+            <Alert color="failure" className="mt-3">
+              {passwordChangeError}
+            </Alert>
+          )}
+          <div className="flex justify-between mt-3">
+            <Button onClick={handlePasswordSubmit}>Submit</Button>
+            <Button onClick={() => setShowChangePasswordModal(false)}>
+              Close
+            </Button>
           </div>
         </ModalBody>
       </Modal>
