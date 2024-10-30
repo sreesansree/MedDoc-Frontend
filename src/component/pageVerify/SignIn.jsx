@@ -22,6 +22,7 @@ import {
 // } from "../../redux/doctor/doctorSlice.js";
 import { useSelector, useDispatch } from "react-redux";
 import OAuth from "../google/OAuth.jsx";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 export default function SignIn() {
   // const [role, setRole] = useState("user");
@@ -59,6 +60,10 @@ export default function SignIn() {
   const handleChange = (e) => {
     // console.log(e.target.value);
     setFromData({ ...formData, [e.target.id]: e.target.value.trim() });
+  };
+  const [showPassword, setShowPassword] = useState(false);
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
   };
 
   const handleSubmit = async (e) => {
@@ -122,23 +127,30 @@ export default function SignIn() {
         {/* right */}
         <div className="flex-1">
           <form className=" flex flex-col gap-4" onSubmit={handleSubmit}>
-            <div>
-              <Label value="Email" />
+            <Label value="Email" />
+            {/* <div> */}
+            <TextInput
+              type="email"
+              placeholder="Enter your email address"
+              id="email"
+              onChange={handleChange}
+            />
+            {/* </div> */}
+            <Label value="Password" />
+            <div className="relative">
               <TextInput
-                type="email"
-                placeholder="Enter your email address"
-                id="email"
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <Label value="Password" />
-              <TextInput
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="**********"
                 id="password"
                 onChange={handleChange}
               />
+              <button
+                type="button"
+                onClick={() => togglePasswordVisibility("currentPassword")}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+              >
+                  {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+              </button>
             </div>
             <Button
               gradientDuoTone={"purpleToPink"}

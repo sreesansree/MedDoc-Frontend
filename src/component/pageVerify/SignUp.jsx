@@ -10,20 +10,23 @@ import {
 } from "flowbite-react";
 import axios from "axios";
 import OAuth from "../google/OAuth";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 export default function SignUp() {
   const [formData, setFromData] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     // console.log(e.target.value);
     setFromData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
-
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log("Form data being sent:", formData);
@@ -123,14 +126,25 @@ export default function SignUp() {
                 onChange={handleChange}
               />
             </div>
-            <div>
               <Label value="Password" />
+            <div className="relative">
               <TextInput
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 id="password"
                 onChange={handleChange}
               />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? (
+                  <AiOutlineEyeInvisible size={20} />
+                ) : (
+                  <AiOutlineEye size={20} />
+                )}
+              </button>
             </div>
             <Button
               gradientDuoTone={"purpleToPink"}
