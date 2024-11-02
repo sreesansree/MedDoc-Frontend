@@ -321,19 +321,35 @@ const CompletedAppointmentsTable = ({ appointments }) => {
   };
 
   //Fetch saved ratings from the backend if available
+  // useEffect(() => {
+  //   const intitialRatings = {};
+  //   const initialSubmittedRatings = {};
+  //   appointments.forEach((appointment) => {
+  //     if (appointment.doctor?.averageRating) {
+  //       intitialRatings[appointment._id] = appointment?.doctor?.averageRating;
+  //       // Assume the rating is already submitted if averageRating exists
+  //       initialSubmittedRatings[appointment._id] = true;
+  //     }
+  //   });
+  //   setRatings(intitialRatings);
+  //   setSubmittedRatings(initialSubmittedRatings);
+  // }, [appointments]);
+  
   useEffect(() => {
-    const intitialRatings = {};
+    const initialRatings = {};
     const initialSubmittedRatings = {};
+  
     appointments.forEach((appointment) => {
-      if (appointment.doctor?.averageRating) {
-        intitialRatings[appointment._id] = appointment?.doctor?.averageRating;
-        // Assume the rating is already submitted if averageRating exists
-        initialSubmittedRatings[appointment._id] = true;
+      if (appointment.rating) {
+        initialRatings[appointment._id] = appointment.rating;
+        initialSubmittedRatings[appointment._id] = true; // Mark as submitted if rating exists
       }
     });
-    setRatings(intitialRatings);
+  
+    setRatings(initialRatings);
     setSubmittedRatings(initialSubmittedRatings);
   }, [appointments]);
+
 
   // Update local rating state
   const handleRatingChange = (appointmentId, value) => {
@@ -431,6 +447,7 @@ const CompletedAppointmentsTable = ({ appointments }) => {
                     size={"sm"}
                   >
                     {isSubmitted ? "Rating Submitted" : "Submit Rating"}
+                     
                   </Button>
                 </Table.Cell>
               </Table.Row>
