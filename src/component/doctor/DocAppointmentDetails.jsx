@@ -81,7 +81,7 @@ const DocAppointmentDetails = () => {
   const handleCompleteConsultation = async () => {
     try {
       const response = await axios.post(
-        `/api/doctor/doctor-appointments//${id}/complete`,
+        `/api/doctor/doctor-appointments/${id}/complete`,
         {
           medicines,
           notes,

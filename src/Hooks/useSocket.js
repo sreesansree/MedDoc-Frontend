@@ -16,6 +16,7 @@ const useSocket = (userID, userType) => {
 
   // Get current chat and chat open state from Redux
   const { currentChat, isChatOpen } = useSelector((state) => state.chat);
+
   useEffect(() => {
     socket.current = io("http://localhost:5000");
 
@@ -47,17 +48,31 @@ const useSocket = (userID, userType) => {
 
   // Receiving messages and handling notifications
   useEffect(() => {
+    // Clean up event listeners before adding new ones to avoid duplicates
+    socket.current.off("receive-message");
+    socket.current.off("getNotification");
+    socket.current.off("store-notification");
+    socket.current.off("getStoredNotifications");
+
+  // Receive message event listener
     socket.current.on("receive-message", (data) => {
       setReceiveMessage(data);
     });
 
+    // socket.current.on("getNotification", (res) => {
+    //   // Check if the chat is open with the sender
+    //   const isCurrentChatOpenWithSender = currentChat?.members?.some(
+    //     (id) => id === res.senderId
+    //   );
+    //   if (!isChatOpen || !isCurrentChatOpenWithSender) {
+    //     // Only dispatch notification if chat is NOT open
+    //     dispatch(addNotification(res));
+    //   }
+    // });
     socket.current.on("getNotification", (res) => {
-      // Check if the chat is open with the sender
-      const isCurrentChatOpenWithSender = currentChat?.members?.some(
-        (id) => id === res.senderId
-      );
-      if (!isChatOpen || !isCurrentChatOpenWithSender) {
-        // Only dispatch notification if chat is NOT open
+      // Check if the receiver's chat is open
+      const isReceiverChatOpen = isChatOpen && currentChat?.members.includes(res.receiverId);
+      if (!isReceiverChatOpen) {
         dispatch(addNotification(res));
       }
     });
@@ -80,7 +95,7 @@ const useSocket = (userID, userType) => {
       socket.current.off("getStoredNotifications");
       socket.current.off("get-users");
     };
-  }, [dispatch, userID]);
+  }, [dispatch, userID, currentChat, isChatOpen]);
 
   return {
     onlineUsers,

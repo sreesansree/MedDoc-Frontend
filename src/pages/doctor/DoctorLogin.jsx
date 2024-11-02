@@ -13,8 +13,8 @@ import OAuth from "../../component/google/OAuth.jsx";
 
 export default function DoctorLogin() {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  // const [errors, setErrors] = useState({});
-
+  const [errors, setErrors] = useState({});
+  
   const {
     currentDoctor,
     loading,
