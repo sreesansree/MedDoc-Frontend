@@ -8,12 +8,21 @@ import {
   HiClipboardList,
 } from "react-icons/hi";
 import axios from "axios"; // Import axios for making API calls
+import { Pie, Doughnut, Bar } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js";
+
+ChartJS.register(ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
+
+
+
 
 export default function AdminHome() {
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalDoctors, setTotalDoctors] = useState(0);
   const [totalPendings, setTotalPendings] = useState(0);
 
+
+  
   const navigate = useNavigate();
   const location = useLocation();
   const isDashboard = location.pathname.includes("dashboard");

@@ -53,6 +53,8 @@ const DocAppointments = () => {
           const dateTimeB = new Date(b.date + "T" + b.startTime);
           return dateTimeA - dateTimeB;
         });
+        // console.log("response : ",response.data)
+        // console.log("sorted : ",sortedAppointments)
         setAppointments(sortedAppointments);
       } catch (error) {
         console.error("Error fetching appointments", error);
@@ -96,7 +98,7 @@ const DocAppointments = () => {
     setView(newView);
   };
   const currentDate = new Date();
-
+// console.log("apointments :",appointments)
   // Calculate the indexes for slicing
   const indexOfLastAppointment = currentPage * appointmentsPerPage;
   const indexOfFirstAppointment = indexOfLastAppointment - appointmentsPerPage;
@@ -104,6 +106,7 @@ const DocAppointments = () => {
     indexOfFirstAppointment,
     indexOfLastAppointment
   );
+  // console.log("current appointments :",currentAppointments )
   const upcomingAppointments = currentAppointments.filter((appointment) => {
     const appointmentDate = new Date(appointment.date);
     const [startHours, startMinutes] = appointment.startTime.split(":");
@@ -113,6 +116,7 @@ const DocAppointments = () => {
     // Only return appointments where date and time are in the future
     return appointmentDate > currentDate;
   });
+  // console.log("uPcoming appointments :",upcomingAppointments)
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
