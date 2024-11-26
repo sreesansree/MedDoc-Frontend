@@ -334,22 +334,21 @@ const CompletedAppointmentsTable = ({ appointments }) => {
   //   setRatings(intitialRatings);
   //   setSubmittedRatings(initialSubmittedRatings);
   // }, [appointments]);
-  
+
   useEffect(() => {
     const initialRatings = {};
     const initialSubmittedRatings = {};
-  
+
     appointments.forEach((appointment) => {
       if (appointment.rating) {
         initialRatings[appointment._id] = appointment.rating;
         initialSubmittedRatings[appointment._id] = true; // Mark as submitted if rating exists
       }
     });
-  
+
     setRatings(initialRatings);
     setSubmittedRatings(initialSubmittedRatings);
   }, [appointments]);
-
 
   // Update local rating state
   const handleRatingChange = (appointmentId, value) => {
@@ -409,7 +408,7 @@ const CompletedAppointmentsTable = ({ appointments }) => {
                 </Table.Cell>
                 <Table.Cell className="flex flex-col gap-2">
                   {/* Display doctor average rating */}
-                  <div className="flex">
+                  {/* <div className="flex"> */}
                     {/* Rating component for selecting feedback */}
                     <Rating>
                       <div className="flex items-center">
@@ -425,30 +424,29 @@ const CompletedAppointmentsTable = ({ appointments }) => {
                         ))}
                       </div>
                     </Rating>
-                    <p className="ml-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {/* <p className="ml-2 text-sm font-medium text-gray-500 dark:text-gray-400">
                       {appointment?.doctor?.averageRating
                         ? `${appointment.doctor.averageRating.toFixed(
                             1
                           )} out of 5`
                         : "Not rated yet"}
-                    </p>
-                  </div>
+                    </p> */}
 
-                  {/* Button to submit rating */}
-                  <Button
-                    gradientDuoTone={"purpleToBlue"}
-                    onClick={() =>
-                      handleSubmitRating(
-                        appointment._id,
-                        appointment.doctor._id
-                      )
-                    }
-                    disabled={isSubmitted} // Disable button if rating is submitted
-                    size={"sm"}
-                  >
-                    {isSubmitted ? "Rating Submitted" : "Submit Rating"}
-                     
-                  </Button>
+                    {/* Button to submit rating */}
+                    <Button
+                      gradientDuoTone={"purpleToBlue"}
+                      onClick={() =>
+                        handleSubmitRating(
+                          appointment._id,
+                          appointment.doctor._id
+                        )
+                      }
+                      disabled={isSubmitted} // Disable button if rating is submitted
+                      size={"sm"}
+                    >
+                      {isSubmitted ? "Rating Submitted" : "Submit Rating"}
+                    </Button>
+                  {/* </div> */}
                 </Table.Cell>
               </Table.Row>
             );

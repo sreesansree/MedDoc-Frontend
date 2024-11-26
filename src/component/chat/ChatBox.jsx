@@ -22,6 +22,9 @@ const ChatBox = ({
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null); // For image/video preview
+  const [audioPreview, setAudioPreview] = useState(null); // For audio preview
+
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [audioURL, setAudioURL] = useState(null);
@@ -78,11 +81,21 @@ const ChatBox = ({
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    if (selectedFile) {
+      const previewUrl = URL.createObjectURL(selectedFile);
+      setFilePreview(previewUrl);
+    }
   };
 
   // State to track reply
   const [replyTo, setReplyTo] = useState(null);
+
+  const clearPreviews = () => {
+    setFilePreview(null);
+    setAudioPreview(null);
+  };
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -124,6 +137,7 @@ const ChatBox = ({
       setMessages((prevMessages) => [...prevMessages, messageData]);
       setNewMessage("");
       setReplyTo(null);
+      clearPreviews();
       // Send the message to Socket.io server
       const receiverId = chat?.members.find((id) => id !== currentUser);
       setSendMessage({
@@ -164,7 +178,12 @@ const ChatBox = ({
     if (mediaRecorder) {
       mediaRecorder.stop();
     }
+    if (audioURL) {
+      const previewUrl = URL.createObjectURL(audioURL);
+      setAudioPreview(previewUrl);
+    }
   };
+  // Clear previews after sending
 
   useEffect(() => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
@@ -224,7 +243,12 @@ const ChatBox = ({
                 {message.replyTo && (
                   <div className="reply-preview">
                     <span className="text-sm text-gray-600 ">
-                      Replying to: {message.replyTo?.text || "Deleted message"}
+                      {`${
+                        message.senderId === currentUser
+                          ? "Replying to"
+                          : "Replayed to"
+                      }`}
+                      : {message.replyTo?.text || "Deleted message"}
                     </span>
                   </div>
                 )}
@@ -270,7 +294,7 @@ const ChatBox = ({
                 </span>
                 {/* Reply button */}
                 <button
-                  onClick={() => setReplyTo(message)}
+                  onClick={() => handleReply(message)}
                   className="text-sm text-gray-700"
                 >
                   <FaReply />
@@ -282,6 +306,48 @@ const ChatBox = ({
           </div>
 
           <div className="bg-gray-100 dark:bg-gray-600 flex justify-between items-center gap-4 p-3 m-2 rounded-lg">
+            {filePreview && (
+              <div className="preview-container flex items-center gap-2">
+                {file.type.startsWith("image") && (
+                  <img
+                    src={filePreview}
+                    alt="Preview"
+                    className="max-w-[100px] max-h-[100px] rounded-lg"
+                  />
+                )}
+                {file.type.startsWith("video") && (
+                  <video
+                    src={filePreview}
+                    controls
+                    className="max-w-[150px] max-h-[100px] rounded-lg"
+                  />
+                )}
+                <button
+                  onClick={() => {
+                    setFile(null);
+                    setFilePreview(null);
+                  }}
+                  className="text-red-500"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+            {audioPreview && (
+              <div className="preview-container flex items-center gap-2">
+                <audio src={audioPreview} controls />
+                <button
+                  onClick={() => {
+                    setAudioURL(null);
+                    setAudioPreview(null);
+                  }}
+                  className="text-red-500"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+
             <div className="p-2 rounded-lg cursor-pointer">
               <FaPlus
                 onClick={() => setIsModalOpen(true)}
