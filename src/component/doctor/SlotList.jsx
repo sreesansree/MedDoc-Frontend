@@ -191,7 +191,7 @@ const SlotList = () => {
 
   return (
     <div className="container mx-auto p-4">
-      {/* <ToastContainer /> */}
+      <ToastContainer />
       <h2 className="text-2xl font-bold mb-4 flex">
         Available Slots
       </h2>
