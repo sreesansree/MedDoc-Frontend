@@ -82,10 +82,13 @@ const ChatBox = ({
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    setFile(selectedFile);
     if (selectedFile) {
+      setFile(selectedFile);
       const previewUrl = URL.createObjectURL(selectedFile);
       setFilePreview(previewUrl);
+    } else {
+      setFile(null);
+      setFilePreview(null);
     }
   };
 
@@ -294,7 +297,7 @@ const ChatBox = ({
                 </span>
                 {/* Reply button */}
                 <button
-                  onClick={() => handleReply(message)}
+                  onClick={() => handleReply(message.text)}
                   className="text-sm text-gray-700"
                 >
                   <FaReply />
@@ -306,7 +309,7 @@ const ChatBox = ({
           </div>
 
           <div className="bg-gray-100 dark:bg-gray-600 flex justify-between items-center gap-4 p-3 m-2 rounded-lg">
-            {filePreview && (
+            {filePreview && file && file.type && (
               <div className="preview-container flex items-center gap-2">
                 {file.type.startsWith("image") && (
                   <img
@@ -333,6 +336,7 @@ const ChatBox = ({
                 </button>
               </div>
             )}
+
             {audioPreview && (
               <div className="preview-container flex items-center gap-2">
                 <audio src={audioPreview} controls />
