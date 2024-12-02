@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import RescheduleForm from "../../component/dashboard/RescheduleForm";
+import { ToastContainer } from "react-toastify";
 
 const ReschedulePage = () => {
   const { appointmentId } = useParams();
@@ -33,6 +34,7 @@ const ReschedulePage = () => {
 
   return (
     <div className="flex flex-col justify-center items-center m-2 mb-4">
+      <ToastContainer />
       <h2 className="m-6 font-bold text-lg shadow-sm p-3 text-center shadow-blue-200 rounded-lg">
         Reschedule Appointment
       </h2>

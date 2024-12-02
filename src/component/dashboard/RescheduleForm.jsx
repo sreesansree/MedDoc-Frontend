@@ -29,7 +29,9 @@ const RescheduleForm = ({ appointmentId, availableSlots }) => {
         selectedSlot,
       });
       toast.success("Appointment resheduled successfully!");
-      navigate("/dashboard?tab=appointments");
+      setTimeout(() => {
+        navigate("/dashboard?tab=appointments");
+      }, 3000);
     } catch (error) {
       console.error("Error rescheduling slot:", error);
       toast.error(error.message);
@@ -39,7 +41,7 @@ const RescheduleForm = ({ appointmentId, availableSlots }) => {
   return (
     <Card className=" w-full max-w-md p-6 bg-white rounded-lg shadow-md shadow-blue-300">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <ToastContainer />
+        {/* <ToastContainer /> */}
         <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 shadow-lg text-center shadow-blue-200">
           Select a New Slot
         </h3>
