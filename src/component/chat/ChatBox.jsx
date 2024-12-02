@@ -49,7 +49,6 @@ const ChatBox = ({
 
   useEffect(() => {
     const getUserData = async () => {
-      console.log(userId, "userID from chatBox");
       try {
         const endPoint =
           userType === "user"

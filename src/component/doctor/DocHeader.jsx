@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Button, Dropdown, Navbar, Badge } from "flowbite-react";
+import { Avatar, Button, Dropdown, Navbar } from "flowbite-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaMoon, FaSun, FaBell } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
@@ -101,7 +101,10 @@ export default function DocHeader() {
               {showNotifications && (
                 <div className="absolute right-0 mt-2 w-100 bg-white shadow-lg rounded-lg p-2 z-10">
                   <h3 className="text-sm font-bold">Notifications</h3>
-                  <ChatNotification notifications={notifications} />
+                  <ChatNotification
+                    notifications={notifications}
+                    userType="doctor"
+                  />
                 </div>
               )}
             </div>
