@@ -8,7 +8,7 @@ import {
   Spinner,
   TextInput,
 } from "flowbite-react";
-import axios from "axios";
+// import axios from "axios";
 import {
   signInStart,
   signInSuccess,
@@ -21,8 +21,9 @@ import {
 //   signOutSuccessD,
 // } from "../../redux/doctor/doctorSlice.js";
 import { useSelector, useDispatch } from "react-redux";
-import OAuth from "../google/OAuth.jsx";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import OAuth from "../google/OAuth.jsx";
+import api from "../../api/renderApi.js";
 
 export default function SignIn() {
   // const [role, setRole] = useState("user");
@@ -75,18 +76,13 @@ export default function SignIn() {
     }
     try {
       dispatch(signInStart());
-      const res = await axios.post("api/users/login", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true, // Include this to send cookies
-      });
+      const res = await api.post("api/users/login", formData);
 
       // Check for success status
       if (res.status !== 200 && res.status !== 201) {
         dispatch(
           signInFailure(
-            data.message || "Something went wrong. Please try again."
+            res.message || "Something went wrong. Please try again."
           )
         );
 
@@ -149,7 +145,11 @@ export default function SignIn() {
                 onClick={() => togglePasswordVisibility("currentPassword")}
                 className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
               >
-                  {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+                {showPassword ? (
+                  <AiOutlineEyeInvisible size={20} />
+                ) : (
+                  <AiOutlineEye size={20} />
+                )}
               </button>
             </div>
             <Button
