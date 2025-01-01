@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { Button, Table } from "flowbite-react";
 import ConfirmationModal from "../common/ConfirmationModal";
+import api from "../../api/renderApi.js";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -17,7 +18,7 @@ export default function AdminUsers() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("/api/admin/users", {
+      const response = await api.get("/api/admin/users", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -37,7 +38,7 @@ export default function AdminUsers() {
 
   const handleBlock = async (id) => {
     try {
-      await axios.post(
+      await api.post(
         `/api/admin/block-user/${id}`,
         {},
         {
@@ -52,7 +53,7 @@ export default function AdminUsers() {
 
   const handleUnblock = async (id) => {
     try {
-      await axios.post(
+      await api.post(
         `/api/admin/unblock-user/${id}`,
         {},
         {

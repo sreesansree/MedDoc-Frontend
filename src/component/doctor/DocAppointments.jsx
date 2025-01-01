@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Card, Modal, Table } from "flowbite-react";
-import axios from "axios";
+import { Button, Card, Table } from "flowbite-react";
+// import axios from "axios";
 import animationData from "../../animations/chatanimation.json";
 import Pagination from "../common/Pagination";
 // import ChatPage from "../../pages/chat/ChatPage.jsx";
 import { useSelector } from "react-redux";
 import { createChat } from "../../api/chatRequest.js";
 import { jsPDF } from "jspdf";
+import api from "../../api/renderApi.js";
 
 // Function to format date to "dd/MM/yyyy"
 const formatDate = (date) => {
@@ -47,7 +48,7 @@ const DocAppointments = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get("/api/doctor/doctor-appointments");
+        const response = await api.get("/api/doctor/doctor-appointments");
         const sortedAppointments = response.data.sort((a, b) => {
           const dateTimeA = new Date(a.date + "T" + a.startTime);
           const dateTimeB = new Date(b.date + "T" + b.startTime);
@@ -62,7 +63,7 @@ const DocAppointments = () => {
     };
     const fetchCanceledAppointments = async () => {
       try {
-        const respsonse = await axios.get(
+        const respsonse = await api.get(
           "/api/doctor/doctor-canceled-appointments"
         );
         setCanceledAppointments(respsonse.data);
@@ -76,7 +77,7 @@ const DocAppointments = () => {
 
     const fetchCompletedAppointments = async () => {
       try {
-        const response = await axios.get(
+        const response = await api.get(
           "/api/doctor/doctor-completed-appointments"
         );
         // console.log("Completed Appointments : ", response.data);
@@ -98,7 +99,7 @@ const DocAppointments = () => {
     setView(newView);
   };
   const currentDate = new Date();
-// console.log("apointments :",appointments)
+  // console.log("apointments :",appointments)
   // Calculate the indexes for slicing
   const indexOfLastAppointment = currentPage * appointmentsPerPage;
   const indexOfFirstAppointment = indexOfLastAppointment - appointmentsPerPage;

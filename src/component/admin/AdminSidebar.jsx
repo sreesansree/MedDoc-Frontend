@@ -5,8 +5,9 @@ import { FaUserDoctor } from "react-icons/fa6";
 import { FcDepartment } from "react-icons/fc";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import axios from "axios";
+// import axios from "axios";
 import { signOutSuccessA } from "../../redux/admin/adminSlice";
+import api from "../../api/renderApi.js";
 
 export default function AdminSidebar() {
   const [tab, setTab] = useState("");
@@ -24,7 +25,7 @@ export default function AdminSidebar() {
 
   const handleSignOut = async () => {
     try {
-      const res = await axios.post(
+      const res = await api.post(
         "/api/admin/logout",
         {},
         {

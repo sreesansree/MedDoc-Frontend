@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { Button, Label, TextInput, Card } from "flowbite-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import api from "../../api/renderApi.js";
 
 const formatTime = (time) => {
   const [hours, minutes] = time.split(":").map(Number);
@@ -77,7 +78,7 @@ const CreateSlot = () => {
     }
 
     try {
-      const response = await axios.post("/api/doctor/slots", {
+      const response = await api.post("/api/doctor/slots", {
         date,
         startTime: parseTime(fixedStartTime),
         endTime: parseTime(fixedEndTime),

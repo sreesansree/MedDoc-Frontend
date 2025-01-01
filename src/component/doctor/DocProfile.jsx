@@ -16,8 +16,9 @@ import {
   updateSuccessD,
   updateFailureD,
 } from "../../redux/doctor/doctorSlice.js";
-import axios from "axios";
+// import axios from "axios";
 import { CircularProgressbar } from "react-circular-progressbar";
+import api from "../../api/renderApi.js";
 
 export default function DocProfile() {
   const dispatch = useDispatch();
@@ -91,7 +92,7 @@ export default function DocProfile() {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get("/api/admin/departments/");
+        const response = await api.get("/api/admin/departments/");
         setDepartments(response.data);
       } catch (error) {
         console.error("Error fetching departments: ", error);
@@ -182,7 +183,7 @@ export default function DocProfile() {
     }
     try {
       dispatch(updateStartD());
-      const response = await axios.put(
+      const response = await api.put(
         `/api/doctor/profile/${currentDoctor._id}`,
         formData,
         {

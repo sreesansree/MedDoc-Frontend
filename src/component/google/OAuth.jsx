@@ -20,8 +20,12 @@ export default function OAuth({ userType }) {
     try {
       const resultsFromGoogle = await signInWithPopup(auth, provider);
       // console.log(resultsFromGoogle);
+      const backendURL = "https://meddoc-backend-cqw0.onrender.com";
       const endPoint =
-        userType === "doctor" ? "/api/doctor/google" : "api/users/google";
+        userType === "doctor"
+          ? `${backendURL}/api/doctor/google`
+          : `${backendURL}api/users/google`;
+          
       const res = await fetch(endPoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

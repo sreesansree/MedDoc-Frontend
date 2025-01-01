@@ -38,6 +38,8 @@ export default function DashProfile() {
   const [updateUserError, setUpdateUserError] = useState(null);
   const [formData, setFormData] = useState({});
 
+  const backendURL = "https://meddoc-backend-cqw0.onrender.com";
+
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -120,7 +122,7 @@ export default function DashProfile() {
   const handlePasswordChange = (e) => {
     setPasswordData({ ...passwordData, [e.target.id]: e.target.value });
   };
-    const togglePasswordVisibility = (field) => {
+  const togglePasswordVisibility = (field) => {
     setShowPassword((prevState) => ({
       ...prevState,
       [field]: !prevState[field],
@@ -141,13 +143,17 @@ export default function DashProfile() {
     }
     try {
       dispatch(updateStart());
-      const res = await fetch(`/api/users/update/${currentUser._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      // const backendURL = "https://meddoc-backend-cqw0.onrender.com";
+      const res = await fetch(
+        `${backendURL}/api/users/update/${currentUser._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await res.json();
 
@@ -184,11 +190,15 @@ export default function DashProfile() {
       return;
     }
     try {
-      const res = await fetch(`/api/users/change-password/${currentUser._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(passwordData),
-      });
+      // const backendURL = "https://meddoc-backend-cqw0.onrender.com";
+      const res = await fetch(
+        `${backendURL}/api/users/change-password/${currentUser._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(passwordData),
+        }
+      );
       const data = await res.json();
       if (!res.ok) {
         setPasswordChangeError(data.message);
@@ -231,7 +241,7 @@ export default function DashProfile() {
 
   const handleSignOut = async () => {
     try {
-      const res = await fetch(`/api/users/logout`, {
+      const res = await fetch(`${backendURL}/api/users/logout`, {
         method: "POST",
       });
       const data = await res.json();

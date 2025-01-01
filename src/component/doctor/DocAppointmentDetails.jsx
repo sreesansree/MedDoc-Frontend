@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button, Modal, Textarea, Alert, Label } from "flowbite-react";
 import { AiOutlineClose } from "react-icons/ai";
 import { formatTime, formatDate } from "../../utils/dateUtils";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "../../api/renderApi.js";
+// import axios from "axios";
 // import { HiOutlineEllipsisVertical } from "react-icons/hi2";
 
 const DocAppointmentDetails = () => {
@@ -45,9 +46,7 @@ const DocAppointmentDetails = () => {
   useEffect(() => {
     const fetchAppointmentDetails = async () => {
       try {
-        const response = await axios.get(
-          `/api/doctor/doctor-appointments/${id}`
-        );
+        const response = await api.get(`/api/doctor/doctor-appointments/${id}`);
         setAppointment(response.data);
       } catch (error) {
         console.error("Error fetching appointment details:", error);
@@ -59,7 +58,7 @@ const DocAppointmentDetails = () => {
 
   const handleCancelAppointment = async () => {
     try {
-      const response = await axios.post(
+      const response = await api.post(
         `/api/doctor/doctor-appointments/${id}/cancel`,
         {
           reason: cancelReason,
@@ -80,7 +79,7 @@ const DocAppointmentDetails = () => {
 
   const handleCompleteConsultation = async () => {
     try {
-      const response = await axios.post(
+      const response = await api.post(
         `/api/doctor/doctor-appointments/${id}/complete`,
         {
           medicines,
@@ -110,7 +109,7 @@ const DocAppointmentDetails = () => {
 
   const handleRescheduleAppointment = async () => {
     try {
-      const response = await axios.post(
+      const response = await api.post(
         `/api/doctor/reshedule/${appointment._id}`,
         { newSlots }
       );

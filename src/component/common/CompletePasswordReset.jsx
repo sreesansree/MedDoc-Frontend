@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Button, TextInput, Label, Alert } from "flowbite-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
+import api from "../../api/renderApi.js";
 
 const CompletePasswordReset = ({ userType }) => {
   const [otp, setOtp] = useState("");
@@ -37,7 +38,7 @@ const CompletePasswordReset = ({ userType }) => {
       } else {
         endPoint = "/api/users/reset-password";
       }
-      const response = await axios.post(endPoint, {
+      const response = await api.post(endPoint, {
         email,
         otp: otp,
         password,

@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import InputEmoji from "react-input-emoji";
 import { format } from "timeago.js";
-import axios from "axios";
+// import axios from "axios";
 import { Modal, Button } from "flowbite-react";
 import { FaPlus, FaReply } from "react-icons/fa";
 import { IoMdSend } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
 import { uploadFileToFirebase } from "../../firebase/firebase";
+import api from "../../api/renderApi.js";
 
 const ChatBox = ({
   userType,
@@ -54,7 +55,7 @@ const ChatBox = ({
           userType === "user"
             ? `/api/users/doctor/${userId}`
             : `/api/doctor/user/${userId}`;
-        const { data } = await axios.get(endPoint);
+        const { data } = await api.get(endPoint);
         setUserData(data);
       } catch (error) {
         console.log(error);
@@ -66,7 +67,7 @@ const ChatBox = ({
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const { data } = await axios.get(`/api/messages/${chat._id}`);
+        const { data } = await api.get(`/api/messages/${chat._id}`);
         setMessages(data);
       } catch (error) {
         console.log(error);
@@ -133,7 +134,7 @@ const ChatBox = ({
       // Send the message to the backend
       // const { data  } = await axios.post("/api/messages", message);
       // messageData = data;
-      const { data: messageData } = await axios.post("/api/messages", message);
+      const { data: messageData } = await api.post("/api/messages", message);
 
       // Add the new message to the chat
       setMessages((prevMessages) => [...prevMessages, messageData]);
@@ -200,7 +201,7 @@ const ChatBox = ({
   // Handle delete
   const handleDeleteMessage = async () => {
     try {
-      await axios.delete(`/api/messages/${messageToDelete._id}`);
+      await api.delete(`/api/messages/${messageToDelete._id}`);
       setMessages(messages.filter((msg) => msg._id !== messageToDelete._id));
       setIsDeleteModalOpen(false); // Close modal after deletion
     } catch (error) {

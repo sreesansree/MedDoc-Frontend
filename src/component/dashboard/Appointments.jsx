@@ -2,12 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, Table, Rating, RatingStar } from "flowbite-react";
-import axios from "axios";
+// import axios from "axios";
 import animationData from "../../animations/chatanimation.json";
 import { formatTime } from "../../utils/dateUtils";
 import { createChat } from "../../api/chatRequest";
 import { useSelector } from "react-redux";
 import { jsPDF } from "jspdf";
+import api from "../../api/renderApi.js";
 
 // Function to format date to "dd/MM/yyyy"
 const formatDate = (date) => {
@@ -31,7 +32,7 @@ const Appointment = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get("/api/users/user-appointments");
+        const response = await api.get("/api/users/user-appointments");
         const sortedAppointments = response.data.sort((a, b) => {
           const dateTimeA = new Date(a.date + "T" + a.startTime);
           const dateTimeB = new Date(b.date + "T" + b.startTime);
@@ -45,7 +46,7 @@ const Appointment = () => {
 
     const fetchCanceledAppointments = async () => {
       try {
-        const respsonse = await axios.get(
+        const respsonse = await api.get(
           "/api/users/user-canceled-appointments"
         );
         setCanceledAppointments(respsonse.data);
@@ -56,7 +57,7 @@ const Appointment = () => {
 
     const fetchCompletedAppointments = async () => {
       try {
-        const response = await axios.get(
+        const response = await api.get(
           "/api/users/user-completed-appointments"
         );
         setCompletedAppointments(response.data);
@@ -363,7 +364,7 @@ const CompletedAppointmentsTable = ({ appointments }) => {
       return;
     }
     try {
-      await axios.post("/api/users/rate-doctor", {
+      await api.post("/api/users/rate-doctor", {
         appointmentId,
         doctorId,
         rating,

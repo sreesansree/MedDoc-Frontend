@@ -6,6 +6,7 @@ import { FaEdit, FaTrash } from "react-icons/fa"; // Import icons
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "../../api/renderApi";
 
 const formatTime = (time) => {
   const [hours, minutes] = time.split(":");
@@ -38,7 +39,7 @@ const SlotList = () => {
 
   const fetchSlots = async () => {
     try {
-      const slotsResponse = await axios.get(
+      const slotsResponse = await api.get(
         `/api/doctor/slots/${currentDoctor._id}`,
         { withCredentials: true }
       );
@@ -85,7 +86,7 @@ const SlotList = () => {
 
   const handleCancelAppointment = async () => {
     try {
-      const response = await axios.post(
+      const response = await api.post(
         `/api/doctor/doctor-appointments/${selectedSlot._id}/cancel`,
         {
           reason: cancelReason,
@@ -118,7 +119,7 @@ const SlotList = () => {
 
   const handleRescheduleAppointment = async () => {
     try {
-      const response = await axios.post(
+      const response = await api.post(
         `/api/doctor/reshedule/${selectedSlot._id}`,
         { newSlots }
       );
@@ -163,7 +164,7 @@ const SlotList = () => {
 
   const handleUpdateSubmit = async () => {
     try {
-      await axios.put(`/api/doctor/slots/${selectedSlot._id}`, updateForm);
+      await api.put(`/api/doctor/slots/${selectedSlot._id}`, updateForm);
       setSlots(
         slots.map((slot) =>
           slot._id === selectedSlot._id ? { ...slot, ...updateForm } : slot
@@ -179,7 +180,7 @@ const SlotList = () => {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`/api/doctor/slots/${selectedSlot._id}`);
+      await api.delete(`/api/doctor/slots/${selectedSlot._id}`);
       setSlots(slots.filter((slot) => slot._id !== selectedSlot._id));
       toast.success("Slot deleted successfully");
       setShowDeleteModal(false);

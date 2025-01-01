@@ -8,10 +8,10 @@ import {
   Spinner,
   TextInput,
 } from "flowbite-react";
-import axios from "axios";
+// import axios from "axios";
 import OAuth from "../google/OAuth";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-
+import api from "../../api/renderApi.js";
 export default function SignUp() {
   const [formData, setFromData] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
@@ -41,16 +41,12 @@ export default function SignUp() {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await axios.post("api/users/register", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await api.post("api/users/register", formData);
 
       // Check for success status
       if (res.status !== 200 && res.status !== 201) {
         setErrorMessage(
-          data.message || "Something went wrong. Please try again."
+          res.message || "Something went wrong. Please try again."
         );
         setLoading(false);
         return;
@@ -126,7 +122,7 @@ export default function SignUp() {
                 onChange={handleChange}
               />
             </div>
-              <Label value="Password" />
+            <Label value="Password" />
             <div className="relative">
               <TextInput
                 type={showPassword ? "text" : "password"}

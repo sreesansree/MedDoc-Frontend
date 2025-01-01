@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Button, TextInput, Label, Alert } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
+import api from "../../api/renderApi.js";
 
 const ForgetPassword = ({ userType }) => {
   const [email, setEmail] = useState("");
@@ -27,7 +28,7 @@ const ForgetPassword = ({ userType }) => {
       } else {
         endPoint = "/api/users/forget-password";
       }
-      const response = await axios.post(endPoint, { email });
+      const response = await api.post(endPoint, { email });
       setMessage(response.data.message);
       // Navigate to CompletePasswordReset with query parameters
       if (userType === "doctor") {

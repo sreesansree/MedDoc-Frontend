@@ -31,7 +31,9 @@ export default function DocHeader() {
 
   const handleSignOut = async () => {
     try {
-      const res = await fetch(`/api/doctor/logout`, {
+      const backendURL = "https://meddoc-backend-cqw0.onrender.com";
+      
+      const res = await fetch(`${backendURL}/api/doctor/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

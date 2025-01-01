@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import { getUser } from "../../api/userRequest.js";
-import axios from "axios";
+// import axios from "axios";
+import api from "../../api/renderApi.js";
 
 const Conversation = ({ userType, data, currentUserId, online }) => {
   const [userData, setUserData] = useState(null);
@@ -13,7 +14,7 @@ const Conversation = ({ userType, data, currentUserId, online }) => {
           userType === "doctor"
             ? `/api/doctor/user/${userId}`
             : `/api/users/doctor/${userId}`;
-        const { data } = await axios.get(endPoint);
+        const { data } = await api.get(endPoint);
         setUserData(data);
         // console.log("From Conversation , Get User : ", data);
       } catch (error) {

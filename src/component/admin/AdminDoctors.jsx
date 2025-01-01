@@ -4,6 +4,7 @@ import { Button, Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
 import ConfirmationModal from "../common/ConfirmationModal";
+import api from "../../api/renderApi";
 
 export default function AdminDoctors() {
   const [doctors, setDoctors] = useState([]);
@@ -15,7 +16,7 @@ export default function AdminDoctors() {
 
   const fetchDoctors = async () => {
     try {
-      const response = await axios.get("/api/admin/doctors", {
+      const response = await api.get("/api/admin/doctors", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -37,7 +38,7 @@ export default function AdminDoctors() {
 
   const handleBlock = async (id) => {
     try {
-      await axios.post(
+      await api.post(
         `/api/admin/block-doctor/${id}`,
         {},
         {
@@ -52,7 +53,7 @@ export default function AdminDoctors() {
 
   const handleUnblock = async (id) => {
     try {
-      await axios.post(
+      await api.post(
         `/api/admin/unblock-doctor/${id}`,
         {},
         {

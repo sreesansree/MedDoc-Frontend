@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "flowbite-react";
+import api from "../../api/renderApi";
 
 export default function AdminSingleDoctor({ doctorId }) {
   const [doctor, setDoctor] = useState(null);
@@ -9,7 +10,7 @@ export default function AdminSingleDoctor({ doctorId }) {
 
   const fetchDoctor = async () => {
     try {
-      const response = await axios.get(`/api/admin/doctors/${doctorId}`, {
+      const response = await api.get(`/api/admin/doctors/${doctorId}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -25,7 +26,7 @@ export default function AdminSingleDoctor({ doctorId }) {
 
   const fetchDepartment = async (departmentId) => {
     try {
-      const response = await axios.get(
+      const response = await api.get(
         `/api/admin/departments/${departmentId}`,
         {
           headers: {
@@ -44,7 +45,7 @@ export default function AdminSingleDoctor({ doctorId }) {
 
   const handleApprove = async () => {
     try {
-      await axios.post(
+      await api.post(
         `/api/admin/approve-doctor/${doctorId}`,
         {},
         {

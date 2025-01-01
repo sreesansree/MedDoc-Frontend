@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Button, Card, Select, Alert } from "flowbite-react";
+import { useState, useEffect } from "react";
+// import axios from "axios";
+import { Button, Select, Alert } from "flowbite-react";
+import api from "../../api/renderApi.js";
 
 const BookSlot = () => {
   const [slots, setSlots] = useState([]);
@@ -10,7 +11,7 @@ const BookSlot = () => {
   useEffect(() => {
     const fetchSlots = async () => {
       try {
-        const response = await axios.get("/api/user/slots"); // Fetch available slots
+        const response = await api.get("/api/user/slots"); // Fetch available slots
         setSlots(response.data);
       } catch (error) {
         console.error("Error fetching slots:", error);
@@ -26,7 +27,7 @@ const BookSlot = () => {
 
   const handleBookSlot = async () => {
     try {
-      await axios.patch(`/api/users/book-slot/${selectedSlot}`); // Book the selected slot
+      await api.patch(`/api/users/book-slot/${selectedSlot}`); // Book the selected slot
       setBookingStatus("success");
     } catch (error) {
       console.error("Error booking slot:", error);
@@ -37,7 +38,7 @@ const BookSlot = () => {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Book a Slot</h2>
-      
+
       {bookingStatus === "success" && (
         <Alert color="success" className="mb-4">
           Slot booked successfully!
@@ -60,13 +61,18 @@ const BookSlot = () => {
           <option value="">Select a slot</option>
           {slots.map((slot) => (
             <option key={slot._id} value={slot._id}>
-              {new Date(slot.date).toDateString()} - {slot.startTime} to {slot.endTime}
+              {new Date(slot.date).toDateString()} - {slot.startTime} to{" "}
+              {slot.endTime}
             </option>
           ))}
         </Select>
       </div>
 
-      <Button onClick={handleBookSlot} disabled={!selectedSlot} className="w-full">
+      <Button
+        onClick={handleBookSlot}
+        disabled={!selectedSlot}
+        className="w-full"
+      >
         Book Slot
       </Button>
     </div>

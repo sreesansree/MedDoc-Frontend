@@ -1,9 +1,10 @@
-import axios from "axios";
+// import axios from "axios";
 import { Card } from "flowbite-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "../../api/renderApi.js";
 
 const RescheduleForm = ({ appointmentId, availableSlots }) => {
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -25,7 +26,7 @@ const RescheduleForm = ({ appointmentId, availableSlots }) => {
       return;
     }
     try {
-      await axios.put(`/api/users/select-slot/${appointmentId}`, {
+      await api.put(`/api/users/select-slot/${appointmentId}`, {
         selectedSlot,
       });
       toast.success("Appointment resheduled successfully!");

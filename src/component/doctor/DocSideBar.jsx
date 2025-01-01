@@ -2,12 +2,12 @@ import { Sidebar } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { HiArrowSmRight, HiUser } from "react-icons/hi";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { signOutSuccessD } from "../../redux/doctor/doctorSlice.js";
 
 export default function DocSideBar() {
   const dispatch = useDispatch();
-  
+
   const location = useLocation();
   const [tab, setTab] = useState("");
 
@@ -20,7 +20,8 @@ export default function DocSideBar() {
   }, [location.search]);
 
   const handleSignOut = async () => {
-    const res = await fetch(`/api/doctor/logout`, {
+    const backendURL = "https://meddoc-backend-cqw0.onrender.com";
+    const res = await fetch(`${backendURL}/api/doctor/logout`, {
       method: "POST",
     });
     const data = await res.json();
