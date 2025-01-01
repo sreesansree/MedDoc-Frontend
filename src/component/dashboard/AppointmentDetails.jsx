@@ -1,9 +1,10 @@
 // AppointmentDetails.js
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 import { Button, Modal, Textarea, Alert } from "flowbite-react";
 import { formatTime, formatDate } from "../../utils/dateUtils";
+import api from "../../api/renderApi.js";
 
 const AppointmentDetails = () => {
   const { id } = useParams(); // Appointment ID from the URL
@@ -17,7 +18,7 @@ const AppointmentDetails = () => {
   useEffect(() => {
     const fetchAppointmentDetails = async () => {
       try {
-        const response = await axios.get(`/api/users/user-appointments/${id}`);
+        const response = await api.get(`/api/users/user-appointments/${id}`);
         setAppointment(response.data);
       } catch (error) {
         console.error("Error fetching appointment details:", error);
@@ -30,7 +31,7 @@ const AppointmentDetails = () => {
   const handleCancelAppointment = async () => {
     try {
       // /appointments/:id/cancel
-      const response = await axios.post(
+      const response = await api.post(
         `/api/users/user-appointments/${id}/cancel`,
         {
           reason: cancelReason,

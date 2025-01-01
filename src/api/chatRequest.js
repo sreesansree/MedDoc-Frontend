@@ -1,4 +1,5 @@
 import axios from "axios";
+import api from "./renderApi.js";
 //   from chatRequest.js
 // const API = axios.create({ baseURL: "http://localhost:5000" });
 
@@ -6,7 +7,7 @@ import axios from "axios";
 
 export const userChats = async (id) => {
   try {
-    const res = await axios.get(`/api/chat/${id}`);
+    const res = await api.get(`/api/chat/${id}`);
     return res.data.chats;
   } catch (error) {
     console.error("Error getting chat :", error);
@@ -15,7 +16,7 @@ export const userChats = async (id) => {
 
 export const createChat = async (chatData) => {
   try {
-    const response = await axios.post("/api/chat/", chatData);
+    const response = await api.post("/api/chat/", chatData);
     return response.data;
   } catch (error) {
     console.error("Error creating chat :", error);

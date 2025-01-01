@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineSearch, AiOutlineFilter } from "react-icons/ai";
-import axios from "axios";
+// import axios from "axios";
 import { Card, Button, TextInput, Select } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "../../api/renderApi.js";
 
 const DoctorsList = () => {
   const [doctors, setDoctors] = useState([]);
@@ -22,7 +23,7 @@ const DoctorsList = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get("/api/users/doctors");
+        const response = await api.get("/api/users/doctors");
         const approvedDoctors = response.data.filter(
           (doctor) => doctor.isApproved
         );
@@ -39,7 +40,7 @@ const DoctorsList = () => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get("/api/admin/departments/");
+        const response = await api.get("/api/admin/departments/");
         setDepartments(response.data);
       } catch (error) {
         console.error("Error fetching departments:", error);

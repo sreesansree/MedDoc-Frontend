@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import axios from "axios";
+// import axios from "axios";
+import api from "../../api/renderApi.js";
 
 const localizer = momentLocalizer(moment);
 
@@ -13,7 +14,7 @@ const CalendarView = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get("/api/users/user-appointments");
+        const response = await api.get("/api/users/user-appointments");
         const formattedAppointments = response.data.map((appointment) => {
           // Combine date and time using moment
           const startDateTime = moment(

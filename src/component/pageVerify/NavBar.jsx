@@ -31,7 +31,7 @@ export default function NavBar() {
 
   const handleSignOut = async () => {
     try {
-      const res = await fetch(`/api/users/logout`, {
+      const res = await fetch(`https://meddoc-backend-cqw0.onrender.com/api/users/logout`, {
         method: "POST",
       });
       if (!res.ok) {

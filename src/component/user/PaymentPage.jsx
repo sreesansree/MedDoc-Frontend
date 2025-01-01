@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ConfirmationModal from "./ConfirmationModal";
+import api from "../../api/renderApi.js";
 
 const PaymentPage = () => {
   const { slotId } = useParams();
@@ -13,7 +14,7 @@ const PaymentPage = () => {
   useEffect(() => {
     const initializePayment = async () => {
       try {
-        const response = await axios.post(`/api/users/book-slot/${slotId}`);
+        const response = await api.post(`/api/users/book-slot/${slotId}`);
         const { orderId, amount, currency, key_id } = response.data;
 
         // Log the response data for debugging
@@ -31,7 +32,7 @@ const PaymentPage = () => {
               // Log the response from Razorpay for debugging
               console.log("Razorpay response:", response);
 
-              const paymentResponse = await axios.post(
+              const paymentResponse = await api.post(
                 "/api/users/verify-payment",
                 {
                   orderId: response.razorpay_order_id,

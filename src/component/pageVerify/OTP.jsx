@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Alert, Button, Label, TextInput, Spinner } from "flowbite-react";
-import axios from "axios";
+// import axios from "axios";
+import api from "../../api/renderApi.js";
 
 export default function OTP() {
   const [email, setEmail] = useState("");
@@ -23,14 +24,14 @@ export default function OTP() {
   const handleResendOtp = async () => {
     try {
       setLoading(true);
-      const res = await axios.post(
+      const res = await api.post(
         "/api/users/resend-otp",
         { email },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        // {
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // }
       );
       setSuccessMessage("OTP has been resent to your email.");
       setResendTimer(60);
@@ -45,14 +46,14 @@ export default function OTP() {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.post(
+      const res = await api.post(
         "api/users//verify-otp",
         { email, otp },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        // {
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // }
       );
       const data = res.data;
       if (res.status !== 200 && res.status !== 201) {

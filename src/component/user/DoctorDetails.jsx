@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 import { Button, Card } from "flowbite-react";
 import { AiOutlineCalendar } from "react-icons/ai";
 import AlertModal from "../dashboard/AlertModal.jsx"; // Import the AlertModal component
+import api from "../../api/renderApi.js";
 
-// Function to format date to "dd/MM/yyyy"
-const formatDate = (date) => {
-  const d = new Date(date);
-  const day = String(d.getDate()).padStart(2, "0"); // Add leading zero if necessary
-  const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-based
-  const year = d.getFullYear();
-  return `${day}/${month}/${year}`;
-};
+// // Function to format date to "dd/MM/yyyy"
+// const formatDate = (date) => {
+//   const d = new Date(date);
+//   const day = String(d.getDate()).padStart(2, "0"); // Add leading zero if necessary
+//   const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+//   const year = d.getFullYear();
+//   return `${day}/${month}/${year}`;
+// };
 
 const DoctorDetails = () => {
   const { id } = useParams();
@@ -35,10 +36,10 @@ const DoctorDetails = () => {
   useEffect(() => {
     const fetchDoctorDetails = async () => {
       try {
-        const doctorResponse = await axios.get(`/api/users/doctor/${id}`);
+        const doctorResponse = await api.get(`/api/users/doctor/${id}`);
         setDoctor(doctorResponse.data);
 
-        const slotsResponse = await axios.get(`/api/doctor/slots/${id}`);
+        const slotsResponse = await api.get(`/api/doctor/slots/${id}`);
         const now = new Date();
 
         // Combine date and time for sorting
