@@ -18,7 +18,8 @@ const useSocket = (userID, userType) => {
   const { currentChat, isChatOpen } = useSelector((state) => state.chat);
 
   useEffect(() => {
-    socket.current = io("http://localhost:5000");
+    // socket.current = io("http://localhost:5000");
+    socket.current = io("https://meddoc-backend-cqw0.onrender.com");
 
     if (userID) {
       socket.current.emit("new-user-add", userID);
