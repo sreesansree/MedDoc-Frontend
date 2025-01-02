@@ -21,7 +21,7 @@ export default function OAuth({ userType }) {
       const resultsFromGoogle = await signInWithPopup(auth, provider);
       // console.log(resultsFromGoogle);
       const endPoint =
-        userType === "doctor" ? "/api/doctor/google" : "api/users/google";
+        userType === "doctor" ? "/api/doctor/google" : "/api/users/google";
       const res = await fetch(
         `https://meddoc-backend-cqw0.onrender.com${endPoint}`,
         {
