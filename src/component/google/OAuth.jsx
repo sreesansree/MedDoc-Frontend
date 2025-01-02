@@ -20,19 +20,20 @@ export default function OAuth({ userType }) {
     try {
       const resultsFromGoogle = await signInWithPopup(auth, provider);
       // console.log(resultsFromGoogle);
-      const backendURL = "https://meddoc-backend-cqw0.onrender.com";
       const endPoint =
-        userType === "doctor" ? `/api/doctor/google` : `api/users/google`;
-
-      const res = await fetch(`${backendURL}${endPoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: resultsFromGoogle.user.displayName,
-          email: resultsFromGoogle.user.email,
-          googlePhotoUrl: resultsFromGoogle.user.photoURL,
-        }),
-      });
+        userType === "doctor" ? "/api/doctor/google" : "api/users/google";
+      const res = await fetch(
+        `https://meddoc-backend-cqw0.onrender.com${endPoint}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: resultsFromGoogle.user.displayName,
+            email: resultsFromGoogle.user.email,
+            googlePhotoUrl: resultsFromGoogle.user.photoURL,
+          }),
+        }
+      );
       const data = await res.json();
       if (res.ok) {
         if (userType === "user") {
