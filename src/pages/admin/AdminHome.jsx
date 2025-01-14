@@ -7,7 +7,7 @@ import {
   HiUserGroup,
   HiClipboardList,
 } from "react-icons/hi";
-import axios from "axios"; // Import axios for making API calls
+// import axios from "axios"; // Import axios for making API calls
 import { Pie, Doughnut, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -19,6 +19,7 @@ import {
   LinearScale,
   PointElement,
 } from "chart.js";
+import api from "../../api/renderApi";
 
 ChartJS.register(
   ArcElement,
@@ -51,20 +52,20 @@ export default function AdminHome() {
   useEffect(() => {
     const fetchTotals = async () => {
       try {
-        const usersResponse = await axios.get("/api/admin/users", {
+        const usersResponse = await api.get("/api/admin/users", {
           headers: {
             "Content-Type": "application/json",
           },
           withCredentials: true, // Include this to send cookies
         });
-        const doctorsResponse = await axios.get("/api/admin/doctors", {
+        const doctorsResponse = await api.get("/api/admin/doctors", {
           headers: {
             "Content-Type": "application/json",
           },
           withCredentials: true, // Include this to send cookies
         });
 
-        const upcomingAppointments = await axios.get(
+        const upcomingAppointments = await api.get(
           "/api/admin/upcoming-slots",
           {
             headers: {
@@ -73,7 +74,7 @@ export default function AdminHome() {
             withCredentials: true,
           }
         );
-        const appointmentsResponse = await axios.get(
+        const appointmentsResponse = await api.get(
           "/api/admin/all-appointments",
           { withCredentials: true }
         );
@@ -90,7 +91,7 @@ export default function AdminHome() {
         const approvedDoctors = docData.filter((data) => data.isApproved);
 
         // Fetch recent activities
-        const activitiesResponse = await axios.get("/api/admin/activities", {
+        const activitiesResponse = await api.get("/api/admin/activities", {
           headers: {
             "Content-Type": "application/json",
           },
