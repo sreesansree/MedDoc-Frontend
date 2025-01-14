@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Button, Spinner, TextInput, Label } from "flowbite-react";
-import axios from "axios";
+// import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "../../api/renderApi.js";
 import {
   signInStartA,
   signInFailureA,
@@ -45,7 +46,7 @@ export default function AdminLogin() {
     try {
       dispatch(signInStartA());
       // console.log(formData, "formData");
-      const response = await axios.post("/api/admin/login", formData, {
+      const response = await api.post("/api/admin/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -58,7 +59,7 @@ export default function AdminLogin() {
       if (response.status !== 200 && response.status !== 201) {
         dispatch(
           signInFailureA(
-            data.message || "Something went wrong. Please try again."
+            response?.data?.message || "Something went wrong. Please try again."
           )
         );
         // setLoading(false);

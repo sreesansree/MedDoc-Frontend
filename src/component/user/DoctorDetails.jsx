@@ -38,8 +38,9 @@ const DoctorDetails = () => {
       try {
         const doctorResponse = await api.get(`/api/users/doctor/${id}`);
         setDoctor(doctorResponse.data);
-
+        
         const slotsResponse = await api.get(`/api/doctor/slots/${id}`);
+   
         const now = new Date();
 
         // Combine date and time for sorting
