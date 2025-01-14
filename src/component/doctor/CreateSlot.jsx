@@ -78,13 +78,19 @@ const CreateSlot = () => {
     }
 
     try {
-      const response = await api.post("/api/doctor/slots", {
-        date,
-        startTime: parseTime(fixedStartTime),
-        endTime: parseTime(fixedEndTime),
-        price,
-        fixedSlot,
-      });
+      const response = await api.post(
+        "/api/doctor/slots",
+        {
+          date,
+          startTime: parseTime(fixedStartTime),
+          endTime: parseTime(fixedEndTime),
+          price,
+          fixedSlot,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
       setDate(null);
       setStartTime("");

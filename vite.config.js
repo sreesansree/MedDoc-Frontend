@@ -8,7 +8,9 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:5000",
         // target: "https://meddoc-backend-cqw0.onrender.com",
+        changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
     historyApiFallback: true,
