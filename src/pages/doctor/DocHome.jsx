@@ -1,16 +1,44 @@
-import React from "react";
+// import React from "react";
 import { Card, Button } from "flowbite-react";
 import { Link } from "react-router-dom";
+import HealthNewsSection from "../../component/common/HealthNewsSection";
+import { useSelector } from "react-redux";
 
 function DocHome() {
+  const { currentDoctor } = useSelector((state) => state.doctor);
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-4 md:p-6">
       {/* Banner */}
-      <div className="bg-gradient-to-r from-blue-600 via-green-500 to-teal-500 text-white py-20 text-center rounded-lg mb-10">
+      {/* <div className="bg-gradient-to-r from-blue-600 via-green-500 to-teal-500 text-white py-20 text-center rounded-lg mb-10">
         <h1 className="text-5xl font-bold">Welcome to MedDoc</h1>
         <p className="text-xl mt-4">
           Empowering Doctors with Seamless Online Consultations
         </p>
+      </div> */}
+      <div className="relative bg-gradient-to-r from-blue-600 via-teal-500 to-emerald-500 text-white py-16 md:py-24 text-center rounded-xl mb-10 overflow-hidden">
+        <div className="absolute inset-0 opacity-10 bg-[url('https://img.icons8.com/ios/50/000000/stethoscope.png')] bg-repeat"></div>
+        <div className="relative z-10">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Welcome Back, Dr. {currentDoctor?.name}
+          </h1>
+          <p className="text-lg md:text-xl mb-6 max-w-2xl mx-auto">
+            {currentDoctor?.department
+              ? `Your expertise in "${currentDoctor?.department?.name}" is changing lives every day.`
+              : "Your expertise is changing lives every day."}
+          </p>
+          <div className="flex justify-center gap-4">
+            <Link to={`/doctor/slots/${currentDoctor._id}`}>
+              <Button size="lg" gradientDuoTone="cyanToBlue">
+                View Appointments
+              </Button>
+            </Link>
+            <Link to="/doctor/dashboard?tab=appointments">
+              <Button size="lg" outline color="light">
+                Start Consultation
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Features */}
@@ -52,6 +80,7 @@ function DocHome() {
         </Card>
         {/* Add more cards as needed */}
       </div>
+      <HealthNewsSection />
     </div>
   );
 }

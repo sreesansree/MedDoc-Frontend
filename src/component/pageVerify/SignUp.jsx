@@ -15,7 +15,6 @@ import api from "../../api/renderApi.js";
 export default function SignUp() {
   const [formData, setFromData] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
-  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();

@@ -1,8 +1,19 @@
-import React from "react";
 import { useSelector } from "react-redux";
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
+import PropTypes from "prop-types";
 
-export default function PrivateRoute() {
+function PrivateRoute({ redirectPath = "/signin" }) {
   const { currentUser } = useSelector((state) => state.user);
-  return currentUser ? <Outlet /> : <Navigate to="signin" />;
+  const location = useLocation();
+  return currentUser ? (
+    <Outlet />
+  ) : (
+    <Navigate to={redirectPath} state={{ from: location }} replace />
+  );
 }
+
+PrivateRoute.propTypes = {
+  redirectPath: PropTypes.string,
+};
+
+export default PrivateRoute;

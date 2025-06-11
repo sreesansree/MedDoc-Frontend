@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 // import axios from "axios";
 import RescheduleForm from "../../component/dashboard/RescheduleForm";
 import { ToastContainer } from "react-toastify";
-import api from "../../api/renderApi.js";
+import axios from "axios";
 
 const ReschedulePage = () => {
   const { appointmentId } = useParams();
@@ -13,7 +13,7 @@ const ReschedulePage = () => {
     // Fetch available slots for the given appointment
     const fetchAvailableSlots = async () => {
       try {
-        const response = await api.get(
+        const response = await axios.get(
           `/api/users/reschedule-slots/${appointmentId}`,
           {
             headers: {

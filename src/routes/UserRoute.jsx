@@ -21,17 +21,17 @@ export default function UserRoute() {
   return (
     <>
       <div className="flex flex-col min-h-screen">
-        <main className="flex-grow">
           <NavBar />
+        <main className="flex-grow pt-16">
           <ReminderListener userType={userType} />
           <Routes>
-            <Route element={<PrivateRoute />}>
-              <Route
-                path="reminder-notification"
-                element={<ReminderNotification />}
-              />
-              <Route path="doctors-list" element={<DoctorsList />} />
-              <Route path="doctor-detail/:id" element={<DoctorDetails />} />
+            <Route
+              path="reminder-notification"
+              element={<ReminderNotification />}
+            />
+            <Route path="doctors-list" element={<DoctorsList />} />
+            <Route path="doctor-detail/:id" element={<DoctorDetails />} />
+            <Route element={<PrivateRoute redirectPath="/signin" />}>
               <Route path="/payment/:slotId" element={<PaymentPage />} />
               {/* <Route path="chat" element={<ChatPage userType="user" />} /> */}
               <Route

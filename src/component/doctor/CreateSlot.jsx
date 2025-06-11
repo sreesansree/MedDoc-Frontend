@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-// import axios from "axios";
-import { Button, Label, TextInput, Card } from "flowbite-react";
+import { useState } from "react";
+import { Button, Label, TextInput, Card, Select } from "flowbite-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import api from "../../api/renderApi.js";
+import axios from "axios";
+import { HiCalendar, HiClock, HiCash } from "react-icons/hi";
 
 const formatTime = (time) => {
   const [hours, minutes] = time.split(":").map(Number);
@@ -30,15 +30,28 @@ const parseTime = (time) => {
 };
 
 const fixedTimeSlots = [
-  { startTime: "09:00", endTime: "09:30" },
-  { startTime: "10:00", endTime: "10:30" },
-  { startTime: "11:00", endTime: "11:30" },
-  { startTime: "13:00", endTime: "13:30" },
-  { startTime: "14:00", endTime: "14:30" },
-  { startTime: "15:00", endTime: "15:30" },
-  { startTime: "16:00", endTime: "16:30" },
-  { startTime: "18:00", endTime: "18:30" },
+  { startTime: "09:00", endTime: "09:30", label: "Morning" },
+  { startTime: "10:00", endTime: "10:30", label: "Morning" },
+  { startTime: "11:00", endTime: "11:30", label: "Late Morning" },
+  { startTime: "13:00", endTime: "13:30", label: "Early Afternoon" },
+  { startTime: "14:00", endTime: "14:30", label: "Afternoon" },
+  { startTime: "15:00", endTime: "15:30", label: "Afternoon" },
+  { startTime: "16:00", endTime: "16:30", label: "Late Afternoon" },
+  { startTime: "18:00", endTime: "18:30", label: "Evening" },
 ];
+
+const groupSlotsByLabel = () => {
+  const grouped = {};
+  fixedTimeSlots.forEach((slot) => {
+    if (!grouped[slot.label]) {
+      grouped[slot.label] = [];
+    }
+    grouped[slot.label].push(slot);
+  });
+  return grouped;
+};
+
+const groupedSlots = groupSlotsByLabel();
 
 const CreateSlot = () => {
   const [date, setDate] = useState(null);
@@ -59,26 +72,24 @@ const CreateSlot = () => {
     e.preventDefault();
 
     if (!date || date < new Date().setHours(0, 0, 0, 0)) {
-      toast.error("Date must be today or in the future.");
+      toast.error("Please select a valid date (today or future)");
       return;
     }
-    // const formattedDate = date.toISOString().split("T")[0];
 
     const [fixedStartTime, fixedEndTime] = fixedSlot
       ? selectedFixedSlot.split(" - ")
       : [startTime, endTime];
 
-    // Validation minimum 10 minutes difference between startTime and EndTime
     const startMinutes = parseTime(fixedStartTime);
     const endMinutes = parseTime(fixedEndTime);
 
     if (endMinutes - startMinutes < 10) {
-      toast.error("The time difference must be at least 10 minutes. ");
+      toast.error("Time slots must be at least 10 minutes long");
       return;
     }
 
     try {
-      const response = await api.post(
+      const response = await axios.post(
         "/api/doctor/slots",
         {
           date,
@@ -98,127 +109,211 @@ const CreateSlot = () => {
       setPrice(0);
       setFixedSlot(false);
       setSelectedFixedSlot("");
-      const message = response?.data?.message || "Successfully slot created";
+      const message = response?.data?.message || "Slot created successfully";
       toast.success(message);
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "An unexpected error occurred";
+        error.response?.data?.message || "Failed to create slot";
       console.error("Error creating slot:", errorMessage);
       toast.error(errorMessage);
     }
   };
 
   return (
-    <>
-      <Card className="max-w-lg mx-auto mt-6 mb-6 p-6 shadow-lg border rounded-lg">
-        <h2 className="flex justify-center opacity-90 hover:opacity-100 text-2xl font-semibold mb-6">
-          Create a New Slot
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <label className="flex justify-end items-center space-x-4">
-            <span className="text-sm font-medium">Fixed Slot</span>
-            <input
-              type="checkbox"
-              className="form-checkbox h-5 w-5 text-blue-600"
-              checked={fixedSlot}
-              onChange={(e) => setFixedSlot(e.target.checked)}
-            />
-          </label>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="date" className="text-lg font-medium">
-              Date
-            </Label>
-            <DatePicker
-              id="date"
-              selected={date}
-              onChange={(date) => setDate(date)}
-              minDate={new Date()}
-              dateFormat="dd/MM/yyyy"
-              className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-gray-200 dark:bg-gray-700"
-              required
-            />
+    <div className="min-h-screen dark:bg-gray-800 bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md mx-auto">
+        <Card className="rounded-xl shadow-lg border-2 border-dashed">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl dark:text-gray-400 font-bold text-gray-800">
+              Create Appointment Slot
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              {fixedSlot
+                ? "Select from predefined slots"
+                : "Set custom availability"}
+            </p>
           </div>
 
-          {fixedSlot ? (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="fixedSlot" className="text-lg font-medium">
-                Fixed Time Slot
-              </Label>
-              <select
-                id="fixedSlot"
-                value={selectedFixedSlot}
-                onChange={(e) => setSelectedFixedSlot(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:text-gray-200 dark:bg-gray-600"
-                required
-              >
-                <option value="">Select a fixed slot</option>
-                {fixedTimeSlots.map((slot, index) => (
-                  <option
-                    key={index}
-                    value={`${formatTime(slot.startTime)} - ${formatTime(
-                      slot.endTime
-                    )}`}
-                  >
-                    {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-                  </option>
-                ))}
-              </select>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex items-center justify-between mb-6">
+              <Label className="text-gray-700 font-medium">Slot Type</Label>
+              <div className="flex items-center">
+                <span
+                  className={`mr-3 text-sm ${
+                    !fixedSlot ? "font-medium text-blue-600" : "text-gray-500"
+                  }`}
+                >
+                  Custom
+                </span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={fixedSlot}
+                    onChange={(e) => setFixedSlot(e.target.checked)}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+                <span
+                  className={`ml-3 text-sm ${
+                    fixedSlot ? "font-medium text-blue-600" : "text-gray-500"
+                  }`}
+                >
+                  Fixed
+                </span>
+              </div>
             </div>
-          ) : (
-            <>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="startTime" className="text-lg font-medium">
-                  Start Time
-                </Label>
-                <TextInput
-                  type="time"
-                  id="startTime"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="endTime" className="text-lg font-medium">
-                  End Time
-                </Label>
-                <TextInput
-                  type="time"
-                  id="endTime"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
-            </>
-          )}
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="price" className="text-lg font-medium">
-              Amount
-            </Label>
-            <TextInput
-              type="number"
-              id="price"
-              value={price}
-              onChange={handlePriceChange}
-              className="border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
+            <div className="space-y-4">
+              <div>
+                <Label
+                  htmlFor="date"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Date
+                </Label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <HiCalendar className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <DatePicker
+                    id="date"
+                    selected={date}
+                    onChange={(date) => setDate(date)}
+                    minDate={new Date()}
+                    dateFormat="MMMM d, yyyy"
+                    placeholderText="Select a date"
+                    className="block w-full pl-10 p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                    required
+                  />
+                </div>
+              </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md"
-          >
-            Create Slot
-          </Button>
-        </form>
-      </Card>
-      <ToastContainer />
-    </>
+              {fixedSlot ? (
+                <div>
+                  <Label
+                    htmlFor="fixedSlot"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Time Slot
+                  </Label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <HiClock className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <Select
+                      id="fixedSlot"
+                      value={selectedFixedSlot}
+                      onChange={(e) => setSelectedFixedSlot(e.target.value)}
+                      className="pl-10 w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                      required
+                    >
+                      <option value="">Select a time slot</option>
+                      {Object.entries(groupedSlots).map(([label, slots]) => (
+                        <optgroup label={label} key={label}>
+                          {slots.map((slot, index) => (
+                            <option
+                              key={index}
+                              value={`${formatTime(
+                                slot.startTime
+                              )} - ${formatTime(slot.endTime)}`}
+                            >
+                              {formatTime(slot.startTime)} -{" "}
+                              {formatTime(slot.endTime)}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </Select>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label
+                      htmlFor="startTime"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Start Time
+                    </Label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <HiClock className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <TextInput
+                        type="time"
+                        id="startTime"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        className="pl-10 w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label
+                      htmlFor="endTime"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      End Time
+                    </Label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <HiClock className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <TextInput
+                        type="time"
+                        id="endTime"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        className="pl-10 w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <Label
+                  htmlFor="price"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Consultation Fee
+                </Label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <HiCash className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <TextInput
+                    type="number"
+                    id="price"
+                    value={price}
+                    onChange={handlePriceChange}
+                    min="0"
+                    step="50"
+                    className="pl-10 w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <span className="text-gray-500">₹</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
+              pill
+            >
+              Create Slot
+            </Button>
+          </form>
+        </Card>
+      </div>
+      <ToastContainer position="top-center" autoClose={3000} />
+    </div>
   );
 };
 

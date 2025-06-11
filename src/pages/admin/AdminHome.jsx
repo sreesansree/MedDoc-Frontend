@@ -19,7 +19,7 @@ import {
   LinearScale,
   PointElement,
 } from "chart.js";
-import api from "../../api/renderApi";
+import axios from "axios";
 
 ChartJS.register(
   ArcElement,
@@ -52,20 +52,20 @@ export default function AdminHome() {
   useEffect(() => {
     const fetchTotals = async () => {
       try {
-        const usersResponse = await api.get("/api/admin/users", {
+        const usersResponse = await axios.get("/api/admin/users", {
           headers: {
             "Content-Type": "application/json",
           },
           withCredentials: true, // Include this to send cookies
         });
-        const doctorsResponse = await api.get("/api/admin/doctors", {
+        const doctorsResponse = await axios.get("/api/admin/doctors", {
           headers: {
             "Content-Type": "application/json",
           },
           withCredentials: true, // Include this to send cookies
         });
 
-        const upcomingAppointments = await api.get(
+        const upcomingAppointments = await axios.get(
           "/api/admin/upcoming-slots",
           {
             headers: {
@@ -74,7 +74,7 @@ export default function AdminHome() {
             withCredentials: true,
           }
         );
-        const appointmentsResponse = await api.get(
+        const appointmentsResponse = await axios.get(
           "/api/admin/all-appointments",
           { withCredentials: true }
         );
@@ -91,7 +91,7 @@ export default function AdminHome() {
         const approvedDoctors = docData.filter((data) => data.isApproved);
 
         // Fetch recent activities
-        const activitiesResponse = await api.get("/api/admin/activities", {
+        const activitiesResponse = await axios.get("/api/admin/activities", {
           headers: {
             "Content-Type": "application/json",
           },

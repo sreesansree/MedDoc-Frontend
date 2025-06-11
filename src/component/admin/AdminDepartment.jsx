@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-// import axios from "axios";
 import { Button, Modal, TextInput, Label, Card } from "flowbite-react";
 import { FaPlusCircle, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import api from "../../api/renderApi.js";
+import axios from "axios";
 
 export default function AdminDepartment() {
   const [departments, setDepartments] = useState([]);
@@ -21,7 +20,7 @@ export default function AdminDepartment() {
 
   const fetchDepartments = async () => {
     try {
-      const response = await api.get("/api/admin/departments", {
+      const response = await axios.get("/api/admin/departments", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -53,7 +52,7 @@ export default function AdminDepartment() {
     if (editMode) {
       // Update department
       try {
-        const response = await api.put(
+        const response = await axios.put(
           `/api/admin/departments/${currentDepartment._id}`,
           currentDepartment,
           {
@@ -76,7 +75,7 @@ export default function AdminDepartment() {
     } else {
       // Add new department
       try {
-        const response = await api.post(
+        const response = await axios.post(
           "/api/admin/departments/",
           currentDepartment,
           {
@@ -100,7 +99,7 @@ export default function AdminDepartment() {
 
   const handleDelete = async () => {
     try {
-      await api.delete(`/api/admin/departments/${deleteDepartmentId}`, {
+      await axios.delete(`/api/admin/departments/${deleteDepartmentId}`, {
         headers: {
           "Content-Type": "application/json",
         },

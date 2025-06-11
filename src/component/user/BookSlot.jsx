@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 // import axios from "axios";
 import { Button, Select, Alert } from "flowbite-react";
-import api from "../../api/renderApi.js";
+import axios from "axios";
 
 const BookSlot = () => {
   const [slots, setSlots] = useState([]);
@@ -11,7 +11,7 @@ const BookSlot = () => {
   useEffect(() => {
     const fetchSlots = async () => {
       try {
-        const response = await api.get("/api/user/slots"); // Fetch available slots
+        const response = await axios.get("/api/user/slots"); // Fetch available slots
         setSlots(response.data);
       } catch (error) {
         console.error("Error fetching slots:", error);
@@ -27,7 +27,7 @@ const BookSlot = () => {
 
   const handleBookSlot = async () => {
     try {
-      await api.patch(`/api/users/book-slot/${selectedSlot}`); // Book the selected slot
+      await axios.patch(`/api/users/book-slot/${selectedSlot}`); // Book the selected slot
       setBookingStatus("success");
     } catch (error) {
       console.error("Error booking slot:", error);

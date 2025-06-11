@@ -12,10 +12,9 @@ export default function AdminHeader() {
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const backendURL = "https://meddoc-backend-cqw0.onrender.com";
   const handleSignOut = async () => {
     try {
-      const res = await fetch(`${backendURL}/api/admin/logout`, {
+      const res = await fetch(`/api/admin/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

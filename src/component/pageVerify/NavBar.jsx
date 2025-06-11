@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+// import { useState, useEffect, useRef } from "react";
 import { Avatar, Button, Dropdown, Navbar } from "flowbite-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaMoon, FaSun, FaBell } from "react-icons/fa";
@@ -8,6 +9,7 @@ import { signOutSuccess } from "../../redux/user/userSlice";
 import { markAllAsRead } from "../../redux/notification/notificationSlice";
 import ChatNotification from "../common/ChatNotification";
 import useSocket from "../../Hooks/useSocket";
+import Swal from "sweetalert2";
 
 export default function NavBar() {
   const path = useLocation().pathname;
@@ -30,24 +32,61 @@ export default function NavBar() {
   };
 
   const handleSignOut = async () => {
-    try {
-      const res = await fetch(`https://meddoc-backend-cqw0.onrender.com/api/users/logout`, {
-        method: "POST",
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        console.log(data.message);
-      } else {
-        dispatch(signOutSuccess());
-        navigate("/", { replace: true });
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: "Leaving so soon?",
+      text: "Are you sure you want to log out?",
+      icon: "question",
+      imageUrl: "https://cdn-icons-png.flaticon.com/512/3304/3304567.png",
+      imageWidth: 80,
+      imageHeight: 80,
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log me out!",
+      background: theme === "dark" ? "#1f2937" : "#fff",
+      color: theme === "dark" ? "#fff" : "#000",
+    });
+
+    // If user confirms, proceed with logout
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch(`/api/users/logout`, {
+          method: "POST",
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          console.log(data.message);
+        } else {
+          dispatch(signOutSuccess());
+          // Show success message
+          await Swal.fire({
+            title: "Logged Out!",
+            text: "You have been successfully logged out.",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false,
+            background: theme === "dark" ? "#1f2937" : "#fff",
+            color: theme === "dark" ? "#fff" : "#000",
+          });
+          navigate("/", { replace: true });
+        }
+      } catch (error) {
+        console.error("Error during sign out:", error);
+        // Show error message
+        Swal.fire({
+          title: "Error!",
+          text: "An error occurred while logging out.",
+          icon: "error",
+          background: theme === "dark" ? "#1f2937" : "#fff",
+          color: theme === "dark" ? "#fff" : "#000",
+        });
       }
-    } catch (error) {
-      console.error("Error during sign out:", error);
     }
   };
 
   return (
-    <Navbar className="border-b-2 self-center whitespace-nowrap text-sm sm:text-xl font font-semibold dark:text-white">
+    <Navbar className="fixed w-full top-0 z-50 border-b-2 self-center whitespace-nowrap text-sm sm:text-xl font font-semibold dark:text-white">
       <Link to="/">
         <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 font-bold">
           Med
@@ -123,20 +162,11 @@ export default function NavBar() {
         <Navbar.Link active={path === "/"} as={"div"}>
           <Link to="/">Home</Link>
         </Navbar.Link>
-        {currentUser && (
-          <>
-            <Navbar.Link active={path === "/user/doctors-list"} as={"div"}>
-              <Link to="/user/doctors-list">Doctors</Link>
-            </Navbar.Link>
 
-            {/* <Navbar.Link
-              active={path === "/dashboard?tab=appointments"}
-              as={"div"}
-            >
-              <Link to="/dashboard?tab=appointments">Appointments</Link>
-            </Navbar.Link> */}
-          </>
-        )}
+        <Navbar.Link active={path === "/user/doctors-list"} as={"div"}>
+          <Link to="/user/doctors-list">Doctors</Link>
+        </Navbar.Link>
+
         <Navbar.Link active={path === "/about"} as={"div"}>
           <Link to="/about">About</Link>
         </Navbar.Link>

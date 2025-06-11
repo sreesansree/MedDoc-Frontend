@@ -4,8 +4,7 @@ import { HiArrowSmRight, HiUser } from "react-icons/hi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { signInFailure, signOutSuccess } from "../../redux/user/userSlice";
-// import axios from "axios";
-import api from "../../api/renderApi.js";
+import axios from "axios";
 
 export default function DashSideBar() {
   const dispatch = useDispatch();
@@ -27,7 +26,7 @@ export default function DashSideBar() {
     //   method: "POST",
     // });
     try {
-      const res = await api.post(
+      const res = await axios.post(
         "/api/users/logout",
         {},
         {

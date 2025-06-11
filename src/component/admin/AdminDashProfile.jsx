@@ -6,9 +6,8 @@ import { signOutSuccessA } from "../../redux/admin/adminSlice";
 export default function AdminDashProfile() {
   const dispatch = useDispatch();
   const { currentAdmin } = useSelector((state) => state.admin);
-  const backendURL = "https://meddoc-backend-cqw0.onrender.com";
   const handleSignOut = async () => {
-    const res = await fetch(`${backendURL}api/admin/logout`, {
+    const res = await fetch(`api/admin/logout`, {
       method: "POST",
     });
     const data = await res.json();

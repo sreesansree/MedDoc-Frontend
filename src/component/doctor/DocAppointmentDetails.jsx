@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button, Modal, Textarea, Alert, Label } from "flowbite-react";
 import { AiOutlineClose } from "react-icons/ai";
 import { formatTime, formatDate } from "../../utils/dateUtils";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import api from "../../api/renderApi.js";
-// import axios from "axios";
+import axios from "axios";
 // import { HiOutlineEllipsisVertical } from "react-icons/hi2";
 
 const DocAppointmentDetails = () => {
@@ -46,7 +45,9 @@ const DocAppointmentDetails = () => {
   useEffect(() => {
     const fetchAppointmentDetails = async () => {
       try {
-        const response = await api.get(`/api/doctor/doctor-appointments/${id}`);
+        const response = await axios.get(
+          `/api/doctor/doctor-appointments/${id}`
+        );
         setAppointment(response.data);
       } catch (error) {
         console.error("Error fetching appointment details:", error);
@@ -58,7 +59,7 @@ const DocAppointmentDetails = () => {
 
   const handleCancelAppointment = async () => {
     try {
-      const response = await api.post(
+      const response = await axios.post(
         `/api/doctor/doctor-appointments/${id}/cancel`,
         {
           reason: cancelReason,
@@ -79,7 +80,7 @@ const DocAppointmentDetails = () => {
 
   const handleCompleteConsultation = async () => {
     try {
-      const response = await api.post(
+      const response = await axios.post(
         `/api/doctor/doctor-appointments/${id}/complete`,
         {
           medicines,
@@ -109,7 +110,7 @@ const DocAppointmentDetails = () => {
 
   const handleRescheduleAppointment = async () => {
     try {
-      const response = await api.post(
+      const response = await axios.post(
         `/api/doctor/reshedule/${appointment._id}`,
         { newSlots }
       );
@@ -240,7 +241,7 @@ const DocAppointmentDetails = () => {
 
               <div className="w-1/2 pl-4">
                 <label className="block text-sm font-medium text-gray-700">
-                  Doctor's Name
+                  Doctor&#39;s Name
                 </label>
                 <input
                   type="text"
@@ -254,8 +255,8 @@ const DocAppointmentDetails = () => {
             <div className="flex flex-col justify-center">
               <h4 className="text-lg font-semibold ">Medicine Details</h4>
               {medicines.map((medicine, index) => (
-                <div className="flex">
-                  <div key={index} className="grid grid-cols-3 gap-4 ">
+                <div className="flex" key={index}>
+                  <div className="grid grid-cols-3 gap-4 ">
                     <input
                       type="text"
                       className="input-text m-2"
@@ -305,7 +306,7 @@ const DocAppointmentDetails = () => {
                 Add More Medicines
               </Button>
             </div>
-            <Label>Doctor's Notes (optional)</Label>
+            <Label>Doctor&#39;s Notes (optional)</Label>
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

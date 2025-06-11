@@ -9,6 +9,7 @@ import { createChat } from "../../api/chatRequest";
 import { useSelector } from "react-redux";
 import { jsPDF } from "jspdf";
 import api from "../../api/renderApi.js";
+import axios from "axios";
 
 // Function to format date to "dd/MM/yyyy"
 const formatDate = (date) => {
@@ -32,7 +33,7 @@ const Appointment = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await api.get("/api/users/user-appointments");
+        const response = await axios.get("/api/users/user-appointments");
         const sortedAppointments = response.data.sort((a, b) => {
           const dateTimeA = new Date(a.date + "T" + a.startTime);
           const dateTimeB = new Date(b.date + "T" + b.startTime);
@@ -46,7 +47,7 @@ const Appointment = () => {
 
     const fetchCanceledAppointments = async () => {
       try {
-        const respsonse = await api.get(
+        const respsonse = await axios.get(
           "/api/users/user-canceled-appointments"
         );
         setCanceledAppointments(respsonse.data);
@@ -57,7 +58,7 @@ const Appointment = () => {
 
     const fetchCompletedAppointments = async () => {
       try {
-        const response = await api.get(
+        const response = await axios.get(
           "/api/users/user-completed-appointments"
         );
         setCompletedAppointments(response.data);

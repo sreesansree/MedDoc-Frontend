@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Alert,
   // FloatingLabel,
@@ -23,13 +23,16 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import OAuth from "../google/OAuth.jsx";
-import api from "../../api/renderApi.js";
+// import api from "../../api/renderApi.js";
+import axios from "axios";
 
 export default function SignIn() {
   // const [role, setRole] = useState("user");
   const [formData, setFromData] = useState({ email: "", password: "" });
   // const [errorMessage, setErrorMessage] = useState(null);
   // const [loading, setLoading] = useState(false);
+  const location = useLocation();
+
   const {
     currentUser,
     loading,
@@ -76,7 +79,7 @@ export default function SignIn() {
     }
     try {
       dispatch(signInStart());
-      const res = await api.post("api/users/login", formData);
+      const res = await axios.post("api/users/login", formData);
 
       // Check for success status
       if (res.status !== 200 && res.status !== 201) {
@@ -93,7 +96,9 @@ export default function SignIn() {
       // If registration is successful, navigate to the OTP verification page
       // setLoading(false);
       dispatch(signInSuccess(res.data));
-      navigate("/");
+      const from = location.state?.from || "/";
+      navigate(from);
+      // navigate("/");
     } catch (error) {
       // setErrorMessage(error.response?.data?.message || error.message);
       // setLoading(false);

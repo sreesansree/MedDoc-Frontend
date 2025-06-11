@@ -18,26 +18,28 @@ function AuthRoute() {
   return (
     <>
       <NavBar />
-      <Routes>
-        <Route path="signup" element={<SignUp />} />
-        <Route path="signin" element={<SignIn />} />
-        <Route path="verify_otp" element={<OTP />} />
-        <Route
-          path="forgot-password"
-          element={<ForgetPassword userType="user" />}
-        />
-        <Route
-          path="reset-password"
-          element={<CompletePasswordReset userType="user" />}
-        />
-        <Route path="about" element={<About />} />
-        <Route path="contact_us" element={<Contact />} />
-        <Route element={<PrivateRoute />}>
-          <Route path="dashboard" element={<Dashboard />} />
-        </Route>
-        <Route path="" element={<Landingpage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <main className="pt-16">
+        <Routes>
+          <Route path="signup" element={<SignUp />} />
+          <Route path="signin" element={<SignIn />} />
+          <Route path="verify_otp" element={<OTP />} />
+          <Route
+            path="forgot-password"
+            element={<ForgetPassword userType="user" />}
+          />
+          <Route
+            path="reset-password"
+            element={<CompletePasswordReset userType="user" />}
+          />
+          <Route path="about" element={<About />} />
+          <Route path="contact_us" element={<Contact />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="dashboard" element={<Dashboard />} />
+          </Route>
+          <Route path="" element={<Landingpage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
       <FooterCom />
     </>
   );

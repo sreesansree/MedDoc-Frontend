@@ -6,7 +6,7 @@ import ImageZoomModal from "../common/ImageZoomModal";
 
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
-import api from "../../api/renderApi.js";
+import axios from "axios";
 
 export default function AdminDoctorApproval() {
   const [pendingDoctors, setPendingDoctors] = useState([]);
@@ -22,7 +22,7 @@ export default function AdminDoctorApproval() {
 
   const fetchDoctors = async () => {
     try {
-      const response = await api.get("/api/admin/doctors", {
+      const response = await axios.get("/api/admin/doctors", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -50,7 +50,7 @@ export default function AdminDoctorApproval() {
 
   const handleApprove = async () => {
     try {
-      await api.post(
+      await axios.post(
         `/api/admin/approve-doctor/${selectedDoctor._id}`,
         {},
         {
@@ -76,7 +76,7 @@ export default function AdminDoctorApproval() {
 
   const handleReject = async () => {
     try {
-      await api.post(
+      await axios.post(
         `/api/admin/reject-doctor/${selectedDoctor._id}`,
         { rejectionReason },
         {

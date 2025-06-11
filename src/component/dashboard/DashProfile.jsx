@@ -38,7 +38,6 @@ export default function DashProfile() {
   const [updateUserError, setUpdateUserError] = useState(null);
   const [formData, setFormData] = useState({});
 
-  const backendURL = "https://meddoc-backend-cqw0.onrender.com";
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -143,9 +142,8 @@ export default function DashProfile() {
     }
     try {
       dispatch(updateStart());
-      // const backendURL = "https://meddoc-backend-cqw0.onrender.com";
       const res = await fetch(
-        `${backendURL}/api/users/update/${currentUser._id}`,
+        `/api/users/update/${currentUser._id}`,
         {
           method: "PUT",
           headers: {
@@ -190,9 +188,8 @@ export default function DashProfile() {
       return;
     }
     try {
-      // const backendURL = "https://meddoc-backend-cqw0.onrender.com";
       const res = await fetch(
-        `${backendURL}/api/users/change-password/${currentUser._id}`,
+        `/api/users/change-password/${currentUser._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -241,7 +238,7 @@ export default function DashProfile() {
 
   const handleSignOut = async () => {
     try {
-      const res = await fetch(`${backendURL}/api/users/logout`, {
+      const res = await fetch(`/api/users/logout`, {
         method: "POST",
       });
       const data = await res.json();

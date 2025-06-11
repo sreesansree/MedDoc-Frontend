@@ -20,8 +20,7 @@ export default function DocSideBar() {
   }, [location.search]);
 
   const handleSignOut = async () => {
-    const backendURL = "https://meddoc-backend-cqw0.onrender.com";
-    const res = await fetch(`${backendURL}/api/doctor/logout`, {
+    const res = await fetch(`/api/doctor/logout`, {
       method: "POST",
     });
     const data = await res.json();

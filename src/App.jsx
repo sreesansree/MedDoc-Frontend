@@ -9,7 +9,6 @@ import {
 } from "./routes/Routes.js";
 import Loader from "./loader/Loader.jsx";
 import "react-toastify/dist/ReactToastify.css";
-// import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 
@@ -37,7 +36,6 @@ export default function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
-          {/* <ToastContainer /> */}
         </div>
       )}
     </>

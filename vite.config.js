@@ -7,7 +7,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "http://localhost:5000",
-        // target: "https://meddoc-backend-cqw0.onrender.com",
+        changeOrigin: true,
         secure: false,
       },
     },

@@ -5,13 +5,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import api from "../../api/renderApi.js";
 import {
   signInStartA,
   signInFailureA,
   signInSuccessA,
   resetLoading,
 } from "../../redux/admin/adminSlice.js";
+import axios from "axios";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ export default function AdminLogin() {
     try {
       dispatch(signInStartA());
       // console.log(formData, "formData");
-      const response = await api.post("/api/admin/login", formData, {
+      const response = await axios.post("/api/admin/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -80,15 +80,15 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-slate-800 ">
-      <div className="w-full max-w-md p-8 space-y-3 bg-white rounded shadow-md">
-        <h2 className="text-xl font-bold text-cyan-900 text-center">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-slate-700 ">
+      <div className="w-full max-w-md p-8 space-y-3 bg-white dark:bg-slate-800 rounded shadow-md">
+        <h2 className="text-xl font-bold text-cyan-900 dark:text-cyan-500 text-center">
           Admin Login
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="">
             <Label
-              className="dark:text-slate-900 mv-10"
+              className="dark:text-slate-400 mv-10"
               htmlFor="email"
               value="Email"
             />
@@ -98,11 +98,12 @@ export default function AdminLogin() {
               name="email"
               onChange={handleChange}
               value={formData.email}
+              className=""
             />
           </div>
           <div>
             <Label
-              className="dark:text-slate-900 mv-10"
+              className="dark:text-slate-400 mv-10"
               htmlFor="password"
               value="Password"
             />

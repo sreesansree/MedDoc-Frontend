@@ -14,12 +14,12 @@ export default function Contact() {
       <form className="max-w-xl mx-auto">
         <div className="mb-6">
           <Label htmlFor="name" value="Your Name" />
-          <TextInput id="name" type="text" placeholder="Sree" required={true} className="mt-1" />
+          <TextInput id="name" type="text" placeholder="name" required={true} className="mt-1" />
         </div>
         
         <div className="mb-6">
           <Label htmlFor="email" value="Your Email" />
-          <TextInput id="email" type="email" placeholder="sree@example.com" required={true} className="mt-1" />
+          <TextInput id="email" type="email" placeholder="abc@example.com" required={true} className="mt-1" />
         </div>
         
         <div className="mb-6">
