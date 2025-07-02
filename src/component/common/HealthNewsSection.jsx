@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "flowbite-react";
 
 const HealthNewsSection = () => {
@@ -24,7 +24,7 @@ const HealthNewsSection = () => {
   if (loading)
     return <div className="text-center py-8">Loading health news...</div>;
   return (
-    <div className="container mx-auto py-12 px-4">
+    <div className="container mx-auto py-12 px-4 overflow-hidden">
       <h2 className="text-3xl font-bold text-center mb-8">
         Latest Health News
       </h2>

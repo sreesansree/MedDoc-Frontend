@@ -287,7 +287,7 @@ export default function AdminHome() {
             <HiUserGroup className="text-3xl text-green-600" />
             <div>
               <h2 className="text-lg font-medium">Most Active Doctor</h2>
-              <p className="text-2xl font-semibold">Dr. John Doe</p>{" "}
+              <p className="text-2xl font-semibold">Dr. Narayan kutty</p>{" "}
               {/* Example value */}
             </div>
           </Card>
@@ -364,21 +364,29 @@ export default function AdminHome() {
             </li>
           </ul>
         </Card>
-        // Render the activities
-<Card>
-  <ul className="divide-y divide-gray-200">
-    {recentActivities.map((activity) => (
-      <li key={activity._id} className="py-2 flex justify-between items-center">
-        <span>
-          {activity.description}: <strong>{activity.name}</strong>
-        </span>
-        <Badge color={activity.type === 'user_registered' ? 'info' : 'success'}>
-          {new Date(activity.createdAt).toLocaleString()} {/* Adjust time format as necessary */}
-        </Badge>
-      </li>
-    ))}
-  </ul>
-</Card>
+        {/* // Render the activities */}
+        <Card>
+          <ul className="divide-y divide-gray-200">
+            {recentActivities.map((activity) => (
+              <li
+                key={activity._id}
+                className="py-2 flex justify-between items-center"
+              >
+                <span>
+                  {activity.description}: <strong>{activity.name}</strong>
+                </span>
+                <Badge
+                  color={
+                    activity.type === "user_registered" ? "info" : "success"
+                  }
+                >
+                  {new Date(activity.createdAt).toLocaleString()}{" "}
+                  {/* Adjust time format as necessary */}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </Card>
       </section>
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Quick Actions</h2>

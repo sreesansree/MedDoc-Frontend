@@ -22,7 +22,6 @@ function Landingpage() {
       {/* Banner Carousel with Background Images */}
       <div className="h-64 sm:h-80 xl:h-[32rem] 2xl:h-120 mb-10 rounded-lg overflow-hidden">
         <Carousel slideInterval={5000}>
-          {/* Slide 1 with background image */}
           <div
             className="flex h-full items-center justify-center bg-cover bg-center"
             style={{
@@ -46,7 +45,6 @@ function Landingpage() {
             </div>
           </div>
 
-          {/* Slide 2 with background image */}
           <div
             className="flex h-full items-center justify-center bg-cover bg-center"
             style={{
@@ -72,7 +70,6 @@ function Landingpage() {
             </div>
           </div>
 
-          {/* Slide 3 with background image */}
           <div
             className="flex h-full items-center justify-center bg-cover bg-center"
             style={{
@@ -95,7 +92,7 @@ function Landingpage() {
       </div>
 
       {/* How It Works Section */}
-      <AnimateOnScroll animation="slideUp">
+      {/* <AnimateOnScroll animation="slideUp"> */}
         <div className="text-center mb-16 bg-green-200 dark:bg-gray-800 p-10">
           <h2 className="text-3xl font-bold">How It Works</h2>
           <p className="text-lg mt-2 text-gray-600 dark:text-gray-300">
@@ -131,10 +128,10 @@ function Landingpage() {
             </div>
           </div>
         </div>
-      </AnimateOnScroll>
+      {/* </AnimateOnScroll> */}
 
       {/* Specialties */}
-      <AnimateOnScroll animation="slideLeft">
+      <AnimateOnScroll animation="fadeIn">
         <SpecialtiesSection />
       </AnimateOnScroll>
 
@@ -144,7 +141,7 @@ function Landingpage() {
       </AnimateOnScroll>
 
       {/* Best Practices */}
-      <AnimateOnScroll animation="slideLeft">
+      <AnimateOnScroll animation="slideRight">
         <BestPractices />
       </AnimateOnScroll>
 

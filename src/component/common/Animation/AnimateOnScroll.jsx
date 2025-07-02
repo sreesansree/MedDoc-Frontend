@@ -37,10 +37,10 @@ const AnimateOnScroll = ({ children, animation = "fadeIn", delay = 0 }) => {
       isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
     }`,
     slideLeft: `transform transition-all duration-700 ease-out ${
-      isVisible ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"
+      isVisible ? "translate-x-0 opacity-100" : "translate-x-20 opacity-0"
     }`,
     slideRight: `transform transition-all duration-700 ease-out ${
-      isVisible ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
+      isVisible ? "translate-x-0 opacity-100" : "-translate-x-20 opacity-0"
     }`,
     zoomIn: `transform transition-all duration-700 ease-out ${
       isVisible ? "scale-100 opacity-100" : "scale-90 opacity-0"
@@ -48,7 +48,15 @@ const AnimateOnScroll = ({ children, animation = "fadeIn", delay = 0 }) => {
   };
 
   return (
-    <div ref={domRef} className={`${animations[animation]} delay-${delay}`}>
+    <div 
+      ref={domRef} 
+      className={`${animations[animation]} delay-${delay} overflow-hidden`}
+      style={{
+        // Prevent transform from causing overflow
+        transformStyle: 'preserve-3d',
+        backfaceVisibility: 'hidden'
+      }}
+    >
       {children}
     </div>
   );

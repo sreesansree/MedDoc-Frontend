@@ -52,6 +52,7 @@ const DoctorDetails = () => {
         ]);
 
         setDoctor(doctorResponse.data);
+
         const now = new Date();
         const validSlots = slotsResponse.data
           .filter((slot) => {
@@ -195,8 +196,7 @@ const DoctorDetails = () => {
                         <AiOutlineMedicineBox className="mr-2 text-indigo-600 dark:text-indigo-400" />
                         <span>
                           Specializations:{" "}
-                          {doctor.specializations?.join(", ") ||
-                            "General Medicine"}
+                          {doctor?.department?.name || "General Medicine"}
                         </span>
                       </div>
                       <div className="flex items-center text-gray-600 dark:text-gray-300">
@@ -218,7 +218,11 @@ const DoctorDetails = () => {
                       <div className="space-y-2">
                         <div className="flex items-center text-gray-600 dark:text-gray-300">
                           <FaPhone className="mr-2 text-indigo-600 dark:text-indigo-400" />
-                          <span>{doctor.phone || "+91 9876543210"}</span>
+                          <span>
+                            <a href={`tel:${doctor.phone}`}>
+                              {doctor.phone || "+91 9876543210"}
+                            </a>
+                          </span>
                         </div>
                         <div className="flex items-center text-gray-600 dark:text-gray-300">
                           <FaEnvelope className="mr-2 text-indigo-600 dark:text-indigo-400" />

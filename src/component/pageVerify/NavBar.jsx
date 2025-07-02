@@ -115,6 +115,7 @@ export default function NavBar() {
                   {unreadCount}
                 </span>
               )}
+              
               {showNotifications && (
                 <div className="absolute right-0  mt-2 w-100 bg-white dark:bg-gray-600 shadow-lg rounded-lg p-2 z-10 ">
                   <h3 className="text-sm font-bold">Notifications</h3>
